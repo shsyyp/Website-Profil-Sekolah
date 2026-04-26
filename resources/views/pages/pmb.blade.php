@@ -20,18 +20,16 @@
                 pendidikan unggulan di Riau.
             </p>
             <div class="flex flex-col sm:flex-row gap-4">
-                {{-- Persiapan Form Dinamis --}}
-                <form method="POST" action="/daftar" class="flex gap-4">
-                    @csrf
-                    <button type="submit"
+                <div class="flex gap-4">
+                    <a href="{{ $pmb?->link_pendaftaran ?: '#' }}" target="_blank"
                         class="bg-gradient-to-br from-tertiary to-tertiary-container text-on-tertiary px-8 py-4 rounded-lg font-bold text-lg shadow-xl shadow-tertiary/20 hover:scale-105 active:scale-95 transition-all">
                         Daftar Sekarang
-                    </button>
-                </form>
-                <button
+                    </a>
+                </div>
+                <a href="#persyaratan"
                     class="border-2 border-primary/20 text-primary px-8 py-4 rounded-lg font-bold text-lg hover:bg-primary/5 transition-all">
                     Panduan PMB
-                </button>
+                </a>
             </div>
         </div>
         <div class="relative group">
@@ -63,19 +61,22 @@
             <h2 class="font-headline text-4xl md:text-5xl font-extrabold text-primary">Alur Pendaftaran</h2>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
+            @forelse ($alur as $index => $item)
             <div
-                class="bg-surface-container-lowest p-8 rounded-2xl shadow-sm border border-outline-variant/10 relative group hover:shadow-xl transition-all duration-500">
+                class="bg-surface-container-lowest p-8 rounded-2xl shadow-sm border border-outline-variant/10 {{ ! $loop->last ? 'relative' : '' }} group hover:shadow-xl transition-all duration-500">
                 <div
-                    class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-white transition-colors duration-300">
-                    <span class="material-symbols-outlined">person_add</span>
+                    class="w-12 h-12 rounded-lg {{ $loop->last ? 'bg-tertiary/10 group-hover:bg-tertiary group-hover:text-on-tertiary' : 'bg-primary/10 group-hover:bg-primary group-hover:text-white' }} flex items-center justify-center mb-6 transition-colors duration-300">
+                    <span class="material-symbols-outlined">{{ ['person_add', 'edit_note', 'description', 'psychology', 'campaign'][$index % 5] }}</span>
                 </div>
-                <h3 class="font-bold text-lg mb-2">1. Registrasi Akun</h3>
-                <p class="text-on-surface-variant text-sm leading-relaxed">Buat akun calon siswa melalui portal resmi
-                    PMB.</p>
+                <h3 class="font-bold text-lg mb-2">{{ $index + 1 }}. {{ $item }}</h3>
+                <p class="text-on-surface-variant text-sm leading-relaxed">Ikuti tahapan sesuai informasi resmi panitia PMB.</p>
+                @if(! $loop->last)
                 <div class="hidden md:block absolute -right-4 top-1/2 -translate-y-1/2 z-10">
                     <span class="material-symbols-outlined text-outline-variant">chevron_right</span>
                 </div>
+                @endif
             </div>
+            @empty
             <div
                 class="bg-surface-container-lowest p-8 rounded-2xl shadow-sm border border-outline-variant/10 relative group hover:shadow-xl transition-all duration-500">
                 <div
@@ -125,12 +126,13 @@
                 <p class="text-on-surface-variant text-sm leading-relaxed">Hasil seleksi diumumkan melalui akun
                     masing-masing.</p>
             </div>
+            @endforelse
         </div>
     </div>
 </section>
 
 {{-- Persyaratan --}}
-<section class="py-24">
+<section id="persyaratan" class="py-24">
     <div class="max-w-7xl mx-auto px-8">
         <div class="grid md:grid-cols-2 gap-12">
             <div class="bg-surface-container p-10 rounded-3xl relative overflow-hidden">
@@ -142,23 +144,17 @@
                     Persyaratan Umum
                 </h3>
                 <ul class="space-y-6">
+                    @forelse ($persyaratan as $item)
                     <li class="flex gap-4">
                         <span class="material-symbols-outlined text-primary shrink-0">check_circle</span>
-                        <p class="text-on-surface-variant">Lulusan SMP/MTs sederajat tahun ajaran 2024/2025.</p>
+                        <p class="text-on-surface-variant">{{ $item }}</p>
                     </li>
+                    @empty
                     <li class="flex gap-4">
                         <span class="material-symbols-outlined text-primary shrink-0">check_circle</span>
-                        <p class="text-on-surface-variant">Berusia maksimal 17 tahun pada tanggal 1 Juli 2025.</p>
+                        <p class="text-on-surface-variant">Informasi persyaratan akan diperbarui melalui CMS PMB.</p>
                     </li>
-                    <li class="flex gap-4">
-                        <span class="material-symbols-outlined text-primary shrink-0">check_circle</span>
-                        <p class="text-on-surface-variant">Memiliki nilai rata-rata rapor semester 1-5 minimal 80.00.
-                        </p>
-                    </li>
-                    <li class="flex gap-4">
-                        <span class="material-symbols-outlined text-primary shrink-0">check_circle</span>
-                        <p class="text-on-surface-variant">Bersedia tinggal di asrama selama masa pendidikan.</p>
-                    </li>
+                    @endforelse
                 </ul>
             </div>
             <div class="bg-surface-container-highest p-10 rounded-3xl relative overflow-hidden">
@@ -170,23 +166,17 @@
                     Berkas Administrasi
                 </h3>
                 <ul class="space-y-6">
+                    @forelse ($berkas as $item)
                     <li class="flex gap-4">
                         <span class="material-symbols-outlined text-primary shrink-0">task</span>
-                        <p class="text-on-surface-variant font-medium">Scan Akta Kelahiran & Kartu Keluarga Asli.</p>
+                        <p class="text-on-surface-variant font-medium">{{ $item }}</p>
                     </li>
+                    @empty
                     <li class="flex gap-4">
                         <span class="material-symbols-outlined text-primary shrink-0">task</span>
-                        <p class="text-on-surface-variant font-medium">Scan Rapor Semester 1 s/d 5 yang dilegalisir.</p>
+                        <p class="text-on-surface-variant font-medium">Informasi berkas administrasi akan diperbarui melalui CMS PMB.</p>
                     </li>
-                    <li class="flex gap-4">
-                        <span class="material-symbols-outlined text-primary shrink-0">task</span>
-                        <p class="text-on-surface-variant font-medium">Pas Foto berwarna latar belakang biru (Format
-                            JPG).</p>
-                    </li>
-                    <li class="flex gap-4">
-                        <span class="material-symbols-outlined text-primary shrink-0">task</span>
-                        <p class="text-on-surface-variant font-medium">Scan Sertifikat Prestasi (Jika ada).</p>
-                    </li>
+                    @endforelse
                 </ul>
             </div>
         </div>
@@ -211,7 +201,7 @@
                 </thead>
                 <tbody class="space-y-4">
                     {{-- DYNAMIC LOOP: Jadwal dari Controller --}}
-                    @foreach ($jadwal as $item)
+                    @forelse ($jadwal as $item)
                     <tr
                         class="{{ isset($item->is_highlight) && $item->is_highlight ? 'bg-tertiary-fixed text-on-tertiary-fixed font-bold shadow-lg shadow-tertiary/10' : 'bg-surface-container-low hover:bg-surface-container transition-colors rounded-xl' }}">
                         <td
@@ -220,7 +210,11 @@
                         <td class="px-8 py-6">{{ $item->tanggal }}</td>
                         <td class="px-8 py-6 rounded-r-xl">{{ $item->keterangan }}</td>
                     </tr>
-                    @endforeach
+                    @empty
+                    <tr class="bg-surface-container-low">
+                        <td colspan="3" class="px-8 py-6 rounded-xl text-center text-on-surface-variant">Timeline PMB akan diperbarui melalui CMS.</td>
+                    </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
@@ -235,43 +229,25 @@
             <p class="text-on-surface-variant">Temukan jawaban cepat atas pertanyaan Anda.</p>
         </div>
         <div class="space-y-4">
+            @forelse ($faq as $item)
             <div class="bg-surface-container-low rounded-2xl overflow-hidden group">
                 <button
                     class="w-full px-8 py-6 text-left flex justify-between items-center hover:bg-surface-container transition-all">
-                    <span class="font-bold text-lg text-primary">Apakah SMAN Pintar mewajibkan asrama?</span>
+                    <span class="font-bold text-lg text-primary">{{ $item->pertanyaan }}</span>
                     <span
                         class="material-symbols-outlined group-hover:rotate-180 transition-transform">expand_more</span>
                 </button>
                 <div class="px-8 pb-6 text-on-surface-variant leading-relaxed">
-                    Ya, SMAN Pintar adalah sekolah berbasis asrama (Boarding School). Semua siswa diwajibkan tinggal di
-                    asrama untuk pembinaan karakter dan efektivitas pembelajaran.
+                    {{ $item->jawaban }}
                 </div>
             </div>
+            @empty
             <div class="bg-surface-container-low rounded-2xl overflow-hidden group">
-                <button
-                    class="w-full px-8 py-6 text-left flex justify-between items-center hover:bg-surface-container transition-all">
-                    <span class="font-bold text-lg text-primary">Berapa biaya pendidikan di SMAN Pintar?</span>
-                    <span
-                        class="material-symbols-outlined group-hover:rotate-180 transition-transform">expand_more</span>
-                </button>
-                <div class="px-8 pb-6 text-on-surface-variant leading-relaxed">
-                    Biaya pendidikan di SMAN Pintar disubsidi oleh Pemerintah Provinsi Riau. Detail biaya perlengkapan
-                    pribadi akan diinformasikan saat daftar ulang.
+                <div class="px-8 py-6 text-on-surface-variant leading-relaxed">
+                    FAQ PMB akan diperbarui melalui CMS.
                 </div>
             </div>
-            <div class="bg-surface-container-low rounded-2xl overflow-hidden group">
-                <button
-                    class="w-full px-8 py-6 text-left flex justify-between items-center hover:bg-surface-container transition-all">
-                    <span class="font-bold text-lg text-primary">Materi apa saja yang diujikan dalam tes
-                        akademik?</span>
-                    <span
-                        class="material-symbols-outlined group-hover:rotate-180 transition-transform">expand_more</span>
-                </button>
-                <div class="px-8 pb-6 text-on-surface-variant leading-relaxed">
-                    Tes akademik meliputi mata pelajaran Matematika, Bahasa Inggris, IPA (Fisika & Biologi), dan Bahasa
-                    Indonesia dengan standar olimpiade dan kurikulum nasional.
-                </div>
-            </div>
+            @endforelse
         </div>
     </div>
 </section>
@@ -373,18 +349,14 @@
                     ditutup dalam beberapa hari ke depan.
                 </p>
                 <div class="flex flex-col sm:flex-row justify-center gap-6">
-                    {{-- Persiapan Form Dinamis --}}
-                    <form method="POST" action="/daftar">
-                        @csrf
-                        <button type="submit"
+                    <a href="{{ $pmb?->link_pendaftaran ?: '#' }}" target="_blank"
                             class="bg-tertiary text-on-tertiary px-10 py-5 rounded-xl font-bold text-xl hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-tertiary/20">
                             Daftar Sekarang
-                        </button>
-                    </form>
-                    <button type="button"
+                    </a>
+                    <a href="{{ route('pmb') }}"
                         class="bg-white/10 backdrop-blur-md border border-white/20 text-white px-10 py-5 rounded-xl font-bold text-xl hover:bg-white/20 transition-all">
                         Hubungi Panitia
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>

@@ -27,22 +27,23 @@
         <div
             class="bg-surface-container-lowest p-4 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.02)] flex flex-col md:flex-row justify-between items-center gap-6">
             <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 no-scrollbar">
-                <button
-                    class="px-6 py-2 rounded-full bg-primary text-on-primary font-semibold text-sm whitespace-nowrap">Semua</button>
-                <button
-                    class="px-6 py-2 rounded-full bg-surface-container-high text-on-surface-variant hover:bg-primary-container hover:text-on-primary font-medium text-sm transition-all whitespace-nowrap">Prestasi</button>
-                <button
-                    class="px-6 py-2 rounded-full bg-surface-container-high text-on-surface-variant hover:bg-primary-container hover:text-on-primary font-medium text-sm transition-all whitespace-nowrap">Kegiatan</button>
-                <button
-                    class="px-6 py-2 rounded-full bg-surface-container-high text-on-surface-variant hover:bg-primary-container hover:text-on-primary font-medium text-sm transition-all whitespace-nowrap">Pengumuman</button>
+                <a href="{{ route('berita', request()->only('q')) }}"
+                    class="px-6 py-2 rounded-full {{ empty($kategoriAktif) ? 'bg-primary text-on-primary font-semibold' : 'bg-surface-container-high text-on-surface-variant hover:bg-primary-container hover:text-on-primary font-medium' }} text-sm transition-all whitespace-nowrap">Semua</a>
+                @foreach ($kategoriBerita as $kategori)
+                <a href="{{ route('berita', array_filter(['kategori' => $kategori->kategori, 'q' => $keyword])) }}"
+                    class="px-6 py-2 rounded-full {{ $kategoriAktif === $kategori->kategori ? 'bg-primary text-on-primary font-semibold' : 'bg-surface-container-high text-on-surface-variant hover:bg-primary-container hover:text-on-primary font-medium' }} text-sm transition-all whitespace-nowrap">{{ $kategori->kategori }}</a>
+                @endforeach
             </div>
-            <div class="relative w-full md:w-80">
+            <form method="GET" action="{{ route('berita') }}" class="relative w-full md:w-80">
+                @if($kategoriAktif)
+                <input type="hidden" name="kategori" value="{{ $kategoriAktif }}" />
+                @endif
                 <span
                     class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">search</span>
-                <input
+                <input name="q" value="{{ $keyword }}"
                     class="w-full pl-12 pr-4 py-3 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary-container transition-all"
                     placeholder="Ketik kata kunci..." type="text" />
-            </div>
+            </form>
         </div>
     </section>
 
@@ -53,26 +54,25 @@
         <div class="lg:col-span-8 space-y-12">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
 
-                {{-- DYNAMIC LOOP: Data dikirim dari routes/web.php --}}
-                @foreach ($daftar_berita as $item)
+                @forelse ($daftar_berita as $item)
                 <article
                     class="group bg-surface-container-lowest rounded-xl overflow-hidden hover:shadow-[0_20px_50px_rgba(0,53,127,0.1)] transition-all duration-500 flex flex-col h-full">
                     <div class="relative overflow-hidden aspect-[16/10]">
                         <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                            src="{{ $item->gambar }}" alt="{{ $item->judul }}" />
+                            src="{{ $item->gambar ? asset('storage/' . $item->gambar) : 'https://lh3.googleusercontent.com/aida-public/AB6AXuAUSqq79Uw_F-kdwXiJyOEP54AMX5t94IDTF9iVSXlu5ZE84GXdTQL5-bp-VqtOqm-W51p5Se_xxjWGRbu9UJLxwk6d11z3HF2_py9UKO5L_0vt78jQXJz_lMAcS78Lkvjba-_lCrL5eZLY_lvjMZIaBjnDLZKrZdn3GmwNBWpfeQzR-gPu5mSkTuatXeW5SBJ4tAVFRAZCWIdnBjdFLEDMxuT1zg5wQG_AnkMtNVZFQclNLVPjCWvKoJk36vMmagZzbWSiDSAMjPnU' }}" alt="{{ $item->judul }}" />
                         <span
-                            class="absolute top-4 left-4 {{ $item->warna_badge }} px-3 py-1 rounded-md text-xs font-bold tracking-wider uppercase">{{ $item->kategori }}</span>
+                            class="absolute top-4 left-4 bg-primary-container text-on-primary px-3 py-1 rounded-md text-xs font-bold tracking-wider uppercase">{{ $item->kategori }}</span>
                     </div>
                     <div class="p-6 flex flex-col flex-grow">
                         <div class="flex items-center gap-2 text-outline text-xs font-medium mb-3">
                             <span class="material-symbols-outlined text-[14px]">calendar_today</span>
-                            {{ $item->tanggal }}
+                            {{ \Carbon\Carbon::parse($item->tanggal)->translatedFormat('d F Y') }}
                         </div>
                         <h3
                             class="text-xl font-bold font-headline text-on-surface group-hover:text-primary transition-colors leading-tight mb-3">
                             {{ $item->judul }}</h3>
                         <p class="text-on-surface-variant text-sm leading-relaxed line-clamp-3 mb-6">
-                            {{ $item->deskripsi }}</p>
+                            {{ \Illuminate\Support\Str::limit(strip_tags($item->isi), 140) }}</p>
                         <a href="#"
                             class="mt-auto inline-flex items-center gap-2 text-primary font-bold text-sm group/link">
                             Selengkapnya
@@ -81,25 +81,17 @@
                         </a>
                     </div>
                 </article>
-                @endforeach
+                @empty
+                <div class="md:col-span-2 bg-surface-container-lowest rounded-xl p-10 text-center text-on-surface-variant">
+                    Belum ada berita publish yang tersedia.
+                </div>
+                @endforelse
 
             </div>
 
             {{-- Pagination --}}
-            <div class="flex items-center justify-center gap-2 pt-8">
-                <button
-                    class="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container text-outline hover:bg-primary hover:text-white transition-all">
-                    <span class="material-symbols-outlined">chevron_left</span>
-                </button>
-                <button
-                    class="w-10 h-10 flex items-center justify-center rounded-lg bg-primary text-on-primary font-bold">1</button>
-                <button
-                    class="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container text-on-surface-variant hover:bg-primary-container hover:text-white transition-all font-semibold">2</button>
-                <button
-                    class="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container text-on-surface-variant hover:bg-primary-container hover:text-white transition-all font-semibold">3</button>
-                <span class="px-2 text-outline">...</span>
-                <button
-                    class="px-4 h-10 flex items-center justify-center rounded-lg bg-surface-container text-on-surface-variant hover:bg-primary-container hover:text-white transition-all font-semibold">Next</button>
+            <div class="pt-8">
+                {{ $daftar_berita->links() }}
             </div>
         </div>
 
@@ -113,42 +105,22 @@
                     Berita Populer
                 </h2>
                 <div class="space-y-6">
+                    @forelse ($beritaPopuler as $item)
                     <a class="group flex gap-4" href="#">
                         <div class="w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden">
                             <img class="w-full h-full object-cover group-hover:scale-110 transition-transform"
-                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqcs6FfnhfHAcoi1padYUKRX6lcOW9m_lm-AcXEqAjaPxxQj5qZhsPdNkYiB2GzVVwW1IWZZ4Wx9BE0IVRtymsYWLQH6N6vi2YLMIZ10RrsB5Oz3gqt8jQC1O3mv1fgBU-eZ2XmfDtevEcdX0t2vMjgpQwgECvs7Ba5Pepjp4BNhSXUFEtePQWAeC8nKjzg-dRQBw_SIE1lJjz_Ey7gLuE9PbwvDEMxfaqsDb3S5TilZ77lLYmIFPWYk2pImIo3oju_Usv90S1xHMq" />
+                                src="{{ $item->gambar ? asset('storage/' . $item->gambar) : 'https://lh3.googleusercontent.com/aida-public/AB6AXuDqcs6FfnhfHAcoi1padYUKRX6lcOW9m_lm-AcXEqAjaPxxQj5qZhsPdNkYiB2GzVVwW1IWZZ4Wx9BE0IVRtymsYWLQH6N6vi2YLMIZ10RrsB5Oz3gqt8jQC1O3mv1fgBU-eZ2XmfDtevEcdX0t2vMjgpQwgECvs7Ba5Pepjp4BNhSXUFEtePQWAeC8nKjzg-dRQBw_SIE1lJjz_Ey7gLuE9PbwvDEMxfaqsDb3S5TilZ77lLYmIFPWYk2pImIo3oju_Usv90S1xHMq' }}" />
                         </div>
                         <div class="flex flex-col justify-center">
                             <h4
                                 class="text-sm font-bold leading-snug group-hover:text-primary transition-colors line-clamp-2">
-                                Tips Efektif Belajar Mandiri di Era Digital</h4>
-                            <span class="text-[11px] text-outline mt-1 font-medium">12 Oktober 2023</span>
+                                {{ $item->judul }}</h4>
+                            <span class="text-[11px] text-outline mt-1 font-medium">{{ \Carbon\Carbon::parse($item->tanggal)->translatedFormat('d F Y') }}</span>
                         </div>
                     </a>
-                    <a class="group flex gap-4" href="#">
-                        <div class="w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden">
-                            <img class="w-full h-full object-cover group-hover:scale-110 transition-transform"
-                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzvCdtK7DZawU7damIWbfnb8ZRpzP3xEg89nw8uM2Z_5wtPoMKDlGtDII2zr6KNpZXBkj0CYw-FZSRJN5cXsrw71pPDTyHF6-eGf5xFy9Ntx_AGJP1B1e7XEZ1C1sZwKBgq7efKar6DaezBcoYLkeXF9OzzK-wEJKEJxOwIwfH_w3Dn0rPcvlHlcAcK9nV8GK2uIM9Z7YxF0YSOoGnNEkzXp0LgyD3LmiShheNE9dZWS_an6ItaEwTMj2EvmtqVAzSJIkXzXJoZkA5" />
-                        </div>
-                        <div class="flex flex-col justify-center">
-                            <h4
-                                class="text-sm font-bold leading-snug group-hover:text-primary transition-colors line-clamp-2">
-                                Fasilitas Perpustakaan Digital Baru Kini Tersedia</h4>
-                            <span class="text-[11px] text-outline mt-1 font-medium">10 Oktober 2023</span>
-                        </div>
-                    </a>
-                    <a class="group flex gap-4" href="#">
-                        <div class="w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden">
-                            <img class="w-full h-full object-cover group-hover:scale-110 transition-transform"
-                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5bkWKOEj26bito-1Kxsa2WwEbZ8hgfn2O80DCInXrlLrB2J9zV8IDqNgVbzIfTxjHleWRIJsxmuXEKw9CPzFHkqTugTxg2KXq8dfXccn26eXHpBDPaxOsG9Afn7_ASYFr81Y_PM2MQ3IQMotygIAQfa6ZLGcbw2NKmwERYwtj7daT9HMMArasV6YKclhXOuc9YbB-4UkJxkwlRCJYqI36LHZET_uDGupSzJyG5akOjDJMb2F_mjuRnhW_LhxgiZa446GMH6y4i7JG" />
-                        </div>
-                        <div class="flex flex-col justify-center">
-                            <h4
-                                class="text-sm font-bold leading-snug group-hover:text-primary transition-colors line-clamp-2">
-                                Kunjungan Industri Siswa Jurusan IPA ke Pabrik Farmasi</h4>
-                            <span class="text-[11px] text-outline mt-1 font-medium">08 Oktober 2023</span>
-                        </div>
-                    </a>
+                    @empty
+                    <p class="text-sm text-on-surface-variant">Belum ada berita populer.</p>
+                    @endforelse
                 </div>
             </section>
 
@@ -156,22 +128,14 @@
             <section class="bg-surface-container-lowest border border-outline-variant/10 rounded-xl p-8">
                 <h2 class="text-xl font-bold font-headline text-primary mb-6">Kategori</h2>
                 <div class="flex flex-wrap gap-2">
+                    @forelse ($kategoriBerita as $kategori)
                     <a class="px-4 py-2 bg-surface-container rounded-lg text-sm font-semibold text-on-surface-variant hover:bg-primary-fixed hover:text-on-primary-fixed transition-all flex items-center gap-2"
-                        href="#">
-                        Prestasi <span class="text-[10px] bg-white px-1.5 py-0.5 rounded-full text-primary">12</span>
+                        href="{{ route('berita', ['kategori' => $kategori->kategori]) }}">
+                        {{ $kategori->kategori }} <span class="text-[10px] bg-white px-1.5 py-0.5 rounded-full text-primary">{{ $kategori->total }}</span>
                     </a>
-                    <a class="px-4 py-2 bg-surface-container rounded-lg text-sm font-semibold text-on-surface-variant hover:bg-primary-fixed hover:text-on-primary-fixed transition-all flex items-center gap-2"
-                        href="#">
-                        Kegiatan <span class="text-[10px] bg-white px-1.5 py-0.5 rounded-full text-primary">24</span>
-                    </a>
-                    <a class="px-4 py-2 bg-surface-container rounded-lg text-sm font-semibold text-on-surface-variant hover:bg-primary-fixed hover:text-on-primary-fixed transition-all flex items-center gap-2"
-                        href="#">
-                        Pengumuman <span class="text-[10px] bg-white px-1.5 py-0.5 rounded-full text-primary">8</span>
-                    </a>
-                    <a class="px-4 py-2 bg-surface-container rounded-lg text-sm font-semibold text-on-surface-variant hover:bg-primary-fixed hover:text-on-primary-fixed transition-all flex items-center gap-2"
-                        href="#">
-                        Opini Siswa <span class="text-[10px] bg-white px-1.5 py-0.5 rounded-full text-primary">15</span>
-                    </a>
+                    @empty
+                    <p class="text-sm text-on-surface-variant">Belum ada kategori.</p>
+                    @endforelse
                 </div>
             </section>
 

@@ -10,16 +10,27 @@
                 <p class="text-[10px] opacity-80">Online | Siap membantu</p>
             </div>
         </div>
-        <div class="p-4 bg-slate-50 min-h-[200px] flex flex-col gap-3">
+        <div id="chatbotMessages" class="p-4 bg-slate-50 min-h-[200px] flex flex-col gap-3">
             <div class="bg-white p-3 rounded-md rounded-tl-none shadow-sm text-xs text-slate-600 max-w-[80%]">
                 Halo! Ada yang bisa saya bantu terkait pendaftaran atau informasi sekolah?
             </div>
+            @forelse ($chatbotItems as $item)
+            <button type="button" data-chatbot-question="{{ $item->pertanyaan }}"
+                data-chatbot-answer="{{ $item->jawaban }}"
+                class="text-left bg-primary/5 hover:bg-primary/10 p-3 rounded-md text-xs text-primary font-semibold transition-colors">
+                {{ $item->pertanyaan }}
+            </button>
+            @empty
+            <div class="bg-white p-3 rounded-md shadow-sm text-xs text-slate-600 max-w-[80%]">
+                Data chatbot belum tersedia.
+            </div>
+            @endforelse
         </div>
         <div class="p-4 bg-white border-t border-slate-100 flex items-center gap-2">
-            <input
+            <input id="chatbotInput"
                 class="flex-grow bg-slate-100 border-none rounded-full px-4 py-2 text-xs focus:ring-1 focus:ring-primary"
                 placeholder="Tanya sesuatu..." type="text" />
-            <button class="text-tertiary-container hover:text-tertiary transition-colors">
+            <button id="chatbotSend" type="button" class="text-tertiary-container hover:text-tertiary transition-colors">
                 <span class="material-symbols-outlined text-xl">send</span>
             </button>
         </div>
@@ -30,3 +41,52 @@
         <span class="material-symbols-outlined text-3xl" data-weight="fill">chat_bubble</span>
     </button>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const messages = document.getElementById('chatbotMessages');
+    const input = document.getElementById('chatbotInput');
+    const send = document.getElementById('chatbotSend');
+    const knowledge = @json($chatbotItems->map(fn ($item) => [
+        'pertanyaan' => $item->pertanyaan,
+        'jawaban' => $item->jawaban,
+    ])->values());
+
+    function addMessage(text, alignRight = false) {
+        const bubble = document.createElement('div');
+        bubble.className = alignRight
+            ? 'bg-primary text-white p-3 rounded-md rounded-tr-none shadow-sm text-xs max-w-[80%] self-end'
+            : 'bg-white p-3 rounded-md rounded-tl-none shadow-sm text-xs text-slate-600 max-w-[80%]';
+        bubble.textContent = text;
+        messages.appendChild(bubble);
+        messages.scrollTop = messages.scrollHeight;
+    }
+
+    function answer(question) {
+        const normalized = question.toLowerCase();
+        const match = knowledge.find((item) => item.pertanyaan.toLowerCase().includes(normalized) || normalized.includes(item.pertanyaan.toLowerCase()));
+
+        addMessage(question, true);
+        addMessage(match ? match.jawaban : 'Maaf, jawaban untuk pertanyaan tersebut belum tersedia di database chatbot.');
+        input.value = '';
+    }
+
+    document.querySelectorAll('[data-chatbot-question]').forEach((button) => {
+        button.addEventListener('click', () => answer(button.dataset.chatbotQuestion));
+    });
+
+    send.addEventListener('click', () => {
+        const question = input.value.trim();
+
+        if (question) {
+            answer(question);
+        }
+    });
+
+    input.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            send.click();
+        }
+    });
+});
+</script>

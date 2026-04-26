@@ -35,7 +35,7 @@
         <div
             class="bg-surface-container-lowest p-8 rounded-xl shadow-[0_24px_40px_rgba(25,27,34,0.04)] hover:scale-[1.02] transition-transform">
             <span class="material-symbols-outlined text-tertiary text-4xl mb-4">groups</span>
-            <h3 class="text-3xl font-extrabold text-primary mb-1">2500+</h3>
+            <h3 class="text-3xl font-extrabold text-primary mb-1">{{ $totalAlumni }}+</h3>
             <p class="text-on-surface-variant font-medium text-sm uppercase tracking-wider">Total Alumni</p>
         </div>
         <div
@@ -53,8 +53,8 @@
         <div
             class="bg-surface-container-lowest p-8 rounded-xl shadow-[0_24px_40px_rgba(25,27,34,0.04)] hover:scale-[1.02] transition-transform">
             <span class="material-symbols-outlined text-tertiary text-4xl mb-4">public</span>
-            <h3 class="text-3xl font-extrabold text-primary mb-1">15%</h3>
-            <p class="text-on-surface-variant font-medium text-sm uppercase tracking-wider">Studi Luar Negeri</p>
+            <h3 class="text-3xl font-extrabold text-primary mb-1">{{ $totalLokasi }}+</h3>
+            <p class="text-on-surface-variant font-medium text-sm uppercase tracking-wider">Lokasi Alumni</p>
         </div>
     </div>
 </section>
@@ -114,8 +114,8 @@
             class="bg-surface-container-lowest rounded-3xl overflow-hidden shadow-[0_32px_64px_rgba(25,27,34,0.06)] flex flex-col lg:flex-row">
             <div class="lg:w-1/2 h-[500px] relative">
                 <img class="w-full h-full object-cover"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5b9EKh9EPOhCkOHOD9OhGHtMgEYqREHpizcz4yCCG-bZdDvNF9f7UrIJ1wHBEhzBLiLp5YzkV-TEHddVtGY_d_x0XJ99stYk4ko2d5loipZ8A0_opvHMrJ9H5NcHyo_kGvDoyGqCoMIRljXVe7u9CitFKpB3AAFe0qYMBsRGYOl2iqn1dtoRR_w4HqsywZMt9H9umODxX5V5K2g66_Z-xqoFRL6lU-wUoCYdePmIfmfqGWb__uFu67oUKxb3WZjNHoBPC1rnidCm9"
-                    alt="Dr. Sarah Wijaya" />
+                    src="{{ $featuredAlumni?->foto ? asset('storage/' . $featuredAlumni->foto) : 'https://lh3.googleusercontent.com/aida-public/AB6AXuA5b9EKh9EPOhCkOHOD9OhGHtMgEYqREHpizcz4yCCG-bZdDvNF9f7UrIJ1wHBEhzBLiLp5YzkV-TEHddVtGY_d_x0XJ99stYk4ko2d5loipZ8A0_opvHMrJ9H5NcHyo_kGvDoyGqCoMIRljXVe7u9CitFKpB3AAFe0qYMBsRGYOl2iqn1dtoRR_w4HqsywZMt9H9umODxX5V5K2g66_Z-xqoFRL6lU-wUoCYdePmIfmfqGWb__uFu67oUKxb3WZjNHoBPC1rnidCm9' }}"
+                    alt="{{ $featuredAlumni?->nama ?? 'Alumni SMAN Pintar' }}" />
                 <div class="absolute top-8 left-8">
                     <span
                         class="bg-tertiary-container text-on-tertiary-container px-6 py-2 rounded-full font-bold text-xs uppercase tracking-widest backdrop-blur-md">Featured
@@ -123,11 +123,10 @@
                 </div>
             </div>
             <div class="lg:w-1/2 p-12 lg:p-16 flex flex-col justify-center">
-                <h3 class="text-4xl font-extrabold text-primary mb-4">Dr. Sarah Wijaya</h3>
-                <p class="text-tertiary font-bold mb-8 text-lg">CEO & Founder, BioTech Solutions | Class of 2008</p>
+                <h3 class="text-4xl font-extrabold text-primary mb-4">{{ $featuredAlumni?->nama ?? 'Alumni SMAN Pintar' }}</h3>
+                <p class="text-tertiary font-bold mb-8 text-lg">{{ $featuredAlumni?->profesi ?? 'Profil alumni akan diperbarui' }}{{ $featuredAlumni?->instansi ? ', ' . $featuredAlumni->instansi : '' }} | Class of {{ $featuredAlumni?->tahun_lulus ?? '-' }}</p>
                 <blockquote class="text-xl italic text-on-surface-variant mb-8 leading-relaxed">
-                    "SMAN Pintar bukan sekadar sekolah, tapi inkubator mimpi. Disini saya belajar bahwa disiplin dan
-                    imajinasi adalah kunci untuk mendisrupsi dunia riset medis global."
+                    "{{ $featuredAlumni?->deskripsi ?: 'SMAN Pintar menjadi ruang tumbuh untuk membangun karakter, disiplin, dan keberanian bermimpi lebih besar.' }}"
                 </blockquote>
                 <div class="flex gap-4 items-center">
                     <button
@@ -151,30 +150,34 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 
         {{-- DYNAMIC LOOP: Data Alumni --}}
-        @foreach ($daftar_alumni as $item)
+        @forelse ($daftar_alumni as $item)
         <div
             class="group bg-surface-container-lowest rounded-2xl p-6 shadow-sm hover:shadow-[0_20px_40px_rgba(25,27,34,0.08)] transition-all duration-300">
             <div class="relative mb-6">
-                <img class="w-24 h-24 rounded-2xl object-cover mb-4" src="{{ $item->gambar }}"
+                <img class="w-24 h-24 rounded-2xl object-cover mb-4" src="{{ $item->foto ? asset('storage/' . $item->foto) : 'https://lh3.googleusercontent.com/aida-public/AB6AXuA3kk9jqHFB1bwe8T3UOsjV_sL3xqb9csJjS7ZD042fBVAd2C1XKZenZBSonVAEJQXtXFX6FPYkhv92fLkf3eqw7AaNz8GNPmtR2-0doASR5iHvDVsWGACZ5nWxtWJYwrtdkY5KSU9Fep_xYRvUYHdY3VKWQYaeQK8KPqjTMdUEFfLQsYOxTZ43UAzhLiSN3UVZ-ggTeMHgzGk7766ySmdXXbBjNuP6slDcPj4zsZS8EwjyvcBA3qhVsN3P0r8IjwZ9XheX4N25zYYQ' }}"
                     alt="{{ $item->nama }}" />
-                @if(isset($item->badge))
+                @if($loop->first)
                 <span
-                    class="absolute top-0 right-0 {{ $item->badge_color }} text-[10px] font-bold px-2 py-1 rounded-full uppercase">{{ $item->badge }}</span>
+                    class="absolute top-0 right-0 bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-1 rounded-full uppercase">Featured</span>
                 @endif
             </div>
             <h4 class="text-xl font-bold text-primary group-hover:text-tertiary transition-colors">{{ $item->nama }}
             </h4>
-            <p class="text-on-surface-variant text-sm mt-1 mb-6">{{ $item->profesi }}</p>
+            <p class="text-on-surface-variant text-sm mt-1 mb-6">{{ $item->profesi }}{{ $item->instansi ? ', ' . $item->instansi : '' }}</p>
             <div class="flex items-center gap-2">
                 <span
-                    class="text-xs font-semibold bg-surface-container px-3 py-1 rounded-full text-on-surface-variant">{{ $item->tahun }}</span>
-                @if(isset($item->tag))
+                    class="text-xs font-semibold bg-surface-container px-3 py-1 rounded-full text-on-surface-variant">Class of {{ $item->tahun_lulus }}</span>
+                @if($item->lokasi)
                 <span
-                    class="text-xs font-semibold bg-surface-container px-3 py-1 rounded-full text-on-surface-variant">{{ $item->tag }}</span>
+                    class="text-xs font-semibold bg-surface-container px-3 py-1 rounded-full text-on-surface-variant">{{ $item->lokasi }}</span>
                 @endif
             </div>
         </div>
-        @endforeach
+        @empty
+        <div class="lg:col-span-3 bg-surface-container-lowest rounded-2xl p-10 text-center text-on-surface-variant">
+            Belum ada data alumni aktif yang tersedia.
+        </div>
+        @endforelse
 
     </div>
     <div class="mt-16 text-center">

@@ -11,6 +11,11 @@
                 <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
                 <span>Dashboard</span>
             </a>
+            <a class="flex items-center gap-3 px-4 py-3 {{ Route::is('admin.homepage.*') ? 'bg-gradient-to-br from-[#00357f] to-[#004aad] text-white' : 'text-slate-600 hover:bg-slate-100' }} rounded-lg transition-transform hover:translate-x-1 duration-300"
+                href="{{ route('admin.homepage.index') }}">
+                <span class="material-symbols-outlined">home_work</span>
+                <span class="font-medium text-sm">Beranda</span>
+            </a>
             <a href="{{ url('/') }}"
                 class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-blue-700 hover:bg-slate-50 transition-all">
                 <span class="material-symbols-outlined" data-icon="home">home</span>

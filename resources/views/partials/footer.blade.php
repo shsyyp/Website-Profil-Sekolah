@@ -1,9 +1,9 @@
 <footer class="w-full rounded-t-3xl mt-20 bg-slate-100 border-t border-slate-200">
     <div class="grid grid-cols-1 md:grid-cols-4 gap-8 px-12 py-16 max-w-7xl mx-auto">
         <div class="space-y-6">
-            <span class="text-lg font-bold text-primary block">SMAN Pintar</span>
+            <span class="text-lg font-bold text-primary block">{{ $homepage?->site_name ?? 'SMAN Pintar' }}</span>
             <p class="text-slate-500 text-sm leading-relaxed">
-                Mewujudkan pendidikan menengah berkualitas dunia di bumi Lancang Kuning, Provinsi Riau.
+                {{ $homepage?->footer_desc ?? 'Mewujudkan pendidikan menengah berkualitas dunia di bumi Lancang Kuning, Provinsi Riau.' }}
             </p>
             <div class="flex gap-4">
                 <span
@@ -28,18 +28,17 @@
             <ul class="space-y-3 text-sm text-slate-500">
                 <li class="flex items-start gap-3">
                     <span class="material-symbols-outlined text-sm text-tertiary">location_on</span>
-                    <span>Jl. Pendidikan No. 01, Pekanbaru, Provinsi Riau</span>
+                    <span>{{ $homepage?->footer_address ?? 'Jl. Pendidikan No. 01, Pekanbaru, Provinsi Riau' }}</span>
                 </li>
                 <li class="flex items-center gap-3">
                     <span class="material-symbols-outlined text-sm text-tertiary">call</span>
-                    <span>(0761) 1234567</span>
+                    <span>{{ $homepage?->footer_phone ?? '(0761) 1234567' }}</span>
                 </li>
             </ul>
         </div>
         <div class="space-y-4">
             <h4 class="font-bold text-primary mb-4">Newsletter</h4>
-            <p class="text-xs text-slate-500 mb-4">Dapatkan info pendaftaran dan prestasi terbaru langsung di email
-                Anda.</p>
+            <p class="text-xs text-slate-500 mb-4">{{ $homepage?->newsletter_desc ?? 'Dapatkan info pendaftaran dan prestasi terbaru langsung di email Anda.' }}</p>
             <div class="relative">
                 <input
                     class="w-full bg-white border-none rounded-md px-4 py-3 text-sm shadow-sm focus:ring-2 focus:ring-primary"
@@ -53,9 +52,9 @@
     </div>
     <div
         class="max-w-7xl mx-auto px-12 py-8 border-t border-slate-200/50 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-400 text-xs">
-        <p>© {{ date('Y') }} SMAN Pintar. Excellence in Education.</p>
+        <p>&copy; {{ date('Y') }} {{ $homepage?->footer_copyright ?? 'SMAN Pintar. Excellence in Education.' }}</p>
         <div class="flex gap-6">
-            <span>Made with Passion in Riau</span>
+            <span>{{ $homepage?->footer_note ?? 'Made with Passion in Riau' }}</span>
         </div>
     </div>
 </footer>

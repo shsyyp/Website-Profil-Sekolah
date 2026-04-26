@@ -25,6 +25,14 @@ class HomepageController extends Controller
             $data['hero_image'] = $request->file('hero_image')->store('homepage', 'public');
         }
 
+        if ($request->hasFile('facility_main_image')) {
+            $data['facility_main_image'] = $request->file('facility_main_image')->store('homepage', 'public');
+        }
+
+        if ($request->hasFile('facility_side_image')) {
+            $data['facility_side_image'] = $request->file('facility_side_image')->store('homepage', 'public');
+        }
+
         if ($homepage) {
             $homepage->update($data);
         } else {

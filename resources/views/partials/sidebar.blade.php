@@ -11,18 +11,22 @@
                 <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
                 <span>Dashboard</span>
             </a>
+
+            <p class="px-4 pt-5 pb-2 text-[10px] uppercase tracking-widest text-slate-400 font-bold">
+                Konten Website
+            </p>
+
             <a class="flex items-center gap-3 px-4 py-3 {{ Route::is('admin.homepage.*') ? 'bg-gradient-to-br from-[#00357f] to-[#004aad] text-white' : 'text-slate-600 hover:bg-slate-100' }} rounded-lg transition-transform hover:translate-x-1 duration-300"
                 href="{{ route('admin.homepage.index') }}">
                 <span class="material-symbols-outlined">home_work</span>
-                <span class="font-medium text-sm">Beranda</span>
-            </a>
-            <a href="{{ url('/') }}"
-                class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-blue-700 hover:bg-slate-50 transition-all">
-                <span class="material-symbols-outlined" data-icon="home">home</span>
-                <span>Lihat Website</span>
+                <span class="font-medium text-sm">CMS Beranda</span>
             </a>
 
-            <hr class="my-4 border-slate-100">
+            <a class="flex items-center gap-3 px-4 py-3 {{ Route::is('admin.about.*') ? 'bg-gradient-to-br from-[#00357f] to-[#004aad] text-white' : 'text-slate-600 hover:bg-slate-100' }} rounded-lg transition-transform hover:translate-x-1 duration-300"
+                href="{{ route('admin.about.index') }}">
+                <span class="material-symbols-outlined">info</span>
+                <span class="font-medium text-sm">CMS Tentang</span>
+            </a>
 
             <a href="{{ url('admin/berita') }}"
                 class="flex items-center gap-3 px-4 py-3 transition-all {{ request()->is('admin/berita*') ? 'text-blue-900 font-bold border-r-4 border-blue-800 bg-blue-50/50' : 'text-slate-500 hover:text-blue-700 hover:bg-slate-50' }}">
@@ -43,6 +47,14 @@
                 class="flex items-center gap-3 px-4 py-3 transition-all {{ request()->is('admin/chatbot*') ? 'text-blue-900 font-bold border-r-4 border-blue-800 bg-blue-50/50' : 'text-slate-500 hover:text-blue-700 hover:bg-slate-50' }}">
                 <span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span>
                 <span>Chatbot FAQ</span>
+            </a>
+
+            <hr class="my-4 border-slate-100">
+
+            <a href="{{ url('/') }}"
+                class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-blue-700 hover:bg-slate-50 transition-all">
+                <span class="material-symbols-outlined" data-icon="home">home</span>
+                <span>Lihat Website</span>
             </a>
         </nav>
 

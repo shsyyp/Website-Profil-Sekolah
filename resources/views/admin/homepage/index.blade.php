@@ -32,6 +32,18 @@
                 <div class="bg-surface-container-lowest p-8 rounded-2xl shadow-sm space-y-6">
                     <div class="grid grid-cols-2 gap-6">
                         <div class="space-y-2">
+                            <label class="text-xs font-bold text-slate-500 uppercase tracking-tighter">Site Name</label>
+                            <input name="site_name"
+                                class="w-full bg-surface-container-low border-none focus:ring-2 focus:ring-primary rounded-xl px-4 py-3 font-medium text-on-surface"
+                                type="text" value="{{ $homepage->site_name ?? 'SMAN Pintar' }}" />
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-slate-500 uppercase tracking-tighter">Login Button</label>
+                            <input name="login_button_text"
+                                class="w-full bg-surface-container-low border-none focus:ring-2 focus:ring-primary rounded-xl px-4 py-3 font-medium text-on-surface"
+                                type="text" value="{{ $homepage->login_button_text ?? 'Login Admin' }}" />
+                        </div>
+                        <div class="space-y-2">
                             <label class="text-xs font-bold text-slate-500 uppercase tracking-tighter">Small
                                 Label</label>
                             <input name="hero_label"
@@ -43,8 +55,15 @@
                                 Title</label>
                             <input name="success_title"
                                 class="w-full bg-surface-container-low border-none focus:ring-2 focus:ring-primary rounded-xl px-4 py-3 font-medium text-on-surface"
-                                type="text" value="{{ $homepage->success_title ?? 'Outstanding Achievements' }}" />
+                                type="text" value="{{ $homepage->success_title ?? 'Mencetak 500+ Alumni di Universitas Terbaik Dunia' }}" />
                         </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-tighter">Success Story
+                            Description</label>
+                        <textarea name="success_desc"
+                            class="w-full bg-surface-container-low border-none focus:ring-2 focus:ring-primary rounded-xl px-4 py-3 text-on-surface-variant leading-relaxed"
+                            rows="2">{{ $homepage->success_desc ?? 'Cerita sukses siswa dan alumni SMAN Pintar Provinsi Riau.' }}</textarea>
                     </div>
                     <div class="space-y-2">
                         <label class="text-xs font-bold text-slate-500 uppercase tracking-tighter">Main Title</label>
@@ -118,16 +137,31 @@
             <h3 class="text-3xl font-headline font-extrabold text-primary">Tradisi Keunggulan</h3>
         </div>
         <div class="bg-surface-container-low p-8 rounded-3xl space-y-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <input name="about_label" class="bg-surface-container-lowest border-none rounded-xl px-4 py-3 font-bold"
+                    placeholder="Label section" value="{{ $homepage->about_label ?? 'About SMAN Pintar' }}">
+                <input name="about_title" class="bg-surface-container-lowest border-none rounded-xl px-4 py-3 font-bold"
+                    placeholder="Judul section" value="{{ $homepage->about_title ?? 'Tradisi Keunggulan, Masa Depan Gemilang' }}">
+                <textarea name="about_desc"
+                    class="md:col-span-2 bg-surface-container-lowest border-none rounded-xl px-4 py-3"
+                    rows="3" placeholder="Deskripsi tentang sekolah">{{ $homepage->about_desc ?? 'Didirikan sebagai pusat inkubasi talenta terbaik di Provinsi Riau, SMAN Pintar menerapkan sistem asrama terintegrasi yang fokus pada pembentukan karakter dan penguasaan sains teknologi.' }}</textarea>
+                <input name="accreditation_title"
+                    class="bg-surface-container-lowest border-none rounded-xl px-4 py-3 font-bold"
+                    placeholder="Judul akreditasi" value="{{ $homepage->accreditation_title ?? 'Akreditasi A' }}">
+                <input name="accreditation_desc"
+                    class="bg-surface-container-lowest border-none rounded-xl px-4 py-3"
+                    placeholder="Deskripsi akreditasi" value="{{ $homepage->accreditation_desc ?? 'Sertifikasi Nasional & Internasional' }}">
+            </div>
             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
                 @for ($i = 0; $i < 4; $i++) <div
                     class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-slate-50 space-y-4">
                     <input name="tradisi[{{$i}}][title]"
                         class="w-full border-none p-0 focus:ring-0 font-bold text-primary bg-transparent text-lg"
                         type="text"
-                        value="{{ $homepage->tradisi[$i]['title'] ?? ($i == 0 ? 'Kurikulum' : ($i == 1 ? 'Boarding' : ($i == 2 ? 'Pembinaan' : 'Alumni'))) }}" />
+                        value="{{ data_get($homepage->tradisi, $i.'.title') ?? ($i == 0 ? 'Kurikulum' : ($i == 1 ? 'Boarding' : ($i == 2 ? 'Pembinaan' : 'Alumni'))) }}" />
                     <textarea name="tradisi[{{$i}}][desc]"
                         class="w-full border-none p-0 focus:ring-0 text-xs text-on-surface-variant bg-transparent resize-none"
-                        rows="4">{{ $homepage->tradisi[$i]['desc'] ?? 'Deskripsi konten keunggulan di sini...' }}</textarea>
+                        rows="4">{{ data_get($homepage->tradisi, $i.'.desc') ?? 'Deskripsi konten keunggulan di sini...' }}</textarea>
             </div>
             @endfor
         </div>
@@ -137,9 +171,82 @@
     {{-- Section 3: Extra Settings --}}
     <section class="space-y-8">
         <div class="border-t border-slate-100 pt-12">
+            <h3 class="text-3xl font-headline font-extrabold text-primary">Fasilitas & Ekosistem</h3>
+        </div>
+        <div class="bg-surface-container-low p-8 rounded-3xl space-y-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <input name="facilities_title"
+                    class="bg-surface-container-lowest border-none rounded-xl px-4 py-3 font-bold"
+                    placeholder="Judul fasilitas" value="{{ $homepage->facilities_title ?? 'Fasilitas & Ekosistem' }}">
+                <textarea name="facilities_subtitle"
+                    class="bg-surface-container-lowest border-none rounded-xl px-4 py-3 md:row-span-2"
+                    rows="3" placeholder="Subjudul fasilitas">{{ $homepage->facilities_subtitle ?? 'Kami menyediakan infrastruktur terbaik untuk mendukung setiap langkah eksplorasi siswa.' }}</textarea>
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-tighter">Gambar Fasilitas Utama</label>
+                    <input name="facility_main_image" type="file"
+                        class="w-full bg-surface-container-lowest border-none rounded-xl px-4 py-3">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-tighter">Gambar Fasilitas Kecil</label>
+                    <input name="facility_side_image" type="file"
+                        class="w-full bg-surface-container-lowest border-none rounded-xl px-4 py-3">
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                @php
+                $defaultFasilitas = [
+                ['icon' => 'local_library', 'title' => 'Perpustakaan Digital', 'desc' => 'Akses ke ribuan jurnal internasional dan koleksi buku fisik terlengkap di Riau.'],
+                ['icon' => 'science', 'title' => 'Lab Terpadu', 'desc' => 'Fisika, Kimia, Biologi, dan Lab Komputer terbaru.'],
+                ['icon' => 'apartment', 'title' => 'Asrama Modern', 'desc' => 'Kamar yang nyaman dengan pengawasan 24 jam.'],
+                ['icon' => 'sports_basketball', 'title' => 'Sport Center', 'desc' => 'Lapangan basket indoor, futsal, dan area atletik standar nasional.'],
+                ];
+                @endphp
+
+                @for ($i = 0; $i < 4; $i++)
+                <div class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-slate-50 space-y-4">
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-tighter">Icon</label>
+                        <input name="fasilitas[{{$i}}][icon]"
+                            class="w-full border-none focus:ring-2 focus:ring-primary rounded-xl px-4 py-2 bg-surface-container-low text-sm"
+                            type="text"
+                            value="{{ data_get($homepage->fasilitas, $i.'.icon') ?? $defaultFasilitas[$i]['icon'] }}" />
+                    </div>
+                    <input name="fasilitas[{{$i}}][title]"
+                        class="w-full border-none p-0 focus:ring-0 font-bold text-primary bg-transparent text-lg"
+                        type="text"
+                        value="{{ data_get($homepage->fasilitas, $i.'.title') ?? $defaultFasilitas[$i]['title'] }}" />
+                    <textarea name="fasilitas[{{$i}}][desc]"
+                        class="w-full border-none p-0 focus:ring-0 text-xs text-on-surface-variant bg-transparent resize-none"
+                        rows="4">{{ data_get($homepage->fasilitas, $i.'.desc') ?? $defaultFasilitas[$i]['desc'] }}</textarea>
+                </div>
+                @endfor
+            </div>
+        </div>
+    </section>
+
+    {{-- Section 4: Extra Settings --}}
+    <section class="space-y-8">
+        <div class="border-t border-slate-100 pt-12">
             <h3 class="text-3xl font-headline font-extrabold text-primary">Pengaturan Tambahan</h3>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+            <div class="md:col-span-2 bg-surface-container-lowest p-8 rounded-2xl shadow-sm space-y-6">
+                <h4 class="text-xl font-bold text-on-surface">Warta & Alumni Section</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input name="news_title" class="bg-surface-container-low border-none rounded-xl px-4 py-3 font-bold"
+                        placeholder="Judul berita" value="{{ $homepage->news_title ?? 'Warta SMAN Pintar' }}">
+                    <input name="news_button_text" class="bg-surface-container-low border-none rounded-xl px-4 py-3"
+                        placeholder="Teks tombol berita" value="{{ $homepage->news_button_text ?? 'Semua Berita' }}">
+                    <textarea name="news_subtitle"
+                        class="bg-surface-container-low border-none rounded-xl px-4 py-3 md:col-span-2"
+                        rows="2" placeholder="Subjudul berita">{{ $homepage->news_subtitle ?? 'Update terbaru seputar kegiatan dan prestasi sekolah.' }}</textarea>
+                    <input name="alumni_label" class="bg-surface-container-low border-none rounded-xl px-4 py-3"
+                        placeholder="Label alumni" value="{{ $homepage->alumni_label ?? 'Our Alumni' }}">
+                    <input name="alumni_title" class="bg-surface-container-low border-none rounded-xl px-4 py-3 font-bold"
+                        placeholder="Judul alumni" value="{{ $homepage->alumni_title ?? 'Jejak Langkah Kesuksesan' }}">
+                </div>
+            </div>
 
             <div class="bg-surface-container-lowest p-8 rounded-2xl shadow-sm space-y-6">
                 <h4 class="text-xl font-bold text-on-surface">Limit Berita</h4>
@@ -175,10 +282,40 @@
                         placeholder="Tahun" value="{{ $homepage->cta_year ?? '2025' }}">
                     <input name="cta_button" class="bg-surface-container-low border-none rounded-xl px-4 py-3"
                         placeholder="Teks Tombol" value="{{ $homepage->cta_button ?? 'Daftar Sekarang' }}">
+                    <input name="cta_secondary_button" class="bg-surface-container-low border-none rounded-xl px-4 py-3"
+                        placeholder="Teks Tombol Kedua" value="{{ $homepage->cta_secondary_button ?? 'Panduan Pendaftaran' }}">
+                    <input name="cta_secondary_link" class="bg-surface-container-low border-none rounded-xl px-4 py-3"
+                        placeholder="Link Tombol Kedua" value="{{ $homepage->cta_secondary_link ?? route('pmb') }}">
+                    <input name="cta_badge" class="bg-surface-container-low border-none rounded-xl px-4 py-3"
+                        placeholder="Label tahun" value="{{ $homepage->cta_badge ?? 'Batch Admission' }}">
+                    <input name="cta_deadline_label" class="bg-surface-container-low border-none rounded-xl px-4 py-3"
+                        placeholder="Label countdown" value="{{ $homepage->cta_deadline_label ?? 'Pendaftaran Berakhir Dalam' }}">
+                    <input name="cta_countdown_days" class="bg-surface-container-low border-none rounded-xl px-4 py-3"
+                        placeholder="Hari" value="{{ $homepage->cta_countdown_days ?? '14' }}">
+                    <input name="cta_countdown_hours" class="bg-surface-container-low border-none rounded-xl px-4 py-3"
+                        placeholder="Jam" value="{{ $homepage->cta_countdown_hours ?? '08' }}">
                     <textarea name="cta_desc"
                         class="bg-surface-container-low border-none rounded-xl px-4 py-3 col-span-1 md:col-span-2"
                         placeholder="Deskripsi Singkat"
                         rows="3">{{ $homepage->cta_desc ?? 'Daftarkan diri Anda hari ini...' }}</textarea>
+                </div>
+            </div>
+
+            <div class="md:col-span-2 bg-surface-container-lowest p-8 rounded-2xl shadow-sm space-y-6">
+                <h4 class="text-xl font-bold text-on-surface">Footer Website</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <textarea name="footer_desc" class="bg-surface-container-low border-none rounded-xl px-4 py-3 md:col-span-2"
+                        rows="2" placeholder="Deskripsi footer">{{ $homepage->footer_desc ?? 'Mewujudkan pendidikan menengah berkualitas dunia di bumi Lancang Kuning, Provinsi Riau.' }}</textarea>
+                    <input name="footer_address" class="bg-surface-container-low border-none rounded-xl px-4 py-3"
+                        placeholder="Alamat" value="{{ $homepage->footer_address ?? 'Jl. Pendidikan No. 01, Pekanbaru, Provinsi Riau' }}">
+                    <input name="footer_phone" class="bg-surface-container-low border-none rounded-xl px-4 py-3"
+                        placeholder="Telepon" value="{{ $homepage->footer_phone ?? '(0761) 1234567' }}">
+                    <textarea name="newsletter_desc" class="bg-surface-container-low border-none rounded-xl px-4 py-3 md:col-span-2"
+                        rows="2" placeholder="Deskripsi newsletter">{{ $homepage->newsletter_desc ?? 'Dapatkan info pendaftaran dan prestasi terbaru langsung di email Anda.' }}</textarea>
+                    <input name="footer_copyright" class="bg-surface-container-low border-none rounded-xl px-4 py-3"
+                        placeholder="Copyright" value="{{ $homepage->footer_copyright ?? 'SMAN Pintar. Excellence in Education.' }}">
+                    <input name="footer_note" class="bg-surface-container-low border-none rounded-xl px-4 py-3"
+                        placeholder="Catatan footer" value="{{ $homepage->footer_note ?? 'Made with Passion in Riau' }}">
                 </div>
             </div>
         </div>

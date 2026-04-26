@@ -10,10 +10,12 @@ class AdminSeeder extends Seeder
     public function run()
     {
         // Membuat akun admin SMAN Pintar
-        User::create([
-            'name'     => 'Administrator',
-            'email'    => 'admin@smanpintar.sch.id',
-            'password' => bcrypt('password123'),
-        ]);
+        User::updateOrCreate(
+            ['email' => 'admin@smanpintar.sch.id'],
+            [
+                'name'     => 'Administrator',
+                'password' => bcrypt('password123'),
+            ]
+        );
     }
 }

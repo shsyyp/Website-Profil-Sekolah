@@ -1,7 +1,7 @@
 <nav class="fixed top-0 w-full z-50 glass-nav shadow-sm shadow-primary/5">
     <div class="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
         <div class="flex items-center gap-2">
-            <span class="text-xl font-black text-primary tracking-tighter font-headline">SMAN Pintar</span>
+            <span class="text-xl font-black text-primary tracking-tighter font-headline">{{ $homepage?->site_name ?? 'SMAN Pintar' }}</span>
         </div>
 
         <div class="hidden md:flex items-center gap-8">
@@ -40,7 +40,7 @@
             <button class="material-symbols-outlined text-primary p-2">search</button>
             <a href="{{ route('login') }}"
                 class="primary-gradient text-on-primary px-6 py-2.5 rounded-md font-bold text-sm tracking-wide hover:scale-105 active:opacity-80 active:scale-95 transition-all shadow-lg shadow-primary/20">
-                Login Admin
+                {{ $homepage?->login_button_text ?? 'Login Admin' }}
             </a>
         </div>
     </div>

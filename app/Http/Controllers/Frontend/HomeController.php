@@ -15,13 +15,25 @@ class HomeController extends Controller
 {
     public function index()
     {
-        // 1. Ambil data dari database
         $homepage = Homepage::first();
         $pmb      = PMB::first();
-        $berita   = Berita::where('status', 'publish')->latest()->take(3)->get();
-        $alumni   = Alumni::where('status', 'aktif')->latest()->take(3)->get();
+        $newsLimit = max(1, min(6, (int) ($homepage?->news_limit ?? 3)));
 
-        // 2. WAJIB: Lempar semua variabel ke Blade menggunakan compact()
+        $berita = Berita::where('status', 'publish')
+            ->latest()
+            ->take($newsLimit)
+            ->get();
+
+        $alumniQuery = Alumni::where('status', 'aktif');
+
+        if ($homepage?->featured_alumni_id) {
+            $alumniQuery->orderByRaw('id = ? DESC', [$homepage->featured_alumni_id]);
+        } else {
+            $alumniQuery->latest();
+        }
+
+        $alumni = $alumniQuery->take(3)->get();
+
         return view('pages.home', compact('homepage', 'pmb', 'berita', 'alumni'));
     }
 }

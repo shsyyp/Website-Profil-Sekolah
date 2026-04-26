@@ -12,9 +12,11 @@ use App\Http\Controllers\PMBController as AdminPMBController;
 use App\Http\Controllers\AlumniController as AdminAlumniController;
 use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\HomepageController; // Tambahan Controller Homepage
+use App\Http\Controllers\AboutPageController;
 
 // --- FRONTEND CONTROLLERS ---
 use App\Http\Controllers\Frontend\HomeController;
+use App\Http\Controllers\Frontend\AboutController;
 use App\Http\Controllers\Frontend\BeritaController;
 use App\Http\Controllers\Frontend\PMBController;
 use App\Http\Controllers\Frontend\AlumniController;
@@ -24,9 +26,7 @@ use App\Http\Controllers\Frontend\AlumniController;
 // ==========================================
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-Route::get('/tentang', function () {
-    return view('pages.tentang');
-})->name('tentang');
+Route::get('/tentang', [AboutController::class, 'index'])->name('tentang');
 
 Route::get('/berita', [BeritaController::class, 'index'])->name('berita');
 Route::get('/pmb', [PMBController::class, 'index'])->name('pmb');
@@ -57,6 +57,10 @@ Route::middleware('auth')->group(function () {
         // CMS Homepage
         Route::get('/homepage', [HomepageController::class, 'index'])->name('admin.homepage.index');
         Route::post('/homepage', [HomepageController::class, 'update'])->name('admin.homepage.update');
+
+        // CMS Tentang Kami
+        Route::get('/tentang', [AboutPageController::class, 'index'])->name('admin.about.index');
+        Route::post('/tentang', [AboutPageController::class, 'update'])->name('admin.about.update');
 
         // CRUD Management Content
         Route::resource('berita', AdminBeritaController::class);

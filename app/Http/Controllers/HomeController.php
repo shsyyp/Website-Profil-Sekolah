@@ -12,19 +12,25 @@ class HomeController extends Controller
 {
     public function index()
     {
-        // 1. Ambil data CMS Homepage (baris pertama)
         $homepage = Homepage::first(); 
-        
-        // 2. Ambil data PMB
         $pmb = PMB::first();
+        $newsLimit = max(1, min(6, (int) ($homepage?->news_limit ?? 3)));
 
-        // 3. Ambil 3 Berita terbaru yang statusnya 'publish'
-        $berita = Berita::where('status', 'publish')->latest()->take(3)->get();
+        $berita = Berita::where('status', 'publish')
+            ->latest()
+            ->take($newsLimit)
+            ->get();
 
-        // 4. Ambil 3 Alumni terbaru yang statusnya 'aktif'
-        $alumni = Alumni::where('status', 'aktif')->latest()->take(3)->get();
+        $alumniQuery = Alumni::where('status', 'aktif');
 
-        // 5. Lempar semua variabel di atas ke file blade 'pages/home.blade.php'
+        if ($homepage?->featured_alumni_id) {
+            $alumniQuery->orderByRaw('id = ? DESC', [$homepage->featured_alumni_id]);
+        } else {
+            $alumniQuery->latest();
+        }
+
+        $alumni = $alumniQuery->take(3)->get();
+
         return view('pages.home', compact('homepage', 'pmb', 'berita', 'alumni'));
     }
 }

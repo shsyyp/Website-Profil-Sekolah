@@ -29,6 +29,9 @@ $facilities = $about?->facilities ?: [
     ['icon' => 'sports_basketball', 'title' => 'Sport Center', 'desc' => 'Gedung olahraga indoor untuk basket, futsal, dan badminton.'],
     ['icon' => 'theater_comedy', 'title' => 'Teater Seni', 'desc' => 'Ruang pertunjukan dengan sistem tata suara mutakhir.'],
 ];
+$facilities = collect($facilities)
+    ->filter(fn ($facility) => filled($facility['title'] ?? null))
+    ->values();
 $extracurricularTags = $about?->extracurricular_tags ?: ['#Creativity', '#Leadership', '#Innovation'];
 $extracurriculars = $about?->extracurriculars ?: [
     ['icon' => 'robot_2', 'title' => 'Robotic Club', 'desc' => 'Mengembangkan kecerdasan buatan dan perakitan mekanik robotik tingkat lanjut.'],
@@ -138,6 +141,16 @@ $extracurriculars = $about?->extracurriculars ?: [
     </div>
 </section>
 
+<style>
+    .facility-scrollbar {
+        scrollbar-width: none;
+    }
+
+    .facility-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+</style>
+
 {{-- Fasilitas --}}
 <section class="py-24 max-w-7xl mx-auto px-8">
     <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
@@ -145,13 +158,22 @@ $extracurriculars = $about?->extracurriculars ?: [
             <span class="text-primary font-bold text-sm tracking-[0.2em] uppercase mb-4 block">{{ $about?->facilities_label ?? 'Infrastruktur Modern' }}</span>
             <h2 class="text-3xl md:text-4xl font-extrabold font-headline">{{ $about?->facilities_title ?? 'Fasilitas Unggulan' }}</h2>
         </div>
-        <a href="{{ $about?->facilities_button_link ?? '#' }}" class="text-primary font-bold flex items-center gap-2 group hover:gap-4 transition-all">
-            {{ $about?->facilities_button_text ?? 'Lihat Semua Fasilitas' }} <span class="material-symbols-outlined">arrow_forward</span>
-        </a>
+        <div class="flex items-center gap-3">
+            <button type="button" data-facility-prev
+                class="w-11 h-11 rounded-xl bg-surface-container text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors"
+                aria-label="Fasilitas sebelumnya">
+                <span class="material-symbols-outlined">chevron_left</span>
+            </button>
+            <button type="button" data-facility-next
+                class="w-11 h-11 rounded-xl bg-primary text-on-primary flex items-center justify-center hover:bg-primary-container transition-colors"
+                aria-label="Fasilitas berikutnya">
+                <span class="material-symbols-outlined">chevron_right</span>
+            </button>
+        </div>
     </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+    <div data-facility-slider class="facility-scrollbar flex gap-8 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4">
         @foreach ($facilities as $index => $facility)
-        <div class="group cursor-pointer">
+        <div class="group cursor-pointer min-w-[280px] sm:min-w-[320px] lg:min-w-[360px] snap-start">
             <div class="relative h-64 rounded-xl overflow-hidden mb-4 shadow-md">
                 <img alt="{{ $facility['title'] ?? 'Fasilitas' }}"
                     class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
@@ -167,6 +189,25 @@ $extracurriculars = $about?->extracurriculars ?: [
         @endforeach
     </div>
 </section>
+
+<script>
+const facilitySlider = document.querySelector('[data-facility-slider]');
+const facilityPrev = document.querySelector('[data-facility-prev]');
+const facilityNext = document.querySelector('[data-facility-next]');
+
+function scrollFacilities(direction) {
+    if (!facilitySlider) {
+        return;
+    }
+
+    const card = facilitySlider.querySelector('.snap-start');
+    const distance = card ? card.getBoundingClientRect().width + 32 : 360;
+    facilitySlider.scrollBy({ left: direction * distance, behavior: 'smooth' });
+}
+
+facilityPrev?.addEventListener('click', () => scrollFacilities(-1));
+facilityNext?.addEventListener('click', () => scrollFacilities(1));
+</script>
 
 {{-- Ekstrakurikuler --}}
 <section class="py-24 bg-primary text-on-primary">

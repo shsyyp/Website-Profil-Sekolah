@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'CMS Tentang Kami - SMAN Pintar')
+@section('title', 'Tentang Kami - SMAN Pintar')
 
 @section('content')
 @php
@@ -20,6 +20,10 @@ $defaultFacilities = [
     ['icon' => 'auto_stories', 'title' => 'Perpustakaan Digital', 'desc' => 'Akses ke ribuan jurnal dan e-book global 24/7.'],
     ['icon' => 'sports_basketball', 'title' => 'Sport Center', 'desc' => 'Gedung olahraga indoor untuk basket, futsal, dan badminton.'],
     ['icon' => 'theater_comedy', 'title' => 'Teater Seni', 'desc' => 'Ruang pertunjukan dengan sistem tata suara mutakhir.'],
+    ['icon' => 'apartment', 'title' => 'Asrama Siswa', 'desc' => 'Hunian nyaman dengan pembinaan karakter dan pengawasan terarah.'],
+    ['icon' => 'restaurant', 'title' => 'Kantin Sehat', 'desc' => 'Area makan bersih dengan pilihan menu harian yang mendukung aktivitas siswa.'],
+    ['icon' => 'computer', 'title' => 'Lab Komputer', 'desc' => 'Perangkat pembelajaran digital untuk coding, desain, dan riset teknologi.'],
+    ['icon' => 'local_hospital', 'title' => 'UKS', 'desc' => 'Layanan kesehatan sekolah untuk kebutuhan pertolongan pertama siswa.'],
 ];
 $defaultExtracurriculars = [
     ['icon' => 'robot_2', 'title' => 'Robotic Club', 'desc' => 'Mengembangkan kecerdasan buatan dan perakitan mekanik robotik tingkat lanjut.'],
@@ -28,9 +32,128 @@ $defaultExtracurriculars = [
     ['icon' => 'campaign', 'title' => 'Journalism', 'desc' => 'Pelatihan penulisan berita, fotografi jurnalistik, dan penyiaran radio sekolah.'],
 ];
 $defaultTags = ['#Creativity', '#Leadership', '#Innovation'];
+$facilitySlots = max(8, count($about->facilities ?? []));
+
+$components = [
+    [
+        'id' => 'hero-profile-section',
+        'icon' => 'account_balance',
+        'title' => 'Hero & Profil',
+        'meta' => $about->profile_label ?? 'Ekselerasi Pendidikan',
+        'content' => $about->profile_title ?? 'Dedikasi Mencetak Generasi Unggul Riau',
+    ],
+    [
+        'id' => 'highlight-section',
+        'icon' => 'verified',
+        'title' => 'Highlight Atas',
+        'meta' => '3 highlight utama',
+        'content' => collect(range(0, 2))->map(fn ($i) => data_get($about->highlights, $i . '.title') ?? $defaultHighlights[$i]['title'])->implode(', '),
+    ],
+    [
+        'id' => 'vision-section',
+        'icon' => 'flag',
+        'title' => 'Visi & Misi',
+        'meta' => count($about->missions ?? $defaultMissions) . ' misi',
+        'content' => $about->vision_mission_title ?? 'Visi & Misi Kami',
+    ],
+    [
+        'id' => 'facilities-section',
+        'icon' => 'domain',
+        'title' => 'Fasilitas Unggulan',
+        'meta' => $facilitySlots . ' slot fasilitas',
+        'content' => $about->facilities_title ?? 'Fasilitas Unggulan',
+    ],
+    [
+        'id' => 'extracurricular-section',
+        'icon' => 'groups',
+        'title' => 'Ekstrakurikuler',
+        'meta' => '4 kegiatan pilihan',
+        'content' => $about->extracurricular_title ?? 'Ekstrakurikuler Pilihan',
+    ],
+];
 @endphp
 
-<form action="{{ route('admin.about.update') }}" method="POST" enctype="multipart/form-data" class="p-8 space-y-12">
+<style>
+    #about-editors {
+        max-width: 56rem;
+    }
+
+    #about-editors summary {
+        cursor: default;
+        list-style: none;
+        padding: 0;
+        margin-bottom: 2.5rem;
+    }
+
+    #about-editors summary::-webkit-details-marker {
+        display: none;
+    }
+
+    #about-editors summary > div:first-child span {
+        display: none;
+    }
+
+    #about-editors summary h3 {
+        font-size: 2.25rem;
+        line-height: 2.5rem;
+        font-weight: 800;
+    }
+
+    #about-editors summary h3::after {
+        content: "Kelola konten halaman Tentang Kami";
+        display: block;
+        margin-top: .5rem;
+        color: rgb(71 85 105);
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 1.125rem;
+        line-height: 1.75rem;
+        font-weight: 500;
+    }
+
+    #about-editors [data-about-panel] {
+        border: 0;
+        background: transparent;
+        box-shadow: none;
+        overflow: visible;
+    }
+
+    #about-editors [data-about-panel] > div {
+        border-top: 0;
+        border-radius: 1rem;
+        background: rgb(255 255 255);
+        box-shadow: 0 8px 30px rgb(0 0 0 / 0.04);
+        padding: 2rem;
+    }
+
+    #about-editors label {
+        display: block;
+        margin-bottom: .5rem;
+        color: rgb(15 23 42);
+        font-size: .875rem;
+        font-weight: 700;
+    }
+
+    #about-editors input,
+    #about-editors textarea,
+    #about-editors select {
+        width: 100%;
+        border: 0;
+        border-radius: .75rem;
+        background: rgb(226 227 237);
+        padding: .75rem 1rem;
+        color: rgb(15 23 42);
+        font-weight: 500;
+    }
+
+    #about-editors input:focus,
+    #about-editors textarea:focus,
+    #about-editors select:focus {
+        outline: 0;
+        box-shadow: 0 0 0 2px rgb(0 74 173 / 0.2);
+    }
+</style>
+
+<form action="{{ route('admin.about.update') }}" method="POST" enctype="multipart/form-data" class="p-8 space-y-10">
     @csrf
 
     @if(session('success'))
@@ -40,99 +163,335 @@ $defaultTags = ['#Creativity', '#Leadership', '#Innovation'];
     </div>
     @endif
 
-    <div class="flex justify-between items-end">
-        <div>
-            <span class="text-xs font-bold text-tertiary uppercase tracking-widest mb-1 block">CMS Page</span>
-            <h2 class="text-3xl font-headline font-extrabold text-primary">Tentang Kami</h2>
-        </div>
-        <button type="submit" class="bg-gradient-to-br from-[#00357f] to-[#004aad] text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg">
-            Save Changes
-        </button>
+    <div id="about-overview" class="space-y-10">
+        <section class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div class="space-y-1">
+                <span class="text-[11px] font-bold tracking-[0.2em] text-tertiary uppercase">Pengelolaan Halaman</span>
+                <h2 class="text-4xl font-extrabold text-primary tracking-tight font-headline">Tentang Kami</h2>
+                <p class="text-on-surface-variant text-lg">Kelola komponen halaman profil sekolah.</p>
+            </div>
+            <button type="submit"
+                class="bg-gradient-to-br from-[#00357f] to-[#004aad] text-white px-8 py-4 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all duration-200">
+                <span class="material-symbols-outlined">save</span>
+                Simpan Perubahan
+            </button>
+        </section>
+
+        <section class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-surface-container-low/50">
+                            <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Preview</th>
+                            <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Komponen</th>
+                            <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Konten Utama</th>
+                            <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Status</th>
+                            <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-surface-container">
+                        @foreach ($components as $component)
+                        <tr class="group hover:bg-surface-container-low/30 transition-colors">
+                            <td class="px-8 py-4">
+                                <div class="w-20 h-14 rounded-lg bg-blue-50 text-primary flex items-center justify-center">
+                                    <span class="material-symbols-outlined">{{ $component['icon'] }}</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <p class="font-bold text-blue-900 group-hover:text-primary transition-colors">{{ $component['title'] }}</p>
+                                <p class="text-xs text-slate-400 mt-1">{{ $component['meta'] }}</p>
+                            </td>
+                            <td class="px-6 py-4">
+                                <p class="max-w-xl text-sm text-on-surface-variant font-medium leading-relaxed line-clamp-2">{{ $component['content'] }}</p>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="flex items-center gap-1.5 text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full w-fit">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Aktif
+                                </span>
+                            </td>
+                            <td class="px-8 py-4 text-right">
+                                <a href="#{{ $component['id'] }}" data-about-edit-target="{{ $component['id'] }}"
+                                    class="inline-flex w-9 h-9 items-center justify-center rounded-xl bg-slate-100 text-slate-500 hover:bg-amber-100 hover:text-amber-600 transition-all">
+                                    <span class="material-symbols-outlined text-[20px]">edit</span>
+                                </a>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </section>
     </div>
 
-    <section class="bg-surface-container-lowest p-8 rounded-2xl shadow-sm space-y-6">
-        <h3 class="text-2xl font-bold text-primary">Hero & Profil</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input name="hero_title" class="bg-surface-container-low border-none rounded-xl px-4 py-3 font-bold" placeholder="Judul hero" value="{{ $about->hero_title ?? 'Tentang Kami' }}">
-            <input name="hero_image" type="file" class="bg-surface-container-low border-none rounded-xl px-4 py-3">
-            <input name="profile_label" class="bg-surface-container-low border-none rounded-xl px-4 py-3" placeholder="Label profil" value="{{ $about->profile_label ?? 'Ekselerasi Pendidikan' }}">
-            <input name="profile_title" class="bg-surface-container-low border-none rounded-xl px-4 py-3 font-bold" placeholder="Judul profil" value="{{ $about->profile_title ?? 'Dedikasi Mencetak Generasi Unggul Riau' }}">
-            <textarea name="profile_paragraph_1" class="bg-surface-container-low border-none rounded-xl px-4 py-3 md:col-span-2" rows="3">{{ $about->profile_paragraph_1 ?? 'SMAN Pintar Provinsi Riau berdiri sebagai mercusuar pendidikan berkualitas yang memadukan kurikulum nasional dengan inovasi teknologi terkini.' }}</textarea>
-            <textarea name="profile_paragraph_2" class="bg-surface-container-low border-none rounded-xl px-4 py-3 md:col-span-2" rows="3">{{ $about->profile_paragraph_2 ?? 'Berlokasi di lingkungan yang asri namun modern, sekolah kami menjadi laboratorium masa depan bagi putra-putri terbaik daerah.' }}</textarea>
-            <input name="profile_button_1_text" class="bg-surface-container-low border-none rounded-xl px-4 py-3" value="{{ $about->profile_button_1_text ?? 'Selengkapnya' }}">
-            <input name="profile_button_1_link" class="bg-surface-container-low border-none rounded-xl px-4 py-3" value="{{ $about->profile_button_1_link ?? '#visi-misi' }}">
-            <input name="profile_button_2_text" class="bg-surface-container-low border-none rounded-xl px-4 py-3" value="{{ $about->profile_button_2_text ?? 'Lihat Video Profil' }}">
-            <input name="profile_button_2_link" class="bg-surface-container-low border-none rounded-xl px-4 py-3" value="{{ $about->profile_button_2_link ?? '#' }}">
-            <input name="dedication_number" class="bg-surface-container-low border-none rounded-xl px-4 py-3" value="{{ $about->dedication_number ?? '15+' }}">
-            <input name="dedication_label" class="bg-surface-container-low border-none rounded-xl px-4 py-3" value="{{ $about->dedication_label ?? 'Tahun Dedikasi' }}">
-            <input name="profile_image" type="file" class="bg-surface-container-low border-none rounded-xl px-4 py-3 md:col-span-2">
-        </div>
-    </section>
-
-    <section class="bg-surface-container-low p-8 rounded-2xl space-y-6">
-        <h3 class="text-2xl font-bold text-primary">Highlight Atas</h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            @for ($i = 0; $i < 3; $i++)
-            <div class="bg-white p-5 rounded-xl space-y-3">
-                <input name="highlights[{{ $i }}][icon]" class="w-full bg-surface-container-low border-none rounded-xl px-4 py-2" value="{{ data_get($about->highlights, $i.'.icon') ?? $defaultHighlights[$i]['icon'] }}">
-                <input name="highlights[{{ $i }}][label]" class="w-full bg-surface-container-low border-none rounded-xl px-4 py-2" value="{{ data_get($about->highlights, $i.'.label') ?? $defaultHighlights[$i]['label'] }}">
-                <input name="highlights[{{ $i }}][title]" class="w-full bg-surface-container-low border-none rounded-xl px-4 py-2 font-bold" value="{{ data_get($about->highlights, $i.'.title') ?? $defaultHighlights[$i]['title'] }}">
+    <section id="about-editors" class="hidden space-y-4">
+        <details id="hero-profile-section" data-about-panel class="group bg-surface-container-lowest rounded-2xl shadow-sm border border-slate-100 overflow-hidden" open>
+            <summary class="list-none flex items-center justify-between gap-4">
+                <div>
+                    <span>Component 01</span>
+                    <h3 class="font-headline text-primary">Hero & Profil</h3>
+                </div>
+                <button type="button" data-about-back class="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                    Kembali
+                </button>
+            </summary>
+            <div class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label>Judul Hero</label>
+                        <input name="hero_title" placeholder="Judul hero" value="{{ $about->hero_title ?? 'Tentang Kami' }}">
+                    </div>
+                    <div>
+                        <label>Gambar Hero</label>
+                        <input name="hero_image" type="file" accept="image/*">
+                    </div>
+                    <div>
+                        <label>Label Profil</label>
+                        <input name="profile_label" placeholder="Label profil" value="{{ $about->profile_label ?? 'Ekselerasi Pendidikan' }}">
+                    </div>
+                    <div>
+                        <label>Judul Profil</label>
+                        <input name="profile_title" placeholder="Judul profil" value="{{ $about->profile_title ?? 'Dedikasi Mencetak Generasi Unggul Riau' }}">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label>Paragraf Profil 1</label>
+                        <textarea name="profile_paragraph_1" rows="3">{{ $about->profile_paragraph_1 ?? 'SMAN Pintar Provinsi Riau berdiri sebagai mercusuar pendidikan berkualitas yang memadukan kurikulum nasional dengan inovasi teknologi terkini.' }}</textarea>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label>Paragraf Profil 2</label>
+                        <textarea name="profile_paragraph_2" rows="3">{{ $about->profile_paragraph_2 ?? 'Berlokasi di lingkungan yang asri namun modern, sekolah kami menjadi laboratorium masa depan bagi putra-putri terbaik daerah.' }}</textarea>
+                    </div>
+                    <div>
+                        <label>Tombol Utama</label>
+                        <input name="profile_button_1_text" value="{{ $about->profile_button_1_text ?? 'Selengkapnya' }}">
+                    </div>
+                    <div>
+                        <label>Link Tombol Utama</label>
+                        <input name="profile_button_1_link" value="{{ $about->profile_button_1_link ?? '#visi-misi' }}">
+                    </div>
+                    <div>
+                        <label>Tombol Kedua</label>
+                        <input name="profile_button_2_text" value="{{ $about->profile_button_2_text ?? 'Lihat Video Profil' }}">
+                    </div>
+                    <div>
+                        <label>Link Tombol Kedua</label>
+                        <input name="profile_button_2_link" value="{{ $about->profile_button_2_link ?? '#' }}">
+                    </div>
+                    <div>
+                        <label>Angka Dedikasi</label>
+                        <input name="dedication_number" value="{{ $about->dedication_number ?? '15+' }}">
+                    </div>
+                    <div>
+                        <label>Label Dedikasi</label>
+                        <input name="dedication_label" value="{{ $about->dedication_label ?? 'Tahun Dedikasi' }}">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label>Gambar Profil</label>
+                        <input name="profile_image" type="file" accept="image/*">
+                    </div>
+                </div>
             </div>
-            @endfor
-        </div>
-    </section>
+        </details>
 
-    <section class="bg-surface-container-lowest p-8 rounded-2xl shadow-sm space-y-6">
-        <h3 class="text-2xl font-bold text-primary">Visi & Misi</h3>
-        <input name="vision_mission_title" class="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 font-bold" value="{{ $about->vision_mission_title ?? 'Visi & Misi Kami' }}">
-        <textarea name="vision" class="w-full bg-surface-container-low border-none rounded-xl px-4 py-3" rows="4">{{ $about->vision ?? 'Menjadi institusi pendidikan model yang unggul dalam prestasi akademik, berwawasan teknologi global, serta berakar kuat pada nilai-nilai karakter bangsa.' }}</textarea>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            @for ($i = 0; $i < 4; $i++)
-            <textarea name="missions[{{ $i }}]" class="bg-surface-container-low border-none rounded-xl px-4 py-3" rows="2">{{ data_get($about->missions, $i) ?? $defaultMissions[$i] }}</textarea>
-            @endfor
-        </div>
-    </section>
-
-    <section class="bg-surface-container-low p-8 rounded-2xl space-y-6">
-        <h3 class="text-2xl font-bold text-primary">Fasilitas Unggulan</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input name="facilities_label" class="bg-white border-none rounded-xl px-4 py-3" value="{{ $about->facilities_label ?? 'Infrastruktur Modern' }}">
-            <input name="facilities_title" class="bg-white border-none rounded-xl px-4 py-3 font-bold" value="{{ $about->facilities_title ?? 'Fasilitas Unggulan' }}">
-            <input name="facilities_button_text" class="bg-white border-none rounded-xl px-4 py-3" value="{{ $about->facilities_button_text ?? 'Lihat Semua Fasilitas' }}">
-            <input name="facilities_button_link" class="bg-white border-none rounded-xl px-4 py-3" value="{{ $about->facilities_button_link ?? '#' }}">
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-            @for ($i = 0; $i < 4; $i++)
-            <div class="bg-white p-5 rounded-xl space-y-3">
-                <input name="facilities[{{ $i }}][icon]" class="w-full bg-surface-container-low border-none rounded-xl px-4 py-2" value="{{ data_get($about->facilities, $i.'.icon') ?? $defaultFacilities[$i]['icon'] }}">
-                <input name="facilities[{{ $i }}][title]" class="w-full bg-surface-container-low border-none rounded-xl px-4 py-2 font-bold" value="{{ data_get($about->facilities, $i.'.title') ?? $defaultFacilities[$i]['title'] }}">
-                <textarea name="facilities[{{ $i }}][desc]" class="w-full bg-surface-container-low border-none rounded-xl px-4 py-2" rows="3">{{ data_get($about->facilities, $i.'.desc') ?? $defaultFacilities[$i]['desc'] }}</textarea>
-                <input name="facility_images[{{ $i }}]" type="file" class="w-full bg-surface-container-low border-none rounded-xl px-4 py-2">
-                <input name="facilities[{{ $i }}][image]" type="hidden" value="{{ data_get($about->facilities, $i.'.image') }}">
+        <details id="highlight-section" data-about-panel class="hidden group bg-surface-container-lowest rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <summary class="list-none flex items-center justify-between gap-4">
+                <div>
+                    <span>Component 02</span>
+                    <h3 class="font-headline text-primary">Highlight Atas</h3>
+                </div>
+                <button type="button" data-about-back class="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                    Kembali
+                </button>
+            </summary>
+            <div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    @for ($i = 0; $i < 3; $i++)
+                    <div class="bg-surface-container-low p-5 rounded-xl space-y-3">
+                        <label>Highlight {{ $i + 1 }}</label>
+                        <input name="highlights[{{ $i }}][icon]" value="{{ data_get($about->highlights, $i.'.icon') ?? $defaultHighlights[$i]['icon'] }}">
+                        <input name="highlights[{{ $i }}][label]" value="{{ data_get($about->highlights, $i.'.label') ?? $defaultHighlights[$i]['label'] }}">
+                        <input name="highlights[{{ $i }}][title]" value="{{ data_get($about->highlights, $i.'.title') ?? $defaultHighlights[$i]['title'] }}">
+                    </div>
+                    @endfor
+                </div>
             </div>
-            @endfor
-        </div>
-    </section>
+        </details>
 
-    <section class="bg-primary text-white p-8 rounded-2xl space-y-6">
-        <h3 class="text-2xl font-bold">Ekstrakurikuler</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input name="extracurricular_label" class="bg-white/10 border-white/10 rounded-xl px-4 py-3" value="{{ $about->extracurricular_label ?? 'Pengembangan Diri' }}">
-            <input name="extracurricular_title" class="bg-white/10 border-white/10 rounded-xl px-4 py-3 font-bold" value="{{ $about->extracurricular_title ?? 'Ekstrakurikuler Pilihan' }}">
-            <textarea name="extracurricular_desc" class="bg-white/10 border-white/10 rounded-xl px-4 py-3 md:col-span-2" rows="3">{{ $about->extracurricular_desc ?? 'Kami menyediakan wadah bagi siswa untuk mengeksplorasi minat di luar jam akademik dengan mentor yang kompeten.' }}</textarea>
-            @for ($i = 0; $i < 3; $i++)
-            <input name="extracurricular_tags[{{ $i }}]" class="bg-white/10 border-white/10 rounded-xl px-4 py-3" value="{{ data_get($about->extracurricular_tags, $i) ?? $defaultTags[$i] }}">
-            @endfor
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-            @for ($i = 0; $i < 4; $i++)
-            <div class="bg-white/10 p-5 rounded-xl space-y-3">
-                <input name="extracurriculars[{{ $i }}][icon]" class="w-full bg-white/10 border-white/10 rounded-xl px-4 py-2" value="{{ data_get($about->extracurriculars, $i.'.icon') ?? $defaultExtracurriculars[$i]['icon'] }}">
-                <input name="extracurriculars[{{ $i }}][title]" class="w-full bg-white/10 border-white/10 rounded-xl px-4 py-2 font-bold" value="{{ data_get($about->extracurriculars, $i.'.title') ?? $defaultExtracurriculars[$i]['title'] }}">
-                <textarea name="extracurriculars[{{ $i }}][desc]" class="w-full bg-white/10 border-white/10 rounded-xl px-4 py-2" rows="3">{{ data_get($about->extracurriculars, $i.'.desc') ?? $defaultExtracurriculars[$i]['desc'] }}</textarea>
+        <details id="vision-section" data-about-panel class="hidden group bg-surface-container-lowest rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <summary class="list-none flex items-center justify-between gap-4">
+                <div>
+                    <span>Component 03</span>
+                    <h3 class="font-headline text-primary">Visi & Misi</h3>
+                </div>
+                <button type="button" data-about-back class="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                    Kembali
+                </button>
+            </summary>
+            <div class="space-y-6">
+                <div>
+                    <label>Judul Section</label>
+                    <input name="vision_mission_title" value="{{ $about->vision_mission_title ?? 'Visi & Misi Kami' }}">
+                </div>
+                <div>
+                    <label>Visi</label>
+                    <textarea name="vision" rows="4">{{ $about->vision ?? 'Menjadi institusi pendidikan model yang unggul dalam prestasi akademik, berwawasan teknologi global, serta berakar kuat pada nilai-nilai karakter bangsa.' }}</textarea>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    @for ($i = 0; $i < 4; $i++)
+                    <div>
+                        <label>Misi {{ $i + 1 }}</label>
+                        <textarea name="missions[{{ $i }}]" rows="2">{{ data_get($about->missions, $i) ?? $defaultMissions[$i] }}</textarea>
+                    </div>
+                    @endfor
+                </div>
             </div>
-            @endfor
+        </details>
+
+        <details id="facilities-section" data-about-panel class="hidden group bg-surface-container-lowest rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <summary class="list-none flex items-center justify-between gap-4">
+                <div>
+                    <span>Component 04</span>
+                    <h3 class="font-headline text-primary">Fasilitas Unggulan</h3>
+                </div>
+                <button type="button" data-about-back class="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                    Kembali
+                </button>
+            </summary>
+            <div class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label>Label Fasilitas</label>
+                        <input name="facilities_label" value="{{ $about->facilities_label ?? 'Infrastruktur Modern' }}">
+                    </div>
+                    <div>
+                        <label>Judul Fasilitas</label>
+                        <input name="facilities_title" value="{{ $about->facilities_title ?? 'Fasilitas Unggulan' }}">
+                    </div>
+                    <div>
+                        <label>Teks Tombol</label>
+                        <input name="facilities_button_text" value="{{ $about->facilities_button_text ?? 'Lihat Semua Fasilitas' }}">
+                    </div>
+                    <div>
+                        <label>Link Tombol</label>
+                        <input name="facilities_button_link" value="{{ $about->facilities_button_link ?? '#' }}">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    @for ($i = 0; $i < $facilitySlots; $i++)
+                    <div class="bg-surface-container-low p-5 rounded-xl space-y-3">
+                        <label>Fasilitas {{ $i + 1 }}</label>
+                        <input name="facilities[{{ $i }}][icon]" placeholder="Icon Material Symbols" value="{{ data_get($about->facilities, $i.'.icon') ?? data_get($defaultFacilities, $i.'.icon') }}">
+                        <input name="facilities[{{ $i }}][title]" placeholder="Nama fasilitas" value="{{ data_get($about->facilities, $i.'.title') ?? data_get($defaultFacilities, $i.'.title') }}">
+                        <textarea name="facilities[{{ $i }}][desc]" rows="3" placeholder="Deskripsi fasilitas">{{ data_get($about->facilities, $i.'.desc') ?? data_get($defaultFacilities, $i.'.desc') }}</textarea>
+                        <input name="facility_images[{{ $i }}]" type="file" accept="image/*">
+                        <input name="facilities[{{ $i }}][image]" type="hidden" value="{{ data_get($about->facilities, $i.'.image') }}">
+                    </div>
+                    @endfor
+                </div>
+            </div>
+        </details>
+
+        <details id="extracurricular-section" data-about-panel class="hidden group bg-surface-container-lowest rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <summary class="list-none flex items-center justify-between gap-4">
+                <div>
+                    <span>Component 05</span>
+                    <h3 class="font-headline text-primary">Ekstrakurikuler</h3>
+                </div>
+                <button type="button" data-about-back class="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                    Kembali
+                </button>
+            </summary>
+            <div class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label>Label Ekstrakurikuler</label>
+                        <input name="extracurricular_label" value="{{ $about->extracurricular_label ?? 'Pengembangan Diri' }}">
+                    </div>
+                    <div>
+                        <label>Judul Ekstrakurikuler</label>
+                        <input name="extracurricular_title" value="{{ $about->extracurricular_title ?? 'Ekstrakurikuler Pilihan' }}">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label>Deskripsi</label>
+                        <textarea name="extracurricular_desc" rows="3">{{ $about->extracurricular_desc ?? 'Kami menyediakan wadah bagi siswa untuk mengeksplorasi minat di luar jam akademik dengan mentor yang kompeten.' }}</textarea>
+                    </div>
+                    @for ($i = 0; $i < 3; $i++)
+                    <div>
+                        <label>Tag {{ $i + 1 }}</label>
+                        <input name="extracurricular_tags[{{ $i }}]" value="{{ data_get($about->extracurricular_tags, $i) ?? $defaultTags[$i] }}">
+                    </div>
+                    @endfor
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    @for ($i = 0; $i < 4; $i++)
+                    <div class="bg-surface-container-low p-5 rounded-xl space-y-3">
+                        <label>Ekstrakurikuler {{ $i + 1 }}</label>
+                        <input name="extracurriculars[{{ $i }}][icon]" value="{{ data_get($about->extracurriculars, $i.'.icon') ?? $defaultExtracurriculars[$i]['icon'] }}">
+                        <input name="extracurriculars[{{ $i }}][title]" value="{{ data_get($about->extracurriculars, $i.'.title') ?? $defaultExtracurriculars[$i]['title'] }}">
+                        <textarea name="extracurriculars[{{ $i }}][desc]" rows="3">{{ data_get($about->extracurriculars, $i.'.desc') ?? $defaultExtracurriculars[$i]['desc'] }}</textarea>
+                    </div>
+                    @endfor
+                </div>
+            </div>
+        </details>
+
+        <div class="bg-surface-container-lowest rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-8 py-6">
+            <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end sm:items-center">
+                <button type="button" data-about-back class="px-6 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-100 transition-colors">
+                    Batal
+                </button>
+                <button type="submit" class="bg-primary text-on-primary px-8 py-3 rounded-xl font-bold shadow-lg hover:scale-105 transition-all">
+                    Simpan Tentang Kami
+                </button>
+            </div>
         </div>
     </section>
 </form>
+
+<script>
+const aboutOverview = document.getElementById('about-overview');
+const aboutEditors = document.getElementById('about-editors');
+const aboutPanels = document.querySelectorAll('[data-about-panel]');
+
+function showAboutOverview() {
+    aboutEditors.classList.add('hidden');
+    aboutOverview.classList.remove('hidden');
+    aboutPanels.forEach((panel) => panel.classList.add('hidden'));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showAboutEditor(panelId) {
+    const target = document.getElementById(panelId);
+
+    if (!target) {
+        return;
+    }
+
+    aboutOverview.classList.add('hidden');
+    aboutEditors.classList.remove('hidden');
+    aboutPanels.forEach((panel) => panel.classList.add('hidden'));
+    target.classList.remove('hidden');
+    target.open = true;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.querySelectorAll('[data-about-edit-target]').forEach((link) => {
+    link.addEventListener('click', (event) => {
+        event.preventDefault();
+        showAboutEditor(link.dataset.aboutEditTarget);
+    });
+});
+
+document.querySelectorAll('[data-about-back]').forEach((button) => {
+    button.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        showAboutOverview();
+    });
+});
+</script>
 @endsection

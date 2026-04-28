@@ -8,8 +8,8 @@ class Homepage extends Model
 {
     protected $fillable = [
         'hero_label', 'hero_title', 'hero_subtitle', 'hero_image', 'site_name', 'login_button_text',
-        'hero_button1_text', 'hero_button1_link', 'hero_button2_text', 'hero_button2_link',
-        'success_title', 'success_desc',
+        'hero_button1_text', 'hero_button1_link', 'hero_button2_text', 'hero_button2_link', 'hero_video_url',
+        'success_title', 'success_desc', 'success_image',
         'about_label', 'about_title', 'about_desc', 'accreditation_title', 'accreditation_desc',
         'tradisi', 'fasilitas',
         'facilities_title', 'facilities_subtitle', 'facility_main_image', 'facility_side_image',

@@ -19,13 +19,13 @@
             <a class="flex items-center gap-3 px-4 py-3 {{ Route::is('admin.homepage.*') ? 'bg-gradient-to-br from-[#00357f] to-[#004aad] text-white' : 'text-slate-600 hover:bg-slate-100' }} rounded-lg transition-transform hover:translate-x-1 duration-300"
                 href="{{ route('admin.homepage.index') }}">
                 <span class="material-symbols-outlined">home_work</span>
-                <span class="font-medium text-sm">CMS Beranda</span>
+                <span class="font-medium text-sm">Beranda</span>
             </a>
 
             <a class="flex items-center gap-3 px-4 py-3 {{ Route::is('admin.about.*') ? 'bg-gradient-to-br from-[#00357f] to-[#004aad] text-white' : 'text-slate-600 hover:bg-slate-100' }} rounded-lg transition-transform hover:translate-x-1 duration-300"
                 href="{{ route('admin.about.index') }}">
                 <span class="material-symbols-outlined">info</span>
-                <span class="font-medium text-sm">CMS Tentang</span>
+                <span class="font-medium text-sm">Tentang Kami</span>
             </a>
 
             <a href="{{ url('admin/berita') }}"

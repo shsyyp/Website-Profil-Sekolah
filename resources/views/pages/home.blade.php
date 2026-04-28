@@ -17,6 +17,17 @@ $fasilitasItems = $homepage?->fasilitas ?: [
     ['title' => 'Asrama Modern', 'desc' => 'Kamar yang nyaman dengan pengawasan 24 jam.', 'icon' => 'apartment'],
     ['title' => 'Sport Center', 'desc' => 'Lapangan basket indoor, futsal, dan area atletik standar nasional.', 'icon' => 'sports_basketball'],
 ];
+
+$successImage = $homepage?->success_image
+    ? asset('storage/' . $homepage->success_image)
+    : 'https://lh3.googleusercontent.com/aida-public/AB6AXuDSEccOsqSQv6m5MulAy7Nai2PfFp8lKz-h91phjw5wssfC3smtyVexwy_Ow0nA1lCuM9flw1DdmR5TWSyZs56dIUnjLILXGeLbVgzUYMBdbr92lwAbffStPJtyPaFd3V3r2pKQ0EXFGyaTQyEyuNcJZSRXnoXq4-Gj4GBP7y2IVSJzdlYAUNiN98WWyFnuIsXNWm6MhtTjqoL15p0HF3SLiAny79rJ4rHIpXdFO6715mKQpwPbm-23nCXeX4Gazj3SDdeAZCs6jtf8';
+
+$profileVideoUrl = $homepage?->hero_video_url;
+$profileVideoEmbedUrl = null;
+
+if ($profileVideoUrl && preg_match('~(?:youtube\.com/(?:watch\?v=|embed/|shorts/)|youtu\.be/)([A-Za-z0-9_-]{11})~', $profileVideoUrl, $matches)) {
+    $profileVideoEmbedUrl = 'https://www.youtube.com/embed/' . $matches[1];
+}
 @endphp
 
 <section class="relative min-h-[921px] flex items-center px-6 overflow-hidden">
@@ -43,10 +54,19 @@ $fasilitasItems = $homepage?->fasilitas ?: [
                     class="primary-gradient text-on-primary px-8 py-4 rounded-md font-bold text-lg hover:scale-105 active:scale-95 transition-all shadow-xl shadow-primary/20">
                     {{ $homepage?->hero_button1_text ?? 'Daftar PMB' }}
                 </a>
-                <a href="{{ $homepage?->hero_button2_link ?: route('tentang') }}"
-                    class="px-8 py-4 rounded-md font-bold text-lg border-2 border-primary/20 text-primary hover:bg-primary/5 transition-all">
-                    {{ $homepage?->hero_button2_text ?? 'Lihat Profil' }}
+                @if($profileVideoEmbedUrl)
+                <button type="button" data-profile-video-open
+                    class="px-8 py-4 rounded-md font-bold text-lg border-2 border-primary/20 text-primary hover:bg-primary/5 transition-all flex items-center gap-2">
+                    <span class="material-symbols-outlined">play_circle</span>
+                    Lihat Video Profil
+                </button>
+                @else
+                <a href="{{ route('tentang') }}"
+                    class="px-8 py-4 rounded-md font-bold text-lg border-2 border-primary/20 text-primary hover:bg-primary/5 transition-all flex items-center gap-2">
+                    <span class="material-symbols-outlined">play_circle</span>
+                    Lihat Video Profil
                 </a>
+                @endif
             </div>
         </div>
         <div class="hidden md:block relative">
@@ -56,7 +76,7 @@ $fasilitasItems = $homepage?->fasilitas ?: [
                 <img alt="Student"
                     class="rounded-md w-full h-[400px] object-cover transition-transform duration-700 group-hover:scale-110"
                     data-alt="High school students in neat blue uniforms discussing a project with a tablet in a modern sunlit library setting"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSEccOsqSQv6m5MulAy7Nai2PfFp8lKz-h91phjw5wssfC3smtyVexwy_Ow0nA1lCuM9flw1DdmR5TWSyZs56dIUnjLILXGeLbVgzUYMBdbr92lwAbffStPJtyPaFd3V3r2pKQ0EXFGyaTQyEyuNcJZSRXnoXq4-Gj4GBP7y2IVSJzdlYAUNiN98WWyFnuIsXNWm6MhtTjqoL15p0HF3SLiAny79rJ4rHIpXdFO6715mKQpwPbm-23nCXeX4Gazj3SDdeAZCs6jtf8" />
+                    src="{{ $successImage }}" />
                 <div
                     class="absolute bottom-12 left-12 right-12 bg-primary-container/90 backdrop-blur-lg p-6 rounded-md text-on-primary-container">
                     <p class="text-sm uppercase tracking-widest font-bold opacity-80 mb-2">Success Story</p>
@@ -67,6 +87,53 @@ $fasilitasItems = $homepage?->fasilitas ?: [
         </div>
     </div>
 </section>
+
+@if($profileVideoEmbedUrl)
+<div id="profileVideoModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/70 px-4 py-8 backdrop-blur-sm">
+    <button type="button" data-profile-video-close class="absolute inset-0 cursor-default" aria-label="Tutup video profil"></button>
+    <div class="relative z-10 w-full max-w-4xl overflow-hidden rounded-md bg-black shadow-2xl">
+        <button type="button" data-profile-video-close
+            class="absolute right-4 top-4 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-primary hover:bg-white transition-colors"
+            aria-label="Tutup video profil">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+        <div class="aspect-video">
+            <iframe id="profileVideoFrame" class="h-full w-full" data-src="{{ $profileVideoEmbedUrl }}?autoplay=1&rel=0"
+                title="Video Profil SMAN Pintar" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen></iframe>
+        </div>
+    </div>
+</div>
+
+<script>
+const profileVideoModal = document.getElementById('profileVideoModal');
+const profileVideoFrame = document.getElementById('profileVideoFrame');
+
+function openProfileVideo() {
+    profileVideoModal.classList.remove('hidden');
+    profileVideoModal.classList.add('flex');
+    profileVideoFrame.src = profileVideoFrame.dataset.src;
+    document.body.classList.add('overflow-hidden');
+}
+
+function closeProfileVideo() {
+    profileVideoModal.classList.add('hidden');
+    profileVideoModal.classList.remove('flex');
+    profileVideoFrame.src = '';
+    document.body.classList.remove('overflow-hidden');
+}
+
+document.querySelector('[data-profile-video-open]')?.addEventListener('click', openProfileVideo);
+document.querySelectorAll('[data-profile-video-close]').forEach((button) => {
+    button.addEventListener('click', closeProfileVideo);
+});
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !profileVideoModal.classList.contains('hidden')) {
+        closeProfileVideo();
+    }
+});
+</script>
+@endif
 
 <section class="py-24 bg-surface">
     <div class="max-w-7xl mx-auto px-6">

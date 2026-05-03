@@ -3,32 +3,41 @@
 @section('title', 'PMB 2025/2026 - SMAN Pintar Provinsi Riau')
 
 @section('content')
+@php
+    $heroImage = $pmb?->hero_image
+        ? asset('storage/' . $pmb->hero_image)
+        : 'https://lh3.googleusercontent.com/aida-public/AB6AXuCzki_EPBNVyg-ldrcUWYC_cc07-B11lum4k6V5O6cNZPyNyNQ1xfh6ZNwxUxGCyiC-x1bMl09IvHCNP3Sbxy4qk_DhR9ljXdMhUikF3im0IHd5_9EkaNk1xWQvCKbOD7QyYy935iH-3C66VCiGB-seTE8fgTJdxxyHnHlMpyYAfe28tlRZ7NpipXSBVWLasgsafK2C1uEWsdorypBCAYEioFJffpS6MgyrNBgnkQfyRFBqg751RMs5T8I0VCNKS_WespzJ_IalC9b4';
+    $defaultTestimonials = [
+        ['name' => 'Aura Nadira', 'meta' => 'Alumni Jalur Prestasi 2022', 'quote' => 'Proses seleksi PMB SMAN Pintar sangat transparan dan kompetitif. Saya merasa tertantang sejak ujian tahap pertama. Di sini saya menemukan lingkungan yang sangat suportif untuk berkembang.', 'image' => 'https://lh3.googleusercontent.com/aida-public/AB6AXuDiHBTXbfO2gUpd6GzX5m6WsnAVu12gaSdYSxOl1xrJEpq8MX27XCM7jpmWRQVxioqR1CRkNvh0icyBLdba0wBzy3pSpJPAVx-EY5xkX219ZXlBteQg9P76UEDhscxoW2wwI6z4LhC9CohRLwtehbqTSpAE92buaJAljDTfbFLeDgXH7KTw9BvbYUtc9f6ioVOrwm3Co0lBjAQe2HMADLkgQIwvpaXQyd7nVv18-0BK-lR0MjCALSEVGwJXaJIK0JdS2KSNUWQBzn_e', 'featured' => false],
+        ['name' => 'Dimas Pratama', 'meta' => 'Siswa Kelas XII - Jalur Tes', 'quote' => 'SMAN Pintar bukan sekadar sekolah, tapi rumah kedua. Ujian seleksinya memang berat, tapi sebanding dengan kualitas fasilitas dan bimbingan guru yang luar biasa profesional.', 'image' => 'https://lh3.googleusercontent.com/aida-public/AB6AXuB9uIQlb20HnSd5R7nyTlPOKfaTxdJ85o0nSkJlVFdWHueJy27UO2ZkjDTIXGlc1W7ezi8C5rOq5SSjnynZ7eAPq_wk0-jF-rsKHZl2eIPW1lEpO40C8Ea59ZedSQq2s0nF6tdbUKC-1CnWIGzPvHVOYVGQrUGi3h65dNOkLFAesfF_sBlNGiksX_JBeDTVtYjITtjewWjcduEfUYB_Gz3iytBLNTGMwlvUQI80QdN7GAcG5ykJQF-MXxTzfs9stYCNHfLrZNYqCO8o', 'featured' => true],
+        ['name' => 'Siti Aminah', 'meta' => 'Siswa Kelas XI - Jalur Tahfidz', 'quote' => 'Sangat senang ada jalur khusus Tahfidz. Proses verifikasinya sangat teliti. SMAN Pintar memberikan apresiasi tinggi bagi penghafal Al-Qur\'an melalui sistem seleksi ini.', 'image' => 'https://lh3.googleusercontent.com/aida-public/AB6AXuC-_ZlbU_Lf4ExB6Efl0Y5g_CKB4i_zXBDNEW2T6eNzeCt9h4GrauFiWkcosBpSWHMESzIPWRWvda-QPIFM8asvw_Y34eMTFQOIau8Ol8J8n_X46eN_dTVmqePZB1AhVUiX3S4ugi0N_UY9iuJO330-H9zvYjMUWA0MeQQABNGZLWwI6P5AnX-4lNoU0X_JHC3CYUM-7EVvlnc71dXd4eK5UMfuIgJplZ3tiQr0QV9ojy5avVQwVXSBjWyplx3hPPfwMmvj6lwIdPj4', 'featured' => false],
+    ];
+    $testimonials = collect($pmb?->testimonials ?: $defaultTestimonials);
+@endphp
 
 {{-- Hero Section --}}
 <section class="relative overflow-hidden min-h-[921px] flex items-center bg-surface pt-20">
     <div class="max-w-7xl mx-auto px-8 grid md:grid-cols-2 gap-12 items-center">
         <div class="relative z-10">
             <span
-                class="inline-block px-4 py-1.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-semibold text-xs tracking-widest uppercase mb-6">Penerimaan
-                Siswa Baru 2025/2026</span>
+                class="inline-block px-4 py-1.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-semibold text-xs tracking-widest uppercase mb-6">{{ $pmb?->hero_badge ?? 'Penerimaan Siswa Baru 2025/2026' }}</span>
             <h1
                 class="font-headline text-5xl md:text-7xl font-extrabold text-primary leading-tight tracking-tighter mb-6">
-                Mulai Masa Depan Gemilang di SMAN Pintar
+                {{ $pmb?->hero_title ?? 'Mulai Masa Depan Gemilang di SMAN Pintar' }}
             </h1>
             <p class="text-xl text-on-surface-variant leading-relaxed mb-10 max-w-lg">
-                Pendaftaran Peserta Didik Baru Tahun Ajaran 2025/2026 Telah Dibuka. Bergabunglah dengan institusi
-                pendidikan unggulan di Riau.
+                {{ $pmb?->hero_description ?? 'Pendaftaran Peserta Didik Baru Tahun Ajaran 2025/2026 Telah Dibuka. Bergabunglah dengan institusi pendidikan unggulan di Riau.' }}
             </p>
             <div class="flex flex-col sm:flex-row gap-4">
                 <div class="flex gap-4">
                     <a href="{{ $pmb?->link_pendaftaran ?: '#' }}" target="_blank"
                         class="bg-gradient-to-br from-tertiary to-tertiary-container text-on-tertiary px-8 py-4 rounded-lg font-bold text-lg shadow-xl shadow-tertiary/20 hover:scale-105 active:scale-95 transition-all">
-                        Daftar Sekarang
+                        {{ $pmb?->primary_button_text ?? 'Daftar Sekarang' }}
                     </a>
                 </div>
                 <a href="#persyaratan"
                     class="border-2 border-primary/20 text-primary px-8 py-4 rounded-lg font-bold text-lg hover:bg-primary/5 transition-all">
-                    Panduan PMB
+                    {{ $pmb?->secondary_button_text ?? 'Panduan PMB' }}
                 </a>
             </div>
         </div>
@@ -42,11 +51,11 @@
             <div
                 class="relative rounded-2xl overflow-hidden shadow-2xl transform rotate-2 hover:rotate-0 transition-transform duration-500">
                 <img alt="SMAN Pintar Campus" class="w-full aspect-[4/5] object-cover"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzki_EPBNVyg-ldrcUWYC_cc07-B11lum4k6V5O6cNZPyNyNQ1xfh6ZNwxUxGCyiC-x1bMl09IvHCNP3Sbxy4qk_DhR9ljXdMhUikF3im0IHd5_9EkaNk1xWQvCKbOD7QyYy935iH-3C66VCiGB-seTE8fgTJdxxyHnHlMpyYAfe28tlRZ7NpipXSBVWLasgsafK2C1uEWsdorypBCAYEioFJffpS6MgyrNBgnkQfyRFBqg751RMs5T8I0VCNKS_WespzJ_IalC9b4" />
+                    src="{{ $heroImage }}" />
                 <div class="absolute inset-0 bg-gradient-to-t from-primary/60 to-transparent"></div>
                 <div class="absolute bottom-8 left-8 text-white">
-                    <p class="font-bold text-2xl">Akreditasi A</p>
-                    <p class="text-white/80">Standar Internasional</p>
+                    <p class="font-bold text-2xl">{{ $pmb?->hero_card_title ?? 'Akreditasi A' }}</p>
+                    <p class="text-white/80">{{ $pmb?->hero_card_subtitle ?? 'Standar Internasional' }}</p>
                 </div>
             </div>
         </div>
@@ -57,8 +66,8 @@
 <section class="py-24 bg-surface-container-low">
     <div class="max-w-7xl mx-auto px-8">
         <div class="text-center mb-20">
-            <p class="text-tertiary font-bold tracking-[0.2em] text-sm uppercase mb-3">Langkah Mudah</p>
-            <h2 class="font-headline text-4xl md:text-5xl font-extrabold text-primary">Alur Pendaftaran</h2>
+            <p class="text-tertiary font-bold tracking-[0.2em] text-sm uppercase mb-3">{{ $pmb?->steps_label ?? 'Langkah Mudah' }}</p>
+            <h2 class="font-headline text-4xl md:text-5xl font-extrabold text-primary">{{ $pmb?->steps_title ?? 'Alur Pendaftaran' }}</h2>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
             @forelse ($alur as $index => $item)
@@ -187,8 +196,8 @@
 <section class="py-24 bg-surface-container-lowest">
     <div class="max-w-7xl mx-auto px-8">
         <div class="text-center mb-16">
-            <h2 class="font-headline text-4xl font-extrabold text-primary mb-4">Timeline Pendaftaran</h2>
-            <p class="text-on-surface-variant">Pantau tanggal penting agar tidak terlewatkan.</p>
+            <h2 class="font-headline text-4xl font-extrabold text-primary mb-4">{{ $pmb?->timeline_title ?? 'Timeline Pendaftaran' }}</h2>
+            <p class="text-on-surface-variant">{{ $pmb?->timeline_description ?? 'Pantau tanggal penting agar tidak terlewatkan.' }}</p>
         </div>
         <div class="overflow-x-auto">
             <table class="w-full text-left border-separate border-spacing-y-4">
@@ -225,8 +234,8 @@
 <section class="py-24 bg-surface">
     <div class="max-w-4xl mx-auto px-8">
         <div class="text-center mb-16">
-            <h2 class="font-headline text-4xl font-extrabold text-primary mb-4">Pertanyaan Umum (FAQ)</h2>
-            <p class="text-on-surface-variant">Temukan jawaban cepat atas pertanyaan Anda.</p>
+            <h2 class="font-headline text-4xl font-extrabold text-primary mb-4">{{ $pmb?->faq_title ?? 'Pertanyaan Umum (FAQ)' }}</h2>
+            <p class="text-on-surface-variant">{{ $pmb?->faq_description ?? 'Temukan jawaban cepat atas pertanyaan Anda.' }}</p>
         </div>
         <div class="space-y-4">
             @forelse ($faq as $item)
@@ -256,24 +265,28 @@
 <section class="py-24 bg-surface-container-low relative overflow-hidden">
     <div class="max-w-7xl mx-auto px-8 relative z-10">
         <div class="text-center mb-20">
-            <h2 class="font-headline text-4xl font-extrabold text-primary mb-4">Kisah Sukses PMB</h2>
-            <p class="text-on-surface-variant">Inspirasi dari mereka yang telah bergabung dengan kami.</p>
+            <h2 class="font-headline text-4xl font-extrabold text-primary mb-4">{{ $pmb?->testimonials_title ?? 'Kisah Sukses PMB' }}</h2>
+            <p class="text-on-surface-variant">{{ $pmb?->testimonials_description ?? 'Inspirasi dari mereka yang telah bergabung dengan kami.' }}</p>
         </div>
         <div class="grid md:grid-cols-3 gap-8">
-            <div class="bg-surface-container-lowest p-8 rounded-3xl shadow-sm border border-outline-variant/5">
+            @foreach ($testimonials as $testimonial)
+            @php
+                $featured = (bool) data_get($testimonial, 'featured');
+                $image = data_get($testimonial, 'image') ?: data_get($defaultTestimonials, $loop->index . '.image');
+            @endphp
+            <div class="{{ $featured ? 'bg-primary p-8 rounded-3xl shadow-xl shadow-primary/20 text-white' : 'bg-surface-container-lowest p-8 rounded-3xl shadow-sm border border-outline-variant/5' }}">
                 <div class="flex items-center gap-4 mb-6">
-                    <img alt="Siswa" class="w-14 h-14 rounded-full object-cover border-2 border-primary/10"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDiHBTXbfO2gUpd6GzX5m6WsnAVu12gaSdYSxOl1xrJEpq8MX27XCM7jpmWRQVxioqR1CRkNvh0icyBLdba0wBzy3pSpJPAVx-EY5xkX219ZXlBteQg9P76UEDhscxoW2wwI6z4LhC9CohRLwtehbqTSpAE92buaJAljDTfbFLeDgXH7KTw9BvbYUtc9f6ioVOrwm3Co0lBjAQe2HMADLkgQIwvpaXQyd7nVv18-0BK-lR0MjCALSEVGwJXaJIK0JdS2KSNUWQBzn_e" />
+                    <img alt="Siswa" class="w-14 h-14 rounded-full object-cover {{ $featured ? 'border-2 border-white/20' : 'border-2 border-primary/10' }}"
+                        src="{{ $image }}" />
                     <div>
-                        <h4 class="font-bold text-primary">Aura Nadira</h4>
-                        <p class="text-xs text-on-surface-variant">Alumni Jalur Prestasi 2022</p>
+                        <h4 class="font-bold {{ $featured ? '' : 'text-primary' }}">{{ data_get($testimonial, 'name') }}</h4>
+                        <p class="text-xs {{ $featured ? 'text-primary-fixed' : 'text-on-surface-variant' }}">{{ data_get($testimonial, 'meta') }}</p>
                     </div>
                 </div>
-                <p class="text-on-surface-variant italic leading-relaxed">
-                    "Proses seleksi PMB SMAN Pintar sangat transparan dan kompetitif. Saya merasa tertantang sejak ujian
-                    tahap pertama. Di sini saya menemukan lingkungan yang sangat suportif untuk berkembang."
+                <p class="{{ $featured ? 'text-primary-fixed' : 'text-on-surface-variant' }} italic leading-relaxed">
+                    "{{ data_get($testimonial, 'quote') }}"
                 </p>
-                <div class="mt-6 flex text-tertiary">
+                <div class="mt-6 flex {{ $featured ? 'text-tertiary-fixed' : 'text-tertiary' }}">
                     <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
                     <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
                     <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
@@ -281,48 +294,7 @@
                     <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
                 </div>
             </div>
-            <div class="bg-primary p-8 rounded-3xl shadow-xl shadow-primary/20 text-white">
-                <div class="flex items-center gap-4 mb-6">
-                    <img alt="Siswa" class="w-14 h-14 rounded-full object-cover border-2 border-white/20"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9uIQlb20HnSd5R7nyTlPOKfaTxdJ85o0nSkJlVFdWHueJy27UO2ZkjDTIXGlc1W7ezi8C5rOq5SSjnynZ7eAPq_wk0-jF-rsKHZl2eIPW1lEpO40C8Ea59ZedSQq2s0nF6tdbUKC-1CnWIGzPvHVOYVGQrUGi3h65dNOkLFAesfF_sBlNGiksX_JBeDTVtYjITtjewWjcduEfUYB_Gz3iytBLNTGMwlvUQI80QdN7GAcG5ykJQF-MXxTzfs9stYCNHfLrZNYqCO8o" />
-                    <div>
-                        <h4 class="font-bold">Dimas Pratama</h4>
-                        <p class="text-xs text-primary-fixed">Siswa Kelas XII - Jalur Tes</p>
-                    </div>
-                </div>
-                <p class="text-primary-fixed italic leading-relaxed">
-                    "SMAN Pintar bukan sekadar sekolah, tapi rumah kedua. Ujian seleksinya memang berat, tapi sebanding
-                    dengan kualitas fasilitas dan bimbingan guru yang luar biasa profesional."
-                </p>
-                <div class="mt-6 flex text-tertiary-fixed">
-                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
-                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
-                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
-                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
-                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
-                </div>
-            </div>
-            <div class="bg-surface-container-lowest p-8 rounded-3xl shadow-sm border border-outline-variant/5">
-                <div class="flex items-center gap-4 mb-6">
-                    <img alt="Siswa" class="w-14 h-14 rounded-full object-cover border-2 border-primary/10"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-_ZlbU_Lf4ExB6Efl0Y5g_CKB4i_zXBDNEW2T6eNzeCt9h4GrauFiWkcosBpSWHMESzIPWRWvda-QPIFM8asvw_Y34eMTFQOIau8Ol8J8n_X46eN_dTVmqePZB1AhVUiX3S4ugi0N_UY9iuJO330-H9zvYjMUWA0MeQQABNGZLWwI6P5AnX-4lNoU0X_JHC3CYUM-7EVvlnc71dXd4eK5UMfuIgJplZ3tiQr0QV9ojy5avVQwVXSBjWyplx3hPPfwMmvj6lwIdPj4" />
-                    <div>
-                        <h4 class="font-bold text-primary">Siti Aminah</h4>
-                        <p class="text-xs text-on-surface-variant">Siswa Kelas XI - Jalur Tahfidz</p>
-                    </div>
-                </div>
-                <p class="text-on-surface-variant italic leading-relaxed">
-                    "Sangat senang ada jalur khusus Tahfidz. Proses verifikasinya sangat teliti. SMAN Pintar memberikan
-                    apresiasi tinggi bagi penghafal Al-Qur'an melalui sistem seleksi ini."
-                </p>
-                <div class="mt-6 flex text-tertiary">
-                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
-                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
-                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
-                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
-                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
-                </div>
-            </div>
+            @endforeach
         </div>
     </div>
 </section>
@@ -342,20 +314,19 @@
             </div>
             <div class="relative z-10">
                 <h2 class="font-headline text-4xl md:text-6xl font-extrabold mb-8 tracking-tighter">
-                    Wujudkan Impian Anda Bersama <br class="hidden md:block" /> SMAN Pintar Riau
+                    {{ $pmb?->cta_title ?? 'Wujudkan Impian Anda Bersama SMAN Pintar Riau' }}
                 </h2>
                 <p class="text-xl text-primary-fixed mb-12 max-w-2xl mx-auto opacity-90 leading-relaxed">
-                    Jangan lewatkan kesempatan untuk bergabung dengan komunitas pelajar terbaik. Pendaftaran akan
-                    ditutup dalam beberapa hari ke depan.
+                    {{ $pmb?->cta_description ?? 'Jangan lewatkan kesempatan untuk bergabung dengan komunitas pelajar terbaik. Pendaftaran akan ditutup dalam beberapa hari ke depan.' }}
                 </p>
                 <div class="flex flex-col sm:flex-row justify-center gap-6">
                     <a href="{{ $pmb?->link_pendaftaran ?: '#' }}" target="_blank"
                             class="bg-tertiary text-on-tertiary px-10 py-5 rounded-xl font-bold text-xl hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-tertiary/20">
-                            Daftar Sekarang
+                            {{ $pmb?->cta_primary_text ?? 'Daftar Sekarang' }}
                     </a>
-                    <a href="{{ route('pmb') }}"
+                    <a href="{{ $pmb?->cta_secondary_link ?: route('pmb') }}"
                         class="bg-white/10 backdrop-blur-md border border-white/20 text-white px-10 py-5 rounded-xl font-bold text-xl hover:bg-white/20 transition-all">
-                        Hubungi Panitia
+                        {{ $pmb?->cta_secondary_text ?? 'Hubungi Panitia' }}
                     </a>
                 </div>
             </div>

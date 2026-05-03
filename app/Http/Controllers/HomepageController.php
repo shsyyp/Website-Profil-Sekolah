@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\AboutPage;
 use App\Models\Homepage;
 use App\Models\Alumni;
 
@@ -11,9 +12,10 @@ class HomepageController extends Controller
     public function index()
     {
         $homepage = Homepage::first() ?? new Homepage();
+        $about = AboutPage::first() ?? new AboutPage();
         $alumni = Alumni::where('status', 'aktif')->get();
 
-        return view('admin.homepage.index', compact('homepage', 'alumni'));
+        return view('admin.homepage.index', compact('homepage', 'about', 'alumni'));
     }
 
     public function update(Request $request)

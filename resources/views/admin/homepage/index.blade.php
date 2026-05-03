@@ -27,13 +27,18 @@ $facilityImage = $homepage->facility_main_image
 ? asset('storage/' . $homepage->facility_main_image)
 : null;
 
+$sharedFacilities = collect($about->facilities ?? [])
+->filter(fn ($facility) => filled($facility['title'] ?? null))
+->take(4)
+->values();
+
 $tradisiTitles = collect(range(0, 3))
 ->map(fn ($i) => data_get($homepage->tradisi, $i . '.title') ?? ($i == 0 ? 'Kurikulum' : ($i == 1 ? 'Boarding' : ($i ==
 2 ? 'Pembinaan' : 'Alumni'))))
 ->implode(', ');
 
 $facilityTitles = collect(range(0, 3))
-->map(fn ($i) => data_get($homepage->fasilitas, $i . '.title') ?? $defaultFasilitas[$i]['title'])
+->map(fn ($i) => data_get($sharedFacilities, $i . '.title') ?? $defaultFasilitas[$i]['title'])
 ->implode(', ');
 
 $components = [
@@ -493,36 +498,31 @@ $components = [
                     <textarea name="facilities_subtitle"
                         class="bg-surface-container-lowest border-none rounded-xl px-4 py-3 md:row-span-2" rows="3"
                         placeholder="Subjudul fasilitas">{{ $homepage->facilities_subtitle ?? 'Kami menyediakan infrastruktur terbaik untuk mendukung setiap langkah eksplorasi siswa.' }}</textarea>
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold text-slate-500 uppercase tracking-tighter">Gambar Fasilitas
-                            Utama</label>
-                        <input name="facility_main_image" type="file"
-                            class="w-full bg-surface-container-lowest border-none rounded-xl px-4 py-3">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold text-slate-500 uppercase tracking-tighter">Gambar Fasilitas
-                            Kecil</label>
-                        <input name="facility_side_image" type="file"
-                            class="w-full bg-surface-container-lowest border-none rounded-xl px-4 py-3">
+                    <div class="md:col-span-2 rounded-2xl bg-blue-50 p-5 text-sm leading-relaxed text-primary">
+                        Data fasilitas, icon, deskripsi, dan gambar dikelola dari halaman
+                        <a href="{{ route('admin.about.index') }}" class="font-bold underline">Tentang Kami</a>.
+                        Beranda otomatis menampilkan 4 fasilitas pertama sebagai fasilitas unggulan.
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
                     @for ($i = 0; $i < 4; $i++) <div
                         class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-slate-50 space-y-4">
-                        <div class="space-y-2">
-                            <label class="text-xs font-bold text-slate-500 uppercase tracking-tighter">Icon</label>
-                            <input name="fasilitas[{{$i}}][icon]"
-                                class="w-full border-none focus:ring-2 focus:ring-primary rounded-xl px-4 py-2 bg-surface-container-low text-sm"
-                                type="text"
-                                value="{{ data_get($homepage->fasilitas, $i.'.icon') ?? $defaultFasilitas[$i]['icon'] }}" />
+                        @php
+                            $facilityImagePreview = data_get($sharedFacilities, $i.'.image')
+                                ? asset('storage/' . data_get($sharedFacilities, $i.'.image'))
+                                : null;
+                        @endphp
+                        @if($facilityImagePreview)
+                        <img src="{{ $facilityImagePreview }}" class="h-28 w-full rounded-xl object-cover" alt="{{ data_get($sharedFacilities, $i.'.title') }}">
+                        @else
+                        <div class="h-28 w-full rounded-xl bg-blue-50 text-primary flex items-center justify-center">
+                            <span class="material-symbols-outlined text-3xl">{{ data_get($sharedFacilities, $i.'.icon') ?? $defaultFasilitas[$i]['icon'] }}</span>
                         </div>
-                        <input name="fasilitas[{{$i}}][title]"
-                            class="w-full border-none p-0 focus:ring-0 font-bold text-primary bg-transparent text-lg"
-                            type="text"
-                            value="{{ data_get($homepage->fasilitas, $i.'.title') ?? $defaultFasilitas[$i]['title'] }}" />
-                        <textarea name="fasilitas[{{$i}}][desc]"
-                            class="w-full border-none p-0 focus:ring-0 text-xs text-on-surface-variant bg-transparent resize-none"
-                            rows="4">{{ data_get($homepage->fasilitas, $i.'.desc') ?? $defaultFasilitas[$i]['desc'] }}</textarea>
+                        @endif
+                        <div>
+                            <p class="font-bold text-primary text-lg">{{ data_get($sharedFacilities, $i.'.title') ?? $defaultFasilitas[$i]['title'] }}</p>
+                            <p class="mt-2 text-xs text-on-surface-variant leading-relaxed">{{ data_get($sharedFacilities, $i.'.desc') ?? $defaultFasilitas[$i]['desc'] }}</p>
+                        </div>
                 </div>
                 @endfor
             </div>

@@ -31,7 +31,10 @@ class AboutPageController extends Controller
         foreach ($request->file('facility_images', []) as $index => $image) {
             $facilities[$index]['image'] = $image->store('about', 'public');
         }
-        $data['facilities'] = $facilities;
+        $data['facilities'] = collect($facilities)
+            ->filter(fn ($facility) => ($facility['title'] ?? null) || ($facility['desc'] ?? null) || ($facility['icon'] ?? null) || ($facility['image'] ?? null))
+            ->values()
+            ->all();
 
         if ($about) {
             $about->update($data);

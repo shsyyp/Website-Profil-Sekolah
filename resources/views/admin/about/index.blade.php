@@ -75,7 +75,7 @@ $components = [
 
 <style>
     #about-editors {
-        max-width: 56rem;
+        width: 100%;
     }
 
     #about-editors summary {
@@ -379,17 +379,97 @@ $components = [
                         <input name="facilities_button_link" value="{{ $about->facilities_button_link ?? '#' }}">
                     </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    @for ($i = 0; $i < $facilitySlots; $i++)
-                    <div class="bg-surface-container-low p-5 rounded-xl space-y-3">
-                        <label>Fasilitas {{ $i + 1 }}</label>
-                        <input name="facilities[{{ $i }}][icon]" placeholder="Icon Material Symbols" value="{{ data_get($about->facilities, $i.'.icon') ?? data_get($defaultFacilities, $i.'.icon') }}">
-                        <input name="facilities[{{ $i }}][title]" placeholder="Nama fasilitas" value="{{ data_get($about->facilities, $i.'.title') ?? data_get($defaultFacilities, $i.'.title') }}">
-                        <textarea name="facilities[{{ $i }}][desc]" rows="3" placeholder="Deskripsi fasilitas">{{ data_get($about->facilities, $i.'.desc') ?? data_get($defaultFacilities, $i.'.desc') }}</textarea>
-                        <input name="facility_images[{{ $i }}]" type="file" accept="image/*">
-                        <input name="facilities[{{ $i }}][image]" type="hidden" value="{{ data_get($about->facilities, $i.'.image') }}">
+                <div class="bg-surface-container-low rounded-2xl overflow-hidden border border-slate-100">
+                    <div class="flex flex-col gap-4 p-5 md:flex-row md:items-center md:justify-between">
+                        <div>
+                            <h4 class="text-lg font-bold text-primary">Daftar Fasilitas</h4>
+                            <p class="text-sm text-on-surface-variant">Edit langsung di tabel. Beranda otomatis memakai 4 fasilitas pertama.</p>
+                        </div>
+                        <button type="button" data-add-facility
+                            class="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-white hover:bg-primary-container transition-colors">
+                            <span class="material-symbols-outlined text-[18px]">add</span>
+                            Tambah Fasilitas
+                        </button>
                     </div>
-                    @endfor
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse table-fixed">
+                            <thead>
+                                <tr class="bg-surface-container-lowest/70">
+                                    <th class="w-28 px-5 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Preview</th>
+                                    <th class="w-48 px-5 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Fasilitas</th>
+                                    <th class="px-5 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Deskripsi</th>
+                                    <th class="w-28 px-5 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Status</th>
+                                    <th class="w-28 px-5 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="facility-table-body" class="divide-y divide-surface-container">
+                                @for ($i = 0; $i < $facilitySlots; $i++)
+                                @php
+                                    $facilityImage = data_get($about->facilities, $i.'.image');
+                                    $facilityIcon = data_get($about->facilities, $i.'.icon') ?? data_get($defaultFacilities, $i.'.icon');
+                                @endphp
+                                <tr data-facility-row data-facility-display-row class="group hover:bg-surface-container-low/30 transition-colors">
+                                    <td class="px-5 py-4">
+                                        @if($facilityImage)
+                                        <img data-facility-preview src="{{ asset('storage/' . $facilityImage) }}" class="h-14 w-20 rounded-lg object-cover" alt="Preview fasilitas">
+                                        @else
+                                        <div data-facility-preview class="h-14 w-20 rounded-lg bg-blue-50 text-primary flex items-center justify-center text-[10px] font-bold uppercase">
+                                            No Image
+                                        </div>
+                                        @endif
+                                    </td>
+                                    <td class="px-5 py-4">
+                                        <p data-facility-title class="font-bold text-blue-900 group-hover:text-primary transition-colors">
+                                            {{ data_get($about->facilities, $i.'.title') ?? data_get($defaultFacilities, $i.'.title') }}
+                                        </p>
+                                        <input data-facility-field="icon" name="facilities[{{ $i }}][icon]" type="hidden" value="{{ $facilityIcon }}">
+                                    </td>
+                                    <td class="px-5 py-4">
+                                        <p data-facility-desc class="max-w-xl text-sm text-on-surface-variant font-medium leading-relaxed line-clamp-2">
+                                            {{ data_get($about->facilities, $i.'.desc') ?? data_get($defaultFacilities, $i.'.desc') }}
+                                        </p>
+                                    </td>
+                                    <td class="px-5 py-4">
+                                        <span class="flex items-center gap-1.5 text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full w-fit">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Aktif
+                                        </span>
+                                    </td>
+                                    <td class="px-5 py-4 text-right">
+                                        <button type="button" data-edit-facility
+                                            class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-500 hover:bg-amber-100 hover:text-amber-600 transition-colors"
+                                            aria-label="Edit fasilitas">
+                                            <span class="material-symbols-outlined text-[20px]">edit</span>
+                                        </button>
+                                        <button type="button" data-remove-facility
+                                            class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-error/10 text-error hover:bg-error hover:text-white transition-colors"
+                                            aria-label="Hapus fasilitas">
+                                            <span class="material-symbols-outlined text-[20px]">delete</span>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr data-facility-edit-row class="hidden bg-surface-container-low/50">
+                                    <td colspan="5" class="px-5 py-5">
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 rounded-2xl bg-white p-5">
+                                            <div>
+                                                <label>Nama Fasilitas</label>
+                                                <input data-facility-field="title" name="facilities[{{ $i }}][title]" placeholder="Nama fasilitas" value="{{ data_get($about->facilities, $i.'.title') ?? data_get($defaultFacilities, $i.'.title') }}">
+                                            </div>
+                                            <div class="md:col-span-2">
+                                                <label>Deskripsi</label>
+                                                <textarea data-facility-field="desc" name="facilities[{{ $i }}][desc]" rows="3" placeholder="Deskripsi fasilitas">{{ data_get($about->facilities, $i.'.desc') ?? data_get($defaultFacilities, $i.'.desc') }}</textarea>
+                                            </div>
+                                            <div class="md:col-span-2">
+                                                <label>Gambar</label>
+                                                <input data-facility-image name="facility_images[{{ $i }}]" type="file" accept="image/*">
+                                                <input data-facility-field="image" name="facilities[{{ $i }}][image]" type="hidden" value="{{ $facilityImage }}">
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @endfor
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </details>
@@ -456,6 +536,161 @@ $components = [
 const aboutOverview = document.getElementById('about-overview');
 const aboutEditors = document.getElementById('about-editors');
 const aboutPanels = document.querySelectorAll('[data-about-panel]');
+const facilityTableBody = document.getElementById('facility-table-body');
+const addFacilityButton = document.querySelector('[data-add-facility]');
+
+function facilityRowTemplate() {
+    return `
+        <td class="px-5 py-4">
+            <div class="h-14 w-20 rounded-lg bg-blue-50 text-primary flex items-center justify-center text-[10px] font-bold uppercase">
+                No Image
+            </div>
+        </td>
+        <td class="px-5 py-4">
+            <p data-facility-title class="font-bold text-blue-900 group-hover:text-primary transition-colors">Fasilitas Baru</p>
+            <input data-facility-field="icon" type="hidden" value="domain">
+        </td>
+        <td class="px-5 py-4">
+            <p data-facility-desc class="max-w-xl text-sm text-on-surface-variant font-medium leading-relaxed line-clamp-2">Deskripsi fasilitas akan diperbarui.</p>
+        </td>
+        <td class="px-5 py-4">
+            <span class="flex items-center gap-1.5 text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full w-fit">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Aktif
+            </span>
+        </td>
+        <td class="px-5 py-4 text-right">
+            <button type="button" data-edit-facility
+                class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-500 hover:bg-amber-100 hover:text-amber-600 transition-colors"
+                aria-label="Edit fasilitas">
+                <span class="material-symbols-outlined text-[20px]">edit</span>
+            </button>
+            <button type="button" data-remove-facility
+                class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-error/10 text-error hover:bg-error hover:text-white transition-colors"
+                aria-label="Hapus fasilitas">
+                <span class="material-symbols-outlined text-[20px]">delete</span>
+            </button>
+        </td>
+    `;
+}
+
+function facilityEditRowTemplate() {
+    return `
+        <td colspan="5" class="px-5 py-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 rounded-2xl bg-white p-5">
+                <div>
+                    <label>Nama Fasilitas</label>
+                    <input data-facility-field="title" placeholder="Nama fasilitas" value="Fasilitas Baru">
+                </div>
+                <div class="md:col-span-2">
+                    <label>Deskripsi</label>
+                    <textarea data-facility-field="desc" rows="3" placeholder="Deskripsi fasilitas">Deskripsi fasilitas akan diperbarui.</textarea>
+                </div>
+                <div class="md:col-span-2">
+                    <label>Gambar</label>
+                    <input data-facility-image type="file" accept="image/*">
+                    <input data-facility-field="image" type="hidden" value="">
+                </div>
+            </div>
+        </td>
+    `;
+}
+
+function reindexFacilityRows() {
+    if (!facilityTableBody) {
+        return;
+    }
+
+    facilityTableBody.querySelectorAll('[data-facility-display-row]').forEach((row, index) => {
+        const editRow = row.nextElementSibling?.matches('[data-facility-edit-row]')
+            ? row.nextElementSibling
+            : null;
+
+        row.querySelectorAll('[data-facility-field]').forEach((field) => {
+            field.name = `facilities[${index}][${field.dataset.facilityField}]`;
+        });
+
+        editRow?.querySelectorAll('[data-facility-field]').forEach((field) => {
+            field.name = `facilities[${index}][${field.dataset.facilityField}]`;
+        });
+
+        const imageInput = editRow?.querySelector('[data-facility-image]');
+        if (imageInput) {
+            imageInput.name = `facility_images[${index}]`;
+        }
+    });
+}
+
+addFacilityButton?.addEventListener('click', () => {
+    const displayRow = document.createElement('tr');
+    displayRow.dataset.facilityRow = '';
+    displayRow.dataset.facilityDisplayRow = '';
+    displayRow.className = 'group hover:bg-surface-container-low/30 transition-colors';
+    displayRow.innerHTML = facilityRowTemplate();
+
+    const editRow = document.createElement('tr');
+    editRow.dataset.facilityEditRow = '';
+    editRow.className = 'bg-surface-container-low/50';
+    editRow.innerHTML = facilityEditRowTemplate();
+
+    facilityTableBody.appendChild(displayRow);
+    facilityTableBody.appendChild(editRow);
+    reindexFacilityRows();
+});
+
+facilityTableBody?.addEventListener('click', (event) => {
+    const removeButton = event.target.closest('[data-remove-facility]');
+    const editButton = event.target.closest('[data-edit-facility]');
+
+    if (editButton) {
+        const displayRow = editButton.closest('[data-facility-display-row]');
+        const editRow = displayRow?.nextElementSibling;
+
+        if (editRow?.matches('[data-facility-edit-row]')) {
+            editRow.classList.toggle('hidden');
+        }
+
+        return;
+    }
+
+    if (!removeButton) {
+        return;
+    }
+
+    const displayRow = removeButton.closest('[data-facility-display-row]');
+    const editRow = displayRow?.nextElementSibling;
+
+    if (editRow?.matches('[data-facility-edit-row]')) {
+        editRow.remove();
+    }
+
+    displayRow?.remove();
+    reindexFacilityRows();
+});
+
+facilityTableBody?.addEventListener('input', (event) => {
+    const field = event.target.closest('[data-facility-field]');
+
+    if (!field) {
+        return;
+    }
+
+    const editRow = field.closest('[data-facility-edit-row]');
+    const displayRow = editRow?.previousElementSibling;
+
+    if (!displayRow?.matches('[data-facility-display-row]')) {
+        return;
+    }
+
+    if (field.dataset.facilityField === 'title') {
+        displayRow.querySelector('[data-facility-title]').textContent = field.value || 'Fasilitas Baru';
+    }
+
+    if (field.dataset.facilityField === 'desc') {
+        displayRow.querySelector('[data-facility-desc]').textContent = field.value || 'Deskripsi fasilitas akan diperbarui.';
+    }
+});
+
+reindexFacilityRows();
 
 function showAboutOverview() {
     aboutEditors.classList.add('hidden');

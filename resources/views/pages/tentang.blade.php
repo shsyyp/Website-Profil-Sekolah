@@ -64,11 +64,11 @@ $extracurriculars = $about?->extracurriculars ?: [
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         @foreach ($highlights as $index => $item)
         <div
-            class="bg-surface-container-lowest p-8 rounded-xl shadow-[0_24px_40px_rgba(25,27,34,0.04)] flex items-center gap-6 group hover:translate-y-[-4px] transition-all">
-            <div class="w-16 h-16 rounded-lg {{ $index === 0 ? 'bg-tertiary-container/20 text-tertiary' : ($index === 1 ? 'bg-primary-container/10 text-primary' : 'bg-secondary-container/30 text-secondary') }} flex items-center justify-center">
+            class="bg-surface-container-lowest p-8 rounded-xl shadow-[0_24px_40px_rgba(25,27,34,0.04)] flex items-start gap-6 group hover:translate-y-[-4px] transition-all min-h-[150px]">
+            <div class="w-16 h-16 rounded-lg {{ $index === 0 ? 'bg-tertiary-container/20 text-tertiary' : ($index === 1 ? 'bg-primary-container/10 text-primary' : 'bg-secondary-container/30 text-secondary') }} flex shrink-0 items-center justify-center">
                 <span class="material-symbols-outlined text-3xl">{{ $item['icon'] ?? 'verified' }}</span>
             </div>
-            <div>
+            <div class="pt-2 text-left">
                 <p class="{{ $index === 0 ? 'text-tertiary' : ($index === 1 ? 'text-primary' : 'text-secondary') }} text-xs font-bold uppercase tracking-widest mb-1">{{ $item['label'] ?? 'Status' }}</p>
                 <h3 class="text-xl font-bold font-headline">{{ $item['title'] ?? 'Akreditasi A' }}</h3>
             </div>
@@ -178,10 +178,6 @@ $extracurriculars = $about?->extracurriculars ?: [
                 <img alt="{{ $facility['title'] ?? 'Fasilitas' }}"
                     class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     src="{{ isset($facility['image']) && $facility['image'] ? asset('storage/' . $facility['image']) : ($defaultFacilityImages[$index] ?? $defaultFacilityImages[0]) }}" />
-                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                <div class="absolute bottom-4 left-4 text-white">
-                    <span class="material-symbols-outlined text-3xl">{{ $facility['icon'] ?? 'biotech' }}</span>
-                </div>
             </div>
             <h4 class="text-lg font-bold font-headline group-hover:text-primary transition-colors">{{ $facility['title'] ?? 'Fasilitas' }}</h4>
             <p class="text-sm text-on-surface-variant">{{ $facility['desc'] ?? 'Deskripsi fasilitas akan diperbarui.' }}</p>

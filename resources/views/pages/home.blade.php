@@ -18,6 +18,37 @@ $fasilitasItems = $homepage?->fasilitas ?: [
     ['title' => 'Sport Center', 'desc' => 'Lapangan basket indoor, futsal, dan area atletik standar nasional.', 'icon' => 'sports_basketball'],
 ];
 
+$sharedFacilities = collect($about?->facilities ?? [])
+    ->filter(fn ($facility) => filled($facility['title'] ?? null))
+    ->take(4)
+    ->values()
+    ->map(fn ($facility) => [
+        'title' => $facility['title'] ?? 'Fasilitas',
+        'desc' => $facility['desc'] ?? ($facility['description'] ?? 'Deskripsi fasilitas akan diperbarui.'),
+        'icon' => $facility['icon'] ?? 'domain',
+        'image' => $facility['image'] ?? null,
+    ])
+    ->all();
+
+if (count($sharedFacilities) >= 4) {
+    $fasilitasItems = $sharedFacilities;
+}
+
+$facilityMainImage = $homepage?->facility_main_image
+    ? asset('storage/' . $homepage->facility_main_image)
+    : 'https://lh3.googleusercontent.com/aida-public/AB6AXuD417E3dgIUxQGWqRCoqdXqxu8yR4a30EnLqcC9rIDImv3s0LE6a8tkHH60K9VKoEjmn4Am3tWOqh9jp8EZJdt9-saTV9Z7N1azsnBw36gtoMMIgPMZOtugkLboFU69n3QwrntuGihtM_Lizgvo84XzLNwIYK8fqB0q8bldWxcbtE_IKg7byygsjFzQg40FdYiCRV7eezm4Dlqbzc9Ks19xtlvvZ966NB8fe-4Hgt3En2C9rImVzmR180hnRhoO-bFo3Vl-ykkxSQp0';
+
+$facilitySideImage = $homepage?->facility_side_image
+    ? asset('storage/' . $homepage->facility_side_image)
+    : 'https://lh3.googleusercontent.com/aida-public/AB6AXuBfpUQT7Bp-kRATE-a2hTWVD1CZNqGsxKdLz2LnbrR0DZju1OCziqPYz4b--UT5MeSSdMre87oIxJcXRAmEFpg8IYMlyCuugv_oi05yiTMNpCLkr-051IYwXmARPFsmzFwrFCziV8iOldqF6MHM3hejCgIQWTEg4IXFNxNWmwvjwQtpNATFtnvnbtob2WRTetjrZT9h22QyjGkl8yP22GL7GI9a2OrfgPk15GRyHzsKv24X2wTqqBPln8WX81gHYUGqCRIwI4fHFY1d';
+
+$facilityCardImages = [
+    data_get($fasilitasItems, '0.image') ? asset('storage/' . data_get($fasilitasItems, '0.image')) : $facilityMainImage,
+    data_get($fasilitasItems, '1.image') ? asset('storage/' . data_get($fasilitasItems, '1.image')) : 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=1200&q=80',
+    data_get($fasilitasItems, '2.image') ? asset('storage/' . data_get($fasilitasItems, '2.image')) : 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=1200&q=80',
+    data_get($fasilitasItems, '3.image') ? asset('storage/' . data_get($fasilitasItems, '3.image')) : $facilitySideImage,
+];
+
 $successImage = $homepage?->success_image
     ? asset('storage/' . $homepage->success_image)
     : 'https://lh3.googleusercontent.com/aida-public/AB6AXuDSEccOsqSQv6m5MulAy7Nai2PfFp8lKz-h91phjw5wssfC3smtyVexwy_Ow0nA1lCuM9flw1DdmR5TWSyZs56dIUnjLILXGeLbVgzUYMBdbr92lwAbffStPJtyPaFd3V3r2pKQ0EXFGyaTQyEyuNcJZSRXnoXq4-Gj4GBP7y2IVSJzdlYAUNiN98WWyFnuIsXNWm6MhtTjqoL15p0HF3SLiAny79rJ4rHIpXdFO6715mKQpwPbm-23nCXeX4Gazj3SDdeAZCs6jtf8';
@@ -79,7 +110,6 @@ if ($profileVideoUrl && preg_match('~(?:youtube\.com/(?:watch\?v=|embed/|shorts/
                     src="{{ $successImage }}" />
                 <div
                     class="absolute bottom-12 left-12 right-12 bg-primary-container/90 backdrop-blur-lg p-6 rounded-md text-on-primary-container">
-                    <p class="text-sm uppercase tracking-widest font-bold opacity-80 mb-2">Success Story</p>
                     <p class="text-xl font-bold leading-tight">{{ $homepage?->success_title ?? 'Mencetak 500+ Alumni di Universitas Terbaik Dunia' }}</p>
                     <p class="text-sm opacity-80 mt-2">{{ $homepage?->success_desc ?? 'Cerita sukses siswa dan alumni SMAN Pintar Provinsi Riau.' }}</p>
                 </div>
@@ -159,12 +189,8 @@ document.addEventListener('keydown', (event) => {
                 @foreach ($tradisiItems as $index => $item)
                 <div
                     class="p-8 bg-surface-container-lowest rounded-md shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-                    <div class="flex items-center justify-between {{ $index === 2 ? 'mb-4' : '' }}">
-                        <span class="material-symbols-outlined text-tertiary text-4xl {{ $index === 2 ? '' : 'mb-4' }}">{{ $item['icon'] ?? ['school', 'home', 'emoji_events', 'groups'][$index] ?? 'verified' }}</span>
-                        @if ($index === 2)
-                        <span
-                            class="px-3 py-1 bg-tertiary-container/20 text-on-tertiary-container rounded-full text-[10px] font-bold uppercase">Prestasi</span>
-                        @endif
+                    <div class="flex items-center justify-between">
+                        <span class="material-symbols-outlined text-tertiary text-4xl mb-4">{{ $item['icon'] ?? ['school', 'home', 'emoji_events', 'groups'][$index] ?? 'verified' }}</span>
                     </div>
                     <h3 class="text-xl font-bold text-primary mb-3">{{ $item['title'] ?? 'Keunggulan SMAN Pintar' }}</h3>
                     <p class="text-on-surface-variant text-sm leading-relaxed">{{ $item['desc'] ?? 'Deskripsi konten keunggulan akan diperbarui.' }}</p>
@@ -187,44 +213,55 @@ document.addEventListener('keydown', (event) => {
                 <img alt="Library"
                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     data-alt="Wide shot of a modern school library with minimalist wooden shelves and contemporary seating areas"
-                    src="{{ $homepage?->facility_main_image ? asset('storage/' . $homepage->facility_main_image) : 'https://lh3.googleusercontent.com/aida-public/AB6AXuD417E3dgIUxQGWqRCoqdXqxu8yR4a30EnLqcC9rIDImv3s0LE6a8tkHH60K9VKoEjmn4Am3tWOqh9jp8EZJdt9-saTV9Z7N1azsnBw36gtoMMIgPMZOtugkLboFU69n3QwrntuGihtM_Lizgvo84XzLNwIYK8fqB0q8bldWxcbtE_IKg7byygsjFzQg40FdYiCRV7eezm4Dlqbzc9Ks19xtlvvZ966NB8fe-4Hgt3En2C9rImVzmR180hnRhoO-bFo3Vl-ykkxSQp0' }}" />
+                    src="{{ $facilityCardImages[0] }}" />
                 <div
                     class="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/20 to-transparent p-10 flex flex-col justify-end">
-                    <span class="material-symbols-outlined text-tertiary-fixed text-4xl mb-4"
-                        data-weight="fill">{{ $fasilitasItems[0]['icon'] ?? 'local_library' }}</span>
                     <h3 class="text-2xl font-bold text-white mb-2">{{ $fasilitasItems[0]['title'] ?? 'Perpustakaan Digital' }}</h3>
                     <p class="text-white/80 max-w-md">{{ $fasilitasItems[0]['desc'] ?? 'Akses ke ribuan jurnal internasional dan koleksi buku fisik terlengkap di Riau.' }}</p>
                 </div>
             </div>
             <div class="col-span-12 md:col-span-6 grid grid-cols-2 grid-rows-2 gap-6">
                 <div
-                    class="bg-surface-container-lowest p-8 rounded-md shadow-sm flex flex-col justify-between border-t-4 border-tertiary">
-                    <span class="material-symbols-outlined text-primary text-3xl">{{ $fasilitasItems[1]['icon'] ?? 'science' }}</span>
-                    <div>
-                        <h4 class="font-bold text-primary text-lg mb-1">{{ $fasilitasItems[1]['title'] ?? 'Lab Terpadu' }}</h4>
-                        <p class="text-xs text-secondary leading-relaxed">{{ $fasilitasItems[1]['desc'] ?? 'Fisika, Kimia, Biologi, dan Lab Komputer terbaru.' }}</p>
+                    class="relative overflow-hidden rounded-md shadow-sm group">
+                    <img alt="{{ $fasilitasItems[1]['title'] ?? 'Lab Terpadu' }}"
+                        class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        src="{{ $facilityCardImages[1] }}" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/35 to-primary/10"></div>
+                    <div class="relative z-10 flex h-full flex-col justify-between p-8 text-white">
+                        <span></span>
+                        <div>
+                            <h4 class="font-bold text-lg mb-1">{{ $fasilitasItems[1]['title'] ?? 'Lab Terpadu' }}</h4>
+                            <p class="text-xs text-white/80 leading-relaxed">{{ $fasilitasItems[1]['desc'] ?? 'Fisika, Kimia, Biologi, dan Lab Komputer terbaru.' }}</p>
+                        </div>
                     </div>
                 </div>
                 <div
-                    class="bg-primary-container p-8 rounded-md shadow-sm flex flex-col justify-between text-on-primary-container">
-                    <span class="material-symbols-outlined text-3xl">{{ $fasilitasItems[2]['icon'] ?? 'apartment' }}</span>
-                    <div>
-                        <h4 class="font-bold text-lg mb-1">{{ $fasilitasItems[2]['title'] ?? 'Asrama Modern' }}</h4>
-                        <p class="text-xs opacity-80 leading-relaxed">{{ $fasilitasItems[2]['desc'] ?? 'Kamar yang nyaman dengan pengawasan 24 jam.' }}</p>
+                    class="relative overflow-hidden rounded-md shadow-sm group">
+                    <img alt="{{ $fasilitasItems[2]['title'] ?? 'Asrama Modern' }}"
+                        class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        src="{{ $facilityCardImages[2] }}" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-primary-container/95 via-primary-container/45 to-primary-container/10"></div>
+                    <div class="relative z-10 flex h-full flex-col justify-between p-8 text-on-primary-container">
+                        <span></span>
+                        <div>
+                            <h4 class="font-bold text-lg mb-1">{{ $fasilitasItems[2]['title'] ?? 'Asrama Modern' }}</h4>
+                            <p class="text-xs opacity-90 leading-relaxed">{{ $fasilitasItems[2]['desc'] ?? 'Kamar yang nyaman dengan pengawasan 24 jam.' }}</p>
+                        </div>
                     </div>
                 </div>
-                <div class="col-span-2 bg-surface-container-lowest p-8 rounded-md shadow-sm flex items-center gap-6">
-                    <div class="w-20 h-20 rounded-md overflow-hidden flex-shrink-0">
-                        <img alt="Sports" class="w-full h-full object-cover"
-                            data-alt="Outdoor athletic track and sports field at a modern school campus"
-                            src="{{ $homepage?->facility_side_image ? asset('storage/' . $homepage->facility_side_image) : 'https://lh3.googleusercontent.com/aida-public/AB6AXuBfpUQT7Bp-kRATE-a2hTWVD1CZNqGsxKdLz2LnbrR0DZju1OCziqPYz4b--UT5MeSSdMre87oIxJcXRAmEFpg8IYMlyCuugv_oi05yiTMNpCLkr-051IYwXmARPFsmzFwrFCziV8iOldqF6MHM3hejCgIQWTEg4IXFNxNWmwvjwQtpNATFtnvnbtob2WRTetjrZT9h22QyjGkl8yP22GL7GI9a2OrfgPk15GRyHzsKv24X2wTqqBPln8WX81gHYUGqCRIwI4fHFY1d' }}" />
-                    </div>
-                    <div>
-                        <div class="flex items-center gap-2 mb-1">
-                            <span class="material-symbols-outlined text-primary text-2xl">{{ $fasilitasItems[3]['icon'] ?? 'sports_basketball' }}</span>
-                            <h4 class="font-bold text-primary text-lg">{{ $fasilitasItems[3]['title'] ?? 'Sport Center' }}</h4>
+                <div class="col-span-2 relative overflow-hidden rounded-md shadow-sm group">
+                    <img alt="{{ $fasilitasItems[3]['title'] ?? 'Sport Center' }}"
+                        class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        data-alt="Outdoor athletic track and sports field at a modern school campus"
+                        src="{{ $facilityCardImages[3] }}" />
+                    <div class="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/45 to-transparent"></div>
+                    <div class="relative z-10 flex h-full items-end justify-start p-8 text-white">
+                        <div class="max-w-md">
+                            <div class="flex items-center gap-2 mb-2">
+                                <h4 class="font-bold text-lg">{{ $fasilitasItems[3]['title'] ?? 'Sport Center' }}</h4>
+                            </div>
+                            <p class="text-sm text-white/80">{{ $fasilitasItems[3]['desc'] ?? 'Lapangan basket indoor, futsal, dan area atletik standar nasional.' }}</p>
                         </div>
-                        <p class="text-sm text-secondary">{{ $fasilitasItems[3]['desc'] ?? 'Lapangan basket indoor, futsal, dan area atletik standar nasional.' }}</p>
                     </div>
                 </div>
             </div>

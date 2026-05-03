@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 // Wajib import modelnya
 use App\Models\Berita;
 use App\Models\Alumni;
+use App\Models\AboutPage;
 use App\Models\PMB;
 use App\Models\Homepage;
 
@@ -16,6 +17,7 @@ class HomeController extends Controller
     public function index()
     {
         $homepage = Homepage::first();
+        $about    = AboutPage::first();
         $pmb      = PMB::first();
         $newsLimit = max(1, min(6, (int) ($homepage?->news_limit ?? 3)));
 
@@ -34,6 +36,6 @@ class HomeController extends Controller
 
         $alumni = $alumniQuery->take(3)->get();
 
-        return view('pages.home', compact('homepage', 'pmb', 'berita', 'alumni'));
+        return view('pages.home', compact('homepage', 'about', 'pmb', 'berita', 'alumni'));
     }
 }

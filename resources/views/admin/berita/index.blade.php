@@ -3,6 +3,38 @@
 @section('title', 'Manajemen Berita | Admin SMAN Pintar')
 
 @section('content')
+@php
+    $newsPageComponents = [
+        [
+            'id' => 'news-hero-section',
+            'icon' => 'newspaper',
+            'title' => 'Hero Halaman',
+            'content' => $settings->hero_title ?? 'Warta SMAN Pintar',
+            'meta' => $settings->hero_breadcrumb_label ?? 'Berita',
+        ],
+        [
+            'id' => 'news-filter-section',
+            'icon' => 'filter_alt',
+            'title' => 'Filter & Pencarian',
+            'content' => $settings->search_placeholder ?? 'Ketik kata kunci...',
+            'meta' => $settings->filter_all_label ?? 'Semua',
+        ],
+        [
+            'id' => 'news-sidebar-section',
+            'icon' => 'view_sidebar',
+            'title' => 'Sidebar',
+            'content' => $settings->popular_title ?? 'Berita Populer',
+            'meta' => $settings->categories_title ?? 'Kategori',
+        ],
+        [
+            'id' => 'news-newsletter-section',
+            'icon' => 'mail',
+            'title' => 'Newsletter',
+            'content' => $settings->newsletter_title ?? 'Berlangganan Warta',
+            'meta' => $settings->newsletter_button_text ?? 'Daftar Sekarang',
+        ],
+    ];
+@endphp
 
 {{-- Alert Success --}}
 @if(session('success'))
@@ -11,6 +43,216 @@
     {{ session('success') }}
 </div>
 @endif
+
+{{-- Pengaturan Tampilan Halaman Berita --}}
+<form action="{{ route('admin.berita.page-setting.update') }}" method="POST" class="mb-12 space-y-8">
+    @csrf
+
+    <div id="news-page-overview" class="space-y-8">
+        <section class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div class="space-y-1">
+                <span class="text-[11px] font-bold tracking-[0.2em] text-tertiary uppercase">Pengelolaan Halaman</span>
+                <h2 class="text-4xl font-extrabold text-primary tracking-tight font-headline">Tampilan Berita</h2>
+                <p class="text-on-surface-variant text-lg">Kelola teks yang tampil di halaman berita publik.</p>
+            </div>
+            <button type="submit"
+                class="bg-gradient-to-br from-[#00357f] to-[#004aad] text-white px-8 py-4 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all duration-200">
+                <span class="material-symbols-outlined">save</span>
+                Simpan Perubahan
+            </button>
+        </section>
+
+        <section class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-surface-container-low/50">
+                            <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Preview</th>
+                            <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Komponen</th>
+                            <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Konten Utama</th>
+                            <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Status</th>
+                            <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-surface-container">
+                        @foreach ($newsPageComponents as $component)
+                        <tr class="group hover:bg-surface-container-low/30 transition-colors">
+                            <td class="px-8 py-4">
+                                <div class="w-20 h-14 rounded-lg bg-blue-50 text-primary flex items-center justify-center">
+                                    <span class="material-symbols-outlined">{{ $component['icon'] }}</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <p class="font-bold text-blue-900 group-hover:text-primary transition-colors">{{ $component['title'] }}</p>
+                                <p class="text-xs text-slate-400 mt-1">{{ $component['meta'] }}</p>
+                            </td>
+                            <td class="px-6 py-4">
+                                <p class="max-w-xl text-sm text-on-surface-variant font-medium leading-relaxed line-clamp-2">{{ $component['content'] }}</p>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="flex items-center gap-1.5 text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full w-fit">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Aktif
+                                </span>
+                            </td>
+                            <td class="px-8 py-4 text-right">
+                                <a href="#{{ $component['id'] }}" data-news-edit-target="{{ $component['id'] }}"
+                                    class="inline-flex w-9 h-9 items-center justify-center rounded-xl bg-slate-100 text-slate-500 hover:bg-amber-100 hover:text-amber-600 transition-all">
+                                    <span class="material-symbols-outlined text-[20px]">edit</span>
+                                </a>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <section id="news-page-editors" class="hidden max-w-4xl space-y-4">
+        <details id="news-hero-section" data-news-panel class="group bg-surface-container-lowest rounded-2xl shadow-sm border border-slate-100 overflow-hidden" open>
+            <summary class="list-none p-6 flex items-center justify-between gap-4">
+                <div>
+                    <span class="text-xs font-bold text-tertiary uppercase tracking-widest mb-1 block">Component 01</span>
+                    <h3 class="text-2xl font-headline font-extrabold text-primary">Hero Halaman</h3>
+                </div>
+                <button type="button" data-news-back class="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                    Kembali
+                </button>
+            </summary>
+            <div class="border-t border-slate-100 p-6 lg:p-8 bg-surface-container-low/40">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-slate-700">Label Breadcrumb</label>
+                        <input name="hero_breadcrumb_label" type="text"
+                            class="w-full bg-surface-container-lowest border-none focus:ring-2 focus:ring-primary rounded-xl px-4 py-3 font-medium text-on-surface"
+                            value="{{ $settings->hero_breadcrumb_label ?? 'Berita' }}">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-slate-700">Judul Hero</label>
+                        <input name="hero_title" type="text"
+                            class="w-full bg-surface-container-lowest border-none focus:ring-2 focus:ring-primary rounded-xl px-4 py-3 font-medium text-on-surface"
+                            value="{{ $settings->hero_title ?? 'Warta SMAN Pintar' }}">
+                    </div>
+                    <div class="md:col-span-2 space-y-2">
+                        <label class="text-sm font-bold text-slate-700">Deskripsi Hero</label>
+                        <textarea name="hero_description" rows="4"
+                            class="w-full bg-surface-container-lowest border-none focus:ring-2 focus:ring-primary rounded-xl px-4 py-3 text-on-surface-variant leading-relaxed">{{ $settings->hero_description ?? 'Menyajikan informasi terbaru seputar prestasi, kegiatan kesiswaan, dan pengumuman resmi dari lingkungan sekolah.' }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </details>
+
+        <details id="news-filter-section" data-news-panel class="hidden group bg-surface-container-lowest rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <summary class="list-none p-6 flex items-center justify-between gap-4">
+                <div>
+                    <span class="text-xs font-bold text-tertiary uppercase tracking-widest mb-1 block">Component 02</span>
+                    <h3 class="text-2xl font-headline font-extrabold text-primary">Filter & Pencarian</h3>
+                </div>
+                <button type="button" data-news-back class="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                    Kembali
+                </button>
+            </summary>
+            <div class="border-t border-slate-100 p-6 lg:p-8 bg-surface-container-low/40">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-slate-700">Label Filter Semua</label>
+                        <input name="filter_all_label" type="text"
+                            class="w-full bg-surface-container-lowest border-none focus:ring-2 focus:ring-primary rounded-xl px-4 py-3 font-medium text-on-surface"
+                            value="{{ $settings->filter_all_label ?? 'Semua' }}">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-slate-700">Placeholder Pencarian</label>
+                        <input name="search_placeholder" type="text"
+                            class="w-full bg-surface-container-lowest border-none focus:ring-2 focus:ring-primary rounded-xl px-4 py-3 font-medium text-on-surface"
+                            value="{{ $settings->search_placeholder ?? 'Ketik kata kunci...' }}">
+                    </div>
+                </div>
+            </div>
+        </details>
+
+        <details id="news-sidebar-section" data-news-panel class="hidden group bg-surface-container-lowest rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <summary class="list-none p-6 flex items-center justify-between gap-4">
+                <div>
+                    <span class="text-xs font-bold text-tertiary uppercase tracking-widest mb-1 block">Component 03</span>
+                    <h3 class="text-2xl font-headline font-extrabold text-primary">Sidebar</h3>
+                </div>
+                <button type="button" data-news-back class="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                    Kembali
+                </button>
+            </summary>
+            <div class="border-t border-slate-100 p-6 lg:p-8 bg-surface-container-low/40">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-slate-700">Judul Berita Populer</label>
+                        <input name="popular_title" type="text"
+                            class="w-full bg-surface-container-lowest border-none focus:ring-2 focus:ring-primary rounded-xl px-4 py-3 font-medium text-on-surface"
+                            value="{{ $settings->popular_title ?? 'Berita Populer' }}">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-slate-700">Judul Kategori</label>
+                        <input name="categories_title" type="text"
+                            class="w-full bg-surface-container-lowest border-none focus:ring-2 focus:ring-primary rounded-xl px-4 py-3 font-medium text-on-surface"
+                            value="{{ $settings->categories_title ?? 'Kategori' }}">
+                    </div>
+                </div>
+            </div>
+        </details>
+
+        <details id="news-newsletter-section" data-news-panel class="hidden group bg-surface-container-lowest rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <summary class="list-none p-6 flex items-center justify-between gap-4">
+                <div>
+                    <span class="text-xs font-bold text-tertiary uppercase tracking-widest mb-1 block">Component 04</span>
+                    <h3 class="text-2xl font-headline font-extrabold text-primary">Newsletter</h3>
+                </div>
+                <button type="button" data-news-back class="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                    Kembali
+                </button>
+            </summary>
+            <div class="border-t border-slate-100 p-6 lg:p-8 bg-surface-container-low/40">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-slate-700">Judul Newsletter</label>
+                        <input name="newsletter_title" type="text"
+                            class="w-full bg-surface-container-lowest border-none focus:ring-2 focus:ring-primary rounded-xl px-4 py-3 font-medium text-on-surface"
+                            value="{{ $settings->newsletter_title ?? 'Berlangganan Warta' }}">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-slate-700">Placeholder Email</label>
+                        <input name="newsletter_placeholder" type="text"
+                            class="w-full bg-surface-container-lowest border-none focus:ring-2 focus:ring-primary rounded-xl px-4 py-3 font-medium text-on-surface"
+                            value="{{ $settings->newsletter_placeholder ?? 'Email Anda' }}">
+                    </div>
+                    <div class="md:col-span-2 space-y-2">
+                        <label class="text-sm font-bold text-slate-700">Deskripsi Newsletter</label>
+                        <textarea name="newsletter_description" rows="3"
+                            class="w-full bg-surface-container-lowest border-none focus:ring-2 focus:ring-primary rounded-xl px-4 py-3 text-on-surface-variant leading-relaxed">{{ $settings->newsletter_description ?? 'Dapatkan update berita terbaru SMAN Pintar langsung ke email Anda setiap minggu.' }}</textarea>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-slate-700">Teks Tombol Newsletter</label>
+                        <input name="newsletter_button_text" type="text"
+                            class="w-full bg-surface-container-lowest border-none focus:ring-2 focus:ring-primary rounded-xl px-4 py-3 font-medium text-on-surface"
+                            value="{{ $settings->newsletter_button_text ?? 'Daftar Sekarang' }}">
+                    </div>
+                </div>
+            </div>
+        </details>
+
+        <div class="bg-surface-container-lowest rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-8 py-6">
+            <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end sm:items-center">
+                <button type="button" data-news-back class="px-6 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-100 transition-colors">
+                    Batal
+                </button>
+                <button type="submit" class="bg-primary text-on-primary px-8 py-3 rounded-xl font-bold shadow-lg hover:scale-105 transition-all">
+                    Simpan Tampilan Berita
+                </button>
+            </div>
+        </div>
+    </section>
+</form>
 
 {{-- Header Section --}}
 <section class="flex justify-between items-end mb-10">
@@ -204,6 +446,47 @@
 
 {{-- Script Logika Modal --}}
 <script>
+const newsPageOverview = document.getElementById('news-page-overview');
+const newsPageEditors = document.getElementById('news-page-editors');
+const newsPagePanels = document.querySelectorAll('[data-news-panel]');
+
+function showNewsPageOverview() {
+    newsPageEditors.classList.add('hidden');
+    newsPageOverview.classList.remove('hidden');
+    newsPagePanels.forEach((panel) => panel.classList.add('hidden'));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showNewsPageEditor(panelId) {
+    const target = document.getElementById(panelId);
+
+    if (!target) {
+        return;
+    }
+
+    newsPageOverview.classList.add('hidden');
+    newsPageEditors.classList.remove('hidden');
+    newsPagePanels.forEach((panel) => panel.classList.add('hidden'));
+    target.classList.remove('hidden');
+    target.open = true;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.querySelectorAll('[data-news-edit-target]').forEach((link) => {
+    link.addEventListener('click', (event) => {
+        event.preventDefault();
+        showNewsPageEditor(link.dataset.newsEditTarget);
+    });
+});
+
+document.querySelectorAll('[data-news-back]').forEach((button) => {
+    button.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        showNewsPageOverview();
+    });
+});
+
 let formToSubmit = null;
 const deleteModal = document.getElementById('deleteModal');
 

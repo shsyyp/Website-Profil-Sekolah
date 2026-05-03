@@ -63,6 +63,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/tentang', [AboutPageController::class, 'update'])->name('admin.about.update');
 
         // CRUD Management Content
+        Route::post('/berita/page-setting', [AdminBeritaController::class, 'updatePageSetting'])->name('admin.berita.page-setting.update');
         Route::resource('berita', AdminBeritaController::class);
         Route::resource('alumni', AdminAlumniController::class);
         Route::resource('chatbot', ChatbotController::class);

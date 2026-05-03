@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Berita;
+use App\Models\NewsPageSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -15,8 +16,36 @@ class BeritaController extends Controller
         $totalBerita = Berita::count();
         $totalPublished = Berita::where('status', 'publish')->count();
         $totalDraft = Berita::where('status', 'draft')->count();
+        $settings = NewsPageSetting::first() ?? new NewsPageSetting();
 
-        return view('admin.berita.index', compact('berita', 'totalBerita', 'totalPublished', 'totalDraft'));
+        return view('admin.berita.index', compact('berita', 'totalBerita', 'totalPublished', 'totalDraft', 'settings'));
+    }
+
+    public function updatePageSetting(Request $request)
+    {
+        $data = $request->validate([
+            'hero_breadcrumb_label' => 'nullable|string|max:255',
+            'hero_title' => 'nullable|string|max:255',
+            'hero_description' => 'nullable|string',
+            'filter_all_label' => 'nullable|string|max:255',
+            'search_placeholder' => 'nullable|string|max:255',
+            'popular_title' => 'nullable|string|max:255',
+            'categories_title' => 'nullable|string|max:255',
+            'newsletter_title' => 'nullable|string|max:255',
+            'newsletter_description' => 'nullable|string',
+            'newsletter_placeholder' => 'nullable|string|max:255',
+            'newsletter_button_text' => 'nullable|string|max:255',
+        ]);
+
+        $settings = NewsPageSetting::first();
+
+        if ($settings) {
+            $settings->update($data);
+        } else {
+            NewsPageSetting::create($data);
+        }
+
+        return back()->with('success', 'Tampilan halaman berita berhasil diupdate!');
     }
 
     // Menampilkan form tambah berita

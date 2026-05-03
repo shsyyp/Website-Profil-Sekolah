@@ -3,6 +3,19 @@
 @section('title', 'Warta SMAN Pintar - Portal Berita Sekolah')
 
 @section('content')
+@php
+    $heroBreadcrumbLabel = $settings->hero_breadcrumb_label ?? 'Berita';
+    $heroTitle = $settings->hero_title ?? 'Warta SMAN Pintar';
+    $heroDescription = $settings->hero_description ?? 'Menyajikan informasi terbaru seputar prestasi, kegiatan kesiswaan, dan pengumuman resmi dari lingkungan sekolah.';
+    $filterAllLabel = $settings->filter_all_label ?? 'Semua';
+    $searchPlaceholder = $settings->search_placeholder ?? 'Ketik kata kunci...';
+    $popularTitle = $settings->popular_title ?? 'Berita Populer';
+    $categoriesTitle = $settings->categories_title ?? 'Kategori';
+    $newsletterTitle = $settings->newsletter_title ?? 'Berlangganan Warta';
+    $newsletterDescription = $settings->newsletter_description ?? 'Dapatkan update berita terbaru SMAN Pintar langsung ke email Anda setiap minggu.';
+    $newsletterPlaceholder = $settings->newsletter_placeholder ?? 'Email Anda';
+    $newsletterButtonText = $settings->newsletter_button_text ?? 'Daftar Sekarang';
+@endphp
 
 <div class="pt-24 pb-20">
 
@@ -12,12 +25,11 @@
             <nav class="flex items-center gap-2 text-sm font-medium text-outline">
                 <a class="hover:text-primary transition-colors" href="{{ url('/') }}">Beranda</a>
                 <span class="material-symbols-outlined text-[16px]">chevron_right</span>
-                <span class="text-primary font-semibold">Berita</span>
+                <span class="text-primary font-semibold">{{ $heroBreadcrumbLabel }}</span>
             </nav>
-            <h1 class="text-5xl font-extrabold font-headline tracking-tight text-primary mt-4">Warta SMAN Pintar</h1>
+            <h1 class="text-5xl font-extrabold font-headline tracking-tight text-primary mt-4">{{ $heroTitle }}</h1>
             <p class="text-on-surface-variant max-w-2xl mt-2 leading-relaxed">
-                Menyajikan informasi terbaru seputar prestasi, kegiatan kesiswaan, dan pengumuman resmi dari lingkungan
-                sekolah.
+                {{ $heroDescription }}
             </p>
         </div>
     </header>
@@ -28,7 +40,7 @@
             class="bg-surface-container-lowest p-4 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.02)] flex flex-col md:flex-row justify-between items-center gap-6">
             <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 no-scrollbar">
                 <a href="{{ route('berita', request()->only('q')) }}"
-                    class="px-6 py-2 rounded-full {{ empty($kategoriAktif) ? 'bg-primary text-on-primary font-semibold' : 'bg-surface-container-high text-on-surface-variant hover:bg-primary-container hover:text-on-primary font-medium' }} text-sm transition-all whitespace-nowrap">Semua</a>
+                    class="px-6 py-2 rounded-full {{ empty($kategoriAktif) ? 'bg-primary text-on-primary font-semibold' : 'bg-surface-container-high text-on-surface-variant hover:bg-primary-container hover:text-on-primary font-medium' }} text-sm transition-all whitespace-nowrap">{{ $filterAllLabel }}</a>
                 @foreach ($kategoriBerita as $kategori)
                 <a href="{{ route('berita', array_filter(['kategori' => $kategori->kategori, 'q' => $keyword])) }}"
                     class="px-6 py-2 rounded-full {{ $kategoriAktif === $kategori->kategori ? 'bg-primary text-on-primary font-semibold' : 'bg-surface-container-high text-on-surface-variant hover:bg-primary-container hover:text-on-primary font-medium' }} text-sm transition-all whitespace-nowrap">{{ $kategori->kategori }}</a>
@@ -42,7 +54,7 @@
                     class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">search</span>
                 <input name="q" value="{{ $keyword }}"
                     class="w-full pl-12 pr-4 py-3 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary-container transition-all"
-                    placeholder="Ketik kata kunci..." type="text" />
+                    placeholder="{{ $searchPlaceholder }}" type="text" />
             </form>
         </div>
     </section>
@@ -102,7 +114,7 @@
             <section class="bg-surface-container-low rounded-xl p-8">
                 <h2 class="text-xl font-bold font-headline text-primary mb-6 flex items-center gap-2">
                     <span class="material-symbols-outlined text-tertiary">trending_up</span>
-                    Berita Populer
+                    {{ $popularTitle }}
                 </h2>
                 <div class="space-y-6">
                     @forelse ($beritaPopuler as $item)
@@ -126,7 +138,7 @@
 
             {{-- Categories --}}
             <section class="bg-surface-container-lowest border border-outline-variant/10 rounded-xl p-8">
-                <h2 class="text-xl font-bold font-headline text-primary mb-6">Kategori</h2>
+                <h2 class="text-xl font-bold font-headline text-primary mb-6">{{ $categoriesTitle }}</h2>
                 <div class="flex flex-wrap gap-2">
                     @forelse ($kategoriBerita as $kategori)
                     <a class="px-4 py-2 bg-surface-container rounded-lg text-sm font-semibold text-on-surface-variant hover:bg-primary-fixed hover:text-on-primary-fixed transition-all flex items-center gap-2"
@@ -142,16 +154,14 @@
             {{-- Newsletter / CTA --}}
             <section class="bg-primary p-8 rounded-xl text-white relative overflow-hidden">
                 <div class="relative z-10">
-                    <h2 class="text-2xl font-bold font-headline mb-4">Berlangganan Warta</h2>
-                    <p class="text-blue-100 text-sm mb-6">Dapatkan update berita terbaru SMAN Pintar langsung ke email
-                        Anda setiap minggu.</p>
+                    <h2 class="text-2xl font-bold font-headline mb-4">{{ $newsletterTitle }}</h2>
+                    <p class="text-blue-100 text-sm mb-6">{{ $newsletterDescription }}</p>
                     <form class="space-y-3">
                         <input
                             class="w-full px-4 py-3 rounded-lg bg-white/10 border-white/20 focus:ring-2 focus:ring-tertiary placeholder:text-blue-200 text-white border-none"
-                            placeholder="Email Anda" type="email" />
+                            placeholder="{{ $newsletterPlaceholder }}" type="email" />
                         <button type="button"
-                            class="w-full bg-tertiary-fixed text-on-tertiary-fixed font-bold py-3 rounded-lg hover:scale-105 active:scale-95 transition-transform">Daftar
-                            Sekarang</button>
+                            class="w-full bg-tertiary-fixed text-on-tertiary-fixed font-bold py-3 rounded-lg hover:scale-105 active:scale-95 transition-transform">{{ $newsletterButtonText }}</button>
                     </form>
                 </div>
                 <span

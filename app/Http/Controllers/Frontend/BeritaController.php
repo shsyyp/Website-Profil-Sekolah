@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Berita;
+use App\Models\NewsPageSetting;
 use Illuminate\Http\Request;
 
 class BeritaController extends Controller
@@ -34,12 +35,15 @@ class BeritaController extends Controller
             ->orderBy('kategori')
             ->get();
 
+        $settings = NewsPageSetting::first() ?? new NewsPageSetting();
+
         return view('pages.berita', compact(
             'daftar_berita',
             'beritaPopuler',
             'kategoriBerita',
             'kategoriAktif',
-            'keyword'
+            'keyword',
+            'settings'
         ));
     }
 }

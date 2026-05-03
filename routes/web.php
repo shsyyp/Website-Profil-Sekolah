@@ -64,6 +64,7 @@ Route::middleware('auth')->group(function () {
 
         // CRUD Management Content
         Route::post('/berita/page-setting', [AdminBeritaController::class, 'updatePageSetting'])->name('admin.berita.page-setting.update');
+        Route::post('/alumni/page-setting', [AdminAlumniController::class, 'updatePageSetting'])->name('admin.alumni.page-setting.update');
         Route::resource('berita', AdminBeritaController::class);
         Route::resource('alumni', AdminAlumniController::class);
         Route::resource('chatbot', ChatbotController::class);

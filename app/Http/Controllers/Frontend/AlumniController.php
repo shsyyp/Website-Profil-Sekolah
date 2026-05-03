@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Alumni;
+use App\Models\AlumniPageSetting;
 
 class AlumniController extends Controller
 {
@@ -44,13 +45,15 @@ class AlumniController extends Controller
         $featuredAlumni = $daftar_alumni->first();
         $totalAlumni = $daftar_alumni->count();
         $totalLokasi = $lokasi->count();
+        $settings = AlumniPageSetting::first() ?? new AlumniPageSetting();
 
         return view('pages.alumni', compact(
             'lokasi',
             'daftar_alumni',
             'featuredAlumni',
             'totalAlumni',
-            'totalLokasi'
+            'totalLokasi',
+            'settings'
         ));
     }
 }

@@ -3,12 +3,27 @@
 @section('title', 'Jejak Alumni - SMAN Pintar Provinsi Riau')
 
 @section('content')
+@php
+    $heroImage = $settings->hero_image
+        ? asset('storage/' . $settings->hero_image)
+        : 'https://lh3.googleusercontent.com/aida-public/AB6AXuDMwvvOLKRtfIxH2Qq18Ps6U-a_YTVILX0ftk_QVoGZ7553gSYV8unNCe1vWI3QO9BzaMyZO10VEAUVIdMoOFhCMXgO8690yxRCJWm7jTfP2i0QpBL0su9IiqdSPMoaSR4-OjpKUuqasNqW88U36bzj9FXDXjxEsbR9xQaTzuumZyLxEdPH9-lNqmM4U4m4RKCe2EIYqZLQXiy3eK3zHthbi0aHxiGpO9CKEjsSlr-JfJjXThobtMrfawkaYNcxq_3ELaRtZ4RVk_I9';
+    $mapImage = $settings->map_image
+        ? asset('storage/' . $settings->map_image)
+        : 'https://lh3.googleusercontent.com/aida-public/AB6AXuCQi24Ka19CQa7GxJbyNCSoqQbzg0RWJH1COvHl4YnPFV156JvxnxdPOwEX-LC4v9zTXzWfTEJDpK-smbaDV-3cMoGM_1gPXIDDZ_Cjf_ekRcVqyIV-s5_9qqGrEJxHdyqcVQ9Uj_1XGPTN3XqtTbnX_Qg3EQOCvEVJy32qAybo7jyO_tvqwaYPlSS8FEzKOplbqZq0KRdePAZgGnEOMH3H0PFwwandzHr6iwfFMSxDQLGVinWVEWqIcSqAIVmQFJVHTfwPo3EEKECg';
+    $defaultStats = [
+        ['icon' => 'groups', 'value' => $totalAlumni . '+', 'label' => 'Total Alumni'],
+        ['icon' => 'school', 'value' => '95%', 'label' => 'Lolos PTN'],
+        ['icon' => 'work', 'value' => '30%', 'label' => 'Fortune 500'],
+        ['icon' => 'public', 'value' => $totalLokasi . '+', 'label' => 'Lokasi Alumni'],
+    ];
+    $stats = collect($settings->stats ?: $defaultStats)->take(4);
+@endphp
 
 {{-- Hero Section --}}
 <section class="relative w-full py-24 overflow-hidden pt-32">
     <div class="absolute inset-0 z-0">
         <img class="w-full h-full object-cover opacity-10 grayscale"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMwvvOLKRtfIxH2Qq18Ps6U-a_YTVILX0ftk_QVoGZ7553gSYV8unNCe1vWI3QO9BzaMyZO10VEAUVIdMoOFhCMXgO8690yxRCJWm7jTfP2i0QpBL0su9IiqdSPMoaSR4-OjpKUuqasNqW88U36bzj9FXDXjxEsbR9xQaTzuumZyLxEdPH9-lNqmM4U4m4RKCe2EIYqZLQXiy3eK3zHthbi0aHxiGpO9CKEjsSlr-JfJjXThobtMrfawkaYNcxq_3ELaRtZ4RVk_I9"
+            src="{{ $heroImage }}"
             alt="Alumni Background" />
         <div class="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background"></div>
     </div>
@@ -16,14 +31,12 @@
         <nav class="flex items-center gap-2 text-sm font-medium mb-6 text-tertiary">
             <a href="{{ url('/') }}" class="hover:text-primary transition-colors">Beranda</a>
             <span class="material-symbols-outlined text-xs">chevron_right</span>
-            <span class="text-on-surface-variant">Alumni</span>
+            <span class="text-on-surface-variant">{{ $settings->hero_breadcrumb_label ?? 'Alumni' }}</span>
         </nav>
         <div class="max-w-3xl">
-            <h1 class="font-headline text-5xl md:text-7xl font-extrabold tracking-tighter text-primary mb-6">Jejak
-                Alumni Kami</h1>
+            <h1 class="font-headline text-5xl md:text-7xl font-extrabold tracking-tighter text-primary mb-6">{{ $settings->hero_title ?? 'Jejak Alumni Kami' }}</h1>
             <p class="text-lg text-on-surface-variant leading-relaxed">
-                Membangun masa depan melalui warisan keunggulan. Alumni SMAN Pintar Riau tersebar di seluruh penjuru
-                dunia, membawa semangat inovasi dan integritas dari tanah Lancang Kuning ke panggung global.
+                {{ $settings->hero_description ?? 'Membangun masa depan melalui warisan keunggulan. Alumni SMAN Pintar Riau tersebar di seluruh penjuru dunia, membawa semangat inovasi dan integritas dari tanah Lancang Kuning ke panggung global.' }}
             </p>
         </div>
     </div>
@@ -32,30 +45,14 @@
 {{-- Statistik --}}
 <section class="max-w-7xl mx-auto px-6 -mt-16 relative z-20">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        @foreach ($stats as $stat)
         <div
             class="bg-surface-container-lowest p-8 rounded-xl shadow-[0_24px_40px_rgba(25,27,34,0.04)] hover:scale-[1.02] transition-transform">
-            <span class="material-symbols-outlined text-tertiary text-4xl mb-4">groups</span>
-            <h3 class="text-3xl font-extrabold text-primary mb-1">{{ $totalAlumni }}+</h3>
-            <p class="text-on-surface-variant font-medium text-sm uppercase tracking-wider">Total Alumni</p>
+            <span class="material-symbols-outlined text-tertiary text-4xl mb-4">{{ data_get($stat, 'icon') }}</span>
+            <h3 class="text-3xl font-extrabold text-primary mb-1">{{ data_get($stat, 'value') }}</h3>
+            <p class="text-on-surface-variant font-medium text-sm uppercase tracking-wider">{{ data_get($stat, 'label') }}</p>
         </div>
-        <div
-            class="bg-surface-container-lowest p-8 rounded-xl shadow-[0_24px_40px_rgba(25,27,34,0.04)] hover:scale-[1.02] transition-transform">
-            <span class="material-symbols-outlined text-tertiary text-4xl mb-4">school</span>
-            <h3 class="text-3xl font-extrabold text-primary mb-1">95%</h3>
-            <p class="text-on-surface-variant font-medium text-sm uppercase tracking-wider">Lolos PTN</p>
-        </div>
-        <div
-            class="bg-surface-container-lowest p-8 rounded-xl shadow-[0_24px_40px_rgba(25,27,34,0.04)] hover:scale-[1.02] transition-transform">
-            <span class="material-symbols-outlined text-tertiary text-4xl mb-4">work</span>
-            <h3 class="text-3xl font-extrabold text-primary mb-1">30%</h3>
-            <p class="text-on-surface-variant font-medium text-sm uppercase tracking-wider">Fortune 500</p>
-        </div>
-        <div
-            class="bg-surface-container-lowest p-8 rounded-xl shadow-[0_24px_40px_rgba(25,27,34,0.04)] hover:scale-[1.02] transition-transform">
-            <span class="material-symbols-outlined text-tertiary text-4xl mb-4">public</span>
-            <h3 class="text-3xl font-extrabold text-primary mb-1">{{ $totalLokasi }}+</h3>
-            <p class="text-on-surface-variant font-medium text-sm uppercase tracking-wider">Lokasi Alumni</p>
-        </div>
+        @endforeach
     </div>
 </section>
 
@@ -63,10 +60,9 @@
 <section class="py-24 max-w-7xl mx-auto px-6">
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
         <div class="max-w-xl">
-            <span class="text-tertiary font-bold tracking-[0.2em] text-xs uppercase block mb-3">Global Network</span>
-            <h2 class="text-4xl font-extrabold text-primary tracking-tight">Sebaran Alumni Global</h2>
-            <p class="mt-4 text-on-surface-variant">Dari Riau untuk Dunia. Lihat bagaimana komunitas alumni kami
-                berkembang di berbagai pusat ekonomi dan pendidikan global.</p>
+            <span class="text-tertiary font-bold tracking-[0.2em] text-xs uppercase block mb-3">{{ $settings->map_label ?? 'Global Network' }}</span>
+            <h2 class="text-4xl font-extrabold text-primary tracking-tight">{{ $settings->map_title ?? 'Sebaran Alumni Global' }}</h2>
+            <p class="mt-4 text-on-surface-variant">{{ $settings->map_description ?? 'Dari Riau untuk Dunia. Lihat bagaimana komunitas alumni kami berkembang di berbagai pusat ekonomi dan pendidikan global.' }}</p>
         </div>
         <div class="flex gap-4">
             <select
@@ -85,7 +81,7 @@
     </div>
     <div class="relative bg-surface-container-low rounded-3xl p-8 aspect-[16/9] overflow-hidden group">
         <img class="w-full h-full object-cover rounded-2xl opacity-40"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQi24Ka19CQa7GxJbyNCSoqQbzg0RWJH1COvHl4YnPFV156JvxnxdPOwEX-LC4v9zTXzWfTEJDpK-smbaDV-3cMoGM_1gPXIDDZ_Cjf_ekRcVqyIV-s5_9qqGrEJxHdyqcVQ9Uj_1XGPTN3XqtTbnX_Qg3EQOCvEVJy32qAybo7jyO_tvqwaYPlSS8FEzKOplbqZq0KRdePAZgGnEOMH3H0PFwwandzHr6iwfFMSxDQLGVinWVEWqIcSqAIVmQFJVHTfwPo3EEKECg"
+            src="{{ $mapImage }}"
             alt="World Map" />
         <div class="absolute inset-0 flex items-center justify-center">
 
@@ -118,8 +114,7 @@
                     alt="{{ $featuredAlumni?->nama ?? 'Alumni SMAN Pintar' }}" />
                 <div class="absolute top-8 left-8">
                     <span
-                        class="bg-tertiary-container text-on-tertiary-container px-6 py-2 rounded-full font-bold text-xs uppercase tracking-widest backdrop-blur-md">Featured
-                        Alumna</span>
+                        class="bg-tertiary-container text-on-tertiary-container px-6 py-2 rounded-full font-bold text-xs uppercase tracking-widest backdrop-blur-md">{{ $settings->featured_badge ?? 'Featured Alumna' }}</span>
                 </div>
             </div>
             <div class="lg:w-1/2 p-12 lg:p-16 flex flex-col justify-center">
@@ -131,7 +126,7 @@
                 <div class="flex gap-4 items-center">
                     <button
                         class="bg-primary text-on-primary px-8 py-4 rounded-xl font-bold flex items-center gap-2 hover:translate-x-2 transition-transform shadow-lg">
-                        Baca Kisah Selengkapnya
+                        {{ $settings->featured_button_text ?? 'Baca Kisah Selengkapnya' }}
                         <span class="material-symbols-outlined">arrow_forward</span>
                     </button>
                 </div>
@@ -143,9 +138,8 @@
 {{-- Alumni Grid --}}
 <section class="py-24 max-w-7xl mx-auto px-6">
     <div class="text-center mb-16">
-        <h2 class="text-4xl font-extrabold text-primary mb-4">Inspirasi Alumni</h2>
-        <p class="text-on-surface-variant max-w-2xl mx-auto">Mengenal lebih dekat para alumni berprestasi yang kini
-            berkarya di berbagai sektor industri strategis.</p>
+        <h2 class="text-4xl font-extrabold text-primary mb-4">{{ $settings->grid_title ?? 'Inspirasi Alumni' }}</h2>
+        <p class="text-on-surface-variant max-w-2xl mx-auto">{{ $settings->grid_description ?? 'Mengenal lebih dekat para alumni berprestasi yang kini berkarya di berbagai sektor industri strategis.' }}</p>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 
@@ -182,7 +176,7 @@
     </div>
     <div class="mt-16 text-center">
         <button class="text-primary font-bold flex items-center gap-2 mx-auto hover:gap-4 transition-all">
-            Lihat Semua Direktori Alumni
+            {{ $settings->grid_button_text ?? 'Lihat Semua Direktori Alumni' }}
             <span class="material-symbols-outlined">east</span>
         </button>
     </div>
@@ -200,13 +194,11 @@
             <span class="material-symbols-outlined text-tertiary-fixed text-6xl mb-8">format_quote</span>
             <div class="max-w-4xl">
                 <p class="text-2xl md:text-3xl font-medium text-white leading-relaxed mb-12">
-                    "Berada di SMAN Pintar membuka mata saya bahwa keterbatasan geografis bukan penghalang untuk
-                    bersaing secara global. Kurikulum dan dukungan pengajarnya benar-benar mempersiapkan mentalitas
-                    juara."
+                    "{{ $settings->testimonial_quote ?? 'Berada di SMAN Pintar membuka mata saya bahwa keterbatasan geografis bukan penghalang untuk bersaing secara global. Kurikulum dan dukungan pengajarnya benar-benar mempersiapkan mentalitas juara.' }}"
                 </p>
                 <div class="flex flex-col items-center">
-                    <h5 class="text-white font-bold text-lg">Fandi Ahmad</h5>
-                    <p class="text-on-primary-container text-sm">PhD Candidate, University of Oxford | Class of 2016</p>
+                    <h5 class="text-white font-bold text-lg">{{ $settings->testimonial_name ?? 'Fandi Ahmad' }}</h5>
+                    <p class="text-on-primary-container text-sm">{{ $settings->testimonial_meta ?? 'PhD Candidate, University of Oxford | Class of 2016' }}</p>
                 </div>
             </div>
             <div class="flex gap-4 mt-12">
@@ -230,22 +222,20 @@
         <div class="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-tertiary/10 rounded-full blur-3xl"></div>
         <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-primary/10 rounded-full blur-3xl"></div>
 
-        <h2 class="text-4xl md:text-5xl font-extrabold text-primary tracking-tight mb-6">Jadilah Bagian dari Alumni
-            Hebat Kami</h2>
-        <p class="text-lg text-on-surface-variant max-w-2xl mb-12">Lanjutkan legacy keunggulan ini. Apakah Anda calon
-            siswa yang ambisius atau alumni yang ingin kembali berkontribusi?</p>
+        <h2 class="text-4xl md:text-5xl font-extrabold text-primary tracking-tight mb-6">{{ $settings->cta_title ?? 'Jadilah Bagian dari Alumni Hebat Kami' }}</h2>
+        <p class="text-lg text-on-surface-variant max-w-2xl mb-12">{{ $settings->cta_description ?? 'Lanjutkan legacy keunggulan ini. Apakah Anda calon siswa yang ambisius atau alumni yang ingin kembali berkontribusi?' }}</p>
 
         <div class="flex flex-col sm:flex-row gap-6 relative z-10">
-            <a href="{{ url('/pmb') }}"
+            <a href="{{ $settings->cta_primary_link ?? url('/pmb') }}"
                 class="bg-tertiary text-on-tertiary px-10 py-4 rounded-xl font-bold text-lg hover:scale-105 transition-all shadow-lg flex items-center gap-3">
-                Daftar PMB
+                {{ $settings->cta_primary_text ?? 'Daftar PMB' }}
                 <span class="material-symbols-outlined">rocket_launch</span>
             </a>
-            <button
+            <a href="{{ $settings->cta_secondary_link ?? '#' }}"
                 class="bg-primary text-on-primary px-10 py-4 rounded-xl font-bold text-lg hover:scale-105 transition-all shadow-lg flex items-center gap-3">
-                Gabung Alumni
+                {{ $settings->cta_secondary_text ?? 'Gabung Alumni' }}
                 <span class="material-symbols-outlined">person_add</span>
-            </button>
+            </a>
         </div>
     </div>
 </section>

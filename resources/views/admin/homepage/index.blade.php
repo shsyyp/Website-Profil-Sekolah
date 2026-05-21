@@ -197,17 +197,8 @@ $components = [
     @endif
 
     <div id="component-overview" class="space-y-10">
-        <section class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-            <div class="space-y-1">
-                <span class="text-[11px] font-bold tracking-[0.2em] text-tertiary uppercase">Pengelolaan Halaman</span>
-                <h2 class="text-4xl font-extrabold text-primary tracking-tight font-headline">Beranda</h2>
-                <p class="text-on-surface-variant text-lg">Kelola komponen utama halaman depan sekolah.</p>
-            </div>
-            <button type="submit"
-                class="bg-gradient-to-br from-[#00357f] to-[#004aad] text-white px-8 py-4 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all duration-200">
-                <span class="material-symbols-outlined">save</span>
-                Simpan Perubahan
-            </button>
+        <section>
+            <h2 class="text-4xl font-extrabold text-primary tracking-tight font-headline">Beranda</h2>
         </section>
 
         <section class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
@@ -215,12 +206,11 @@ $components = [
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="bg-surface-container-low/50">
-                            <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Preview
-                            </th>
+                            <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">No</th>
                             <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
                                 Komponen</th>
-                            <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Konten
-                                Utama</th>
+                            <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+                                Deskripsi</th>
                             <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Status
                             </th>
                             <th
@@ -232,15 +222,10 @@ $components = [
                         @foreach ($components as $component)
                         <tr class="group hover:bg-surface-container-low/30 transition-colors">
                             <td class="px-8 py-4">
-                                @if($component['preview'] === 'image' && $component['image'])
-                                <img src="{{ $component['image'] }}" class="w-20 h-14 object-cover rounded-lg shadow-sm"
-                                    alt="{{ $component['title'] }}">
-                                @else
-                                <div
-                                    class="w-20 h-14 rounded-lg bg-blue-50 text-primary flex items-center justify-center">
-                                    <span class="material-symbols-outlined">{{ $component['icon'] }}</span>
-                                </div>
-                                @endif
+                                <span
+                                    class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-sm font-bold text-primary">
+                                    {{ $loop->iteration }}
+                                </span>
                             </td>
                             <td class="px-6 py-4">
                                 <p class="font-bold text-blue-900 group-hover:text-primary transition-colors">

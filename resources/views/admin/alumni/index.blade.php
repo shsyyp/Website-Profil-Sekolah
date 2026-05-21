@@ -193,8 +193,8 @@
 
         <div class="bg-surface-container-lowest rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-8 py-6">
             <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end sm:items-center">
-                <button type="button" data-alumni-page-back class="px-6 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-100 transition-colors">Batal</button>
-                <button type="submit" class="bg-primary text-on-primary px-8 py-3 rounded-xl font-bold shadow-lg hover:scale-105 transition-all">Simpan Tampilan Alumni</button>
+                <button type="button" data-alumni-page-back class="btn-cancel">Batal</button>
+                <button type="submit" class="bg-primary text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:scale-105 transition-all">Simpan Tampilan Alumni</button>
             </div>
         </div>
     </section>
@@ -210,7 +210,7 @@
                 Kembali
             </button>
             <a href="{{ route('alumni.create') }}"
-                class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-xl font-bold shadow-xl shadow-primary/10 hover:scale-[1.02] active:scale-95 transition-all">
+                class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-primary-container text-white rounded-xl font-bold shadow-xl shadow-primary/10 hover:scale-[1.02] active:scale-95 transition-all">
                 <span class="material-symbols-outlined">add</span>
                 Tambah Alumni
             </a>

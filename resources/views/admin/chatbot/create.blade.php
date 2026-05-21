@@ -43,8 +43,7 @@
             </div>
 
             <div class="pt-6 flex gap-3 border-t border-surface-container">
-                <a href="{{ route('chatbot.index') }}"
-                    class="px-8 py-3 border-2 border-outline-variant/30 text-on-surface font-bold rounded-xl text-sm hover:bg-surface-container transition-colors">Batal</a>
+                <a href="{{ route('chatbot.index') }}" class="btn-cancel">Batal</a>
                 <button type="submit"
                     class="px-8 py-3 bg-primary text-white font-bold rounded-xl text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform">Simpan
                     Data</button>

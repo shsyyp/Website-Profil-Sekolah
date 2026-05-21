@@ -215,8 +215,8 @@
 
             <div class="bg-surface-container-lowest rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-8 py-6">
                 <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end sm:items-center">
-                    <button type="button" data-pmb-back class="px-6 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-100 transition-colors">Batal</button>
-                    <button type="submit" class="bg-primary text-on-primary px-8 py-3 rounded-xl font-bold shadow-lg hover:scale-105 transition-all">Simpan PMB</button>
+                    <button type="button" data-pmb-back class="btn-cancel">Batal</button>
+                    <button type="submit" class="bg-primary text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:scale-105 transition-all">Simpan PMB</button>
                 </div>
             </div>
         </section>

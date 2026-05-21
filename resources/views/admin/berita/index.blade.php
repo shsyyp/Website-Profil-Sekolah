@@ -248,10 +248,10 @@
 
         <div class="bg-surface-container-lowest rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-8 py-6">
             <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end sm:items-center">
-                <button type="button" data-news-back class="px-6 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-100 transition-colors">
+                <button type="button" data-news-back class="btn-cancel">
                     Batal
                 </button>
-                <button type="submit" class="bg-primary text-on-primary px-8 py-3 rounded-xl font-bold shadow-lg hover:scale-105 transition-all">
+                <button type="submit" class="bg-primary text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:scale-105 transition-all">
                     Simpan Tampilan Berita
                 </button>
             </div>
@@ -269,9 +269,9 @@
                 Kembali
             </button>
             <a href="{{ route('berita.create') }}"
-                class="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-primary to-primary-container px-8 py-3.5 font-bold text-on-primary shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all duration-200">
-                <span class="material-symbols-outlined">add_circle</span>
-                + Tambah Berita
+                class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-primary to-primary-container text-white px-6 py-3.5 rounded-xl font-bold shadow-lg shadow-primary/20 hover:scale-105 transition-all">
+                <span class="material-symbols-outlined">add</span>
+                Tambah Berita
             </a>
         </div>
     </div>
@@ -282,14 +282,12 @@
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-surface-container-low/50">
-                        <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Preview</th>
-                        <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Judul Berita
-                        </th>
+                        <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">No</th>
+                        <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Judul Berita</th>
                         <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Kategori</th>
                         <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Tanggal</th>
                         <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Status</th>
-                        <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">Aksi
-                        </th>
+                        <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-surface-container">
@@ -298,24 +296,17 @@
                     @forelse ($berita as $item)
                     <tr class="group hover:bg-surface-container-low/30 transition-colors">
                         <td class="px-8 py-4">
-                            @if($item->gambar)
-                            <img src="{{ asset('storage/' . $item->gambar) }}"
-                                class="w-20 h-14 object-cover rounded-lg shadow-sm" alt="Thumbnail">
-                            @else
-                            <div
-                                class="w-20 h-14 bg-slate-200 rounded-lg flex items-center justify-center text-slate-400 text-xs">
-                                No Image</div>
-                            @endif
+                            <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-sm font-bold text-primary">
+                                {{ $berita->firstItem() + $loop->index }}
+                            </span>
                         </td>
                         <td class="px-6 py-4">
-                            <p
-                                class="font-bold text-blue-900 group-hover:text-primary transition-colors max-w-xs leading-snug">
+                            <p class="font-bold text-blue-900 group-hover:text-primary transition-colors max-w-xs leading-snug">
                                 {{ $item->judul }}
                             </p>
                         </td>
                         <td class="px-6 py-4">
-                            <span
-                                class="bg-primary-fixed text-on-primary-fixed-variant px-3 py-1 rounded-full text-xs font-bold">{{ $item->kategori }}</span>
+                            <span class="text-sm font-bold text-on-surface">{{ $item->kategori }}</span>
                         </td>
                         <td class="px-6 py-4 text-sm text-on-surface-variant font-medium">
                             {{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}
@@ -407,7 +398,7 @@
                     Yakin, Hapus
                 </button>
                 <button type="button" onclick="closeDeleteModal()"
-                    class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-6 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto transition-colors">
+                    class="btn-cancel mt-3 w-full sm:mt-0 sm:w-auto">
                     Batal
                 </button>
             </div>
@@ -483,6 +474,10 @@ document.querySelectorAll('[data-news-management-back]').forEach((button) => {
         showNewsPageOverview();
     });
 });
+
+@if(session('open_news_management'))
+showNewsManagement();
+@endif
 
 let formToSubmit = null;
 const deleteModal = document.getElementById('deleteModal');

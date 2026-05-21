@@ -72,7 +72,10 @@ class BeritaController extends Controller
 
         Berita::create($data);
 
-        return redirect()->route('berita.index')->with('success', 'Berita berhasil ditambahkan');
+        return redirect()
+            ->route('berita.index')
+            ->with('success', 'Berita berhasil ditambahkan')
+            ->with('open_news_management', true);
     }
 
     // Menampilkan form edit berita
@@ -103,7 +106,10 @@ class BeritaController extends Controller
 
         $beritum->update($data);
 
-        return redirect()->route('berita.index')->with('success', 'Berita berhasil diupdate');
+        return redirect()
+            ->route('berita.index')
+            ->with('success', 'Berita berhasil diupdate')
+            ->with('open_news_management', true);
     }
 
     // Menghapus berita
@@ -115,6 +121,9 @@ class BeritaController extends Controller
         
         $beritum->delete();
 
-        return back()->with('success', 'Berita berhasil dihapus');
+        return redirect()
+            ->route('berita.index')
+            ->with('success', 'Berita berhasil dihapus')
+            ->with('open_news_management', true);
     }
 }

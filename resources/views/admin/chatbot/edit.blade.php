@@ -44,8 +44,7 @@
             </div>
 
             <div class="pt-6 flex gap-3 border-t border-surface-container">
-                <a href="{{ route('chatbot.index') }}"
-                    class="px-8 py-3 border-2 border-outline-variant/30 text-on-surface font-bold rounded-xl text-sm hover:bg-surface-container transition-colors">
+                <a href="{{ route('chatbot.index') }}" class="btn-cancel">
                     Batal
                 </a>
                 <button type="submit"

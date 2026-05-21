@@ -73,7 +73,7 @@
         {{-- Topbar --}}
         @include('partials.topbar')
 
-        <main class="p-8 space-y-8 flex-1">
+        <main class="px-8 pb-8 pt-4 space-y-8 flex-1">
             @yield('content')
         </main>
 

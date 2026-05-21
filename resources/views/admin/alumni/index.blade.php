@@ -19,6 +19,7 @@
         ['id' => 'alumni-grid-section', 'icon' => 'grid_view', 'title' => 'Grid Alumni', 'meta' => $settings->grid_button_text ?? 'Lihat Semua Direktori Alumni', 'content' => $settings->grid_title ?? 'Inspirasi Alumni'],
         ['id' => 'alumni-testimonial-section', 'icon' => 'format_quote', 'title' => 'Testimoni', 'meta' => $settings->testimonial_name ?? 'Fandi Ahmad', 'content' => $settings->testimonial_quote ?? 'Berada di SMAN Pintar membuka mata saya...'],
         ['id' => 'alumni-cta-section', 'icon' => 'campaign', 'title' => 'CTA Alumni', 'meta' => $settings->cta_primary_text ?? 'Daftar PMB', 'content' => $settings->cta_title ?? 'Jadilah Bagian dari Alumni Hebat Kami'],
+        ['id' => 'alumni-management-section', 'icon' => 'manage_accounts', 'title' => 'Manajemen Alumni', 'meta' => $alumni->total() . ' alumni', 'content' => 'Kelola data lulusan SMAN Pintar seluruh angkatan.', 'type' => 'management'],
     ];
 @endphp
 
@@ -37,17 +38,8 @@
     @csrf
 
     <div id="alumni-page-overview" class="space-y-8">
-        <section class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-            <div class="space-y-1">
-                <span class="text-[11px] font-bold tracking-[0.2em] text-tertiary uppercase">Pengelolaan Halaman</span>
-                <h2 class="text-4xl font-extrabold text-primary tracking-tight font-headline">Tampilan Alumni</h2>
-                <p class="text-on-surface-variant text-lg">Kelola teks dan komponen halaman alumni publik.</p>
-            </div>
-            <button type="submit"
-                class="bg-gradient-to-br from-[#00357f] to-[#004aad] text-white px-8 py-4 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all duration-200">
-                <span class="material-symbols-outlined">save</span>
-                Simpan Perubahan
-            </button>
+        <section>
+            <h2 class="text-4xl font-extrabold text-primary tracking-tight font-headline">Alumni</h2>
         </section>
 
         <section class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
@@ -55,9 +47,9 @@
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="bg-surface-container-low/50">
-                            <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Preview</th>
+                            <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">No</th>
                             <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Komponen</th>
-                            <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Konten Utama</th>
+                            <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Deskripsi</th>
                             <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Status</th>
                             <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">Aksi</th>
                         </tr>
@@ -66,13 +58,12 @@
                         @foreach ($pageComponents as $component)
                         <tr class="group hover:bg-surface-container-low/30 transition-colors">
                             <td class="px-8 py-4">
-                                <div class="w-20 h-14 rounded-lg bg-blue-50 text-primary flex items-center justify-center">
-                                    <span class="material-symbols-outlined">{{ $component['icon'] }}</span>
-                                </div>
+                                <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-sm font-bold text-primary">
+                                    {{ $loop->iteration }}
+                                </span>
                             </td>
                             <td class="px-6 py-4">
                                 <p class="font-bold text-blue-900 group-hover:text-primary transition-colors">{{ $component['title'] }}</p>
-                                <p class="text-xs text-slate-400 mt-1">{{ $component['meta'] }}</p>
                             </td>
                             <td class="px-6 py-4">
                                 <p class="max-w-xl text-sm text-on-surface-variant font-medium leading-relaxed line-clamp-2">{{ $component['content'] }}</p>
@@ -83,10 +74,17 @@
                                 </span>
                             </td>
                             <td class="px-8 py-4 text-right">
+                                @if(($component['type'] ?? 'editor') === 'management')
+                                <a href="#{{ $component['id'] }}" data-alumni-management-target="{{ $component['id'] }}"
+                                    class="inline-flex w-9 h-9 items-center justify-center rounded-xl bg-slate-100 text-slate-500 hover:bg-amber-100 hover:text-amber-600 transition-all">
+                                    <span class="material-symbols-outlined text-[20px]">edit</span>
+                                </a>
+                                @else
                                 <a href="#{{ $component['id'] }}" data-alumni-page-edit-target="{{ $component['id'] }}"
                                     class="inline-flex w-9 h-9 items-center justify-center rounded-xl bg-slate-100 text-slate-500 hover:bg-amber-100 hover:text-amber-600 transition-all">
                                     <span class="material-symbols-outlined text-[20px]">edit</span>
                                 </a>
+                                @endif
                             </td>
                         </tr>
                         @endforeach
@@ -202,22 +200,25 @@
     </section>
 </form>
 
-{{-- Page Header --}}
-<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-    <div>
-        <span class="text-[10px] uppercase tracking-widest text-tertiary font-bold mb-1 block">Data Master</span>
-        <h2 class="text-3xl font-extrabold text-on-surface tracking-tight">Manajemen Alumni</h2>
-        <p class="text-outline text-sm">Kelola data lulusan SMAN Pintar seluruh angkatan.</p>
+<section id="alumni-management-section" class="hidden space-y-8">
+    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <h2 class="text-4xl font-extrabold text-primary tracking-tight font-headline">Manajemen Alumni</h2>
+        <div class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center">
+            <button type="button" data-alumni-management-back
+                class="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-100 px-6 py-3 font-bold text-slate-600 hover:bg-slate-200 transition-colors">
+                <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                Kembali
+            </button>
+            <a href="{{ route('alumni.create') }}"
+                class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-xl font-bold shadow-xl shadow-primary/10 hover:scale-[1.02] active:scale-95 transition-all">
+                <span class="material-symbols-outlined">add</span>
+                Tambah Alumni
+            </a>
+        </div>
     </div>
-    <a href="{{ route('alumni.create') }}"
-        class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-xl font-bold shadow-xl shadow-primary/10 hover:scale-[1.02] active:scale-95 transition-all">
-        <span class="material-symbols-outlined">add</span>
-        Tambah Alumni
-    </a>
-</div>
 
-{{-- Visual Analytics Grid --}}
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+    {{-- Visual Analytics Grid --}}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
     {{-- Map Section --}}
     <div class="lg:col-span-2 bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
         <div class="p-6 flex justify-between items-center border-b border-surface-container-high/30">
@@ -256,10 +257,10 @@
             </div>
         </div>
     </div>
-</div>
+    </div>
 
-{{-- Table Alumni --}}
-<div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden">
+    {{-- Table Alumni --}}
+    <div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden">
     <div class="p-6 border-b border-surface-container-high/30 flex justify-between items-center">
         <h3 class="font-bold">Database Alumni Terbaru</h3>
     </div>
@@ -329,17 +330,21 @@
     <div class="p-6 bg-surface-container-low/50">
         {{ $alumni->links() }}
     </div>
-</div>
+    </div>
+</section>
 
 {{-- Load JS Leaflet & Init Map --}}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 const alumniPageOverview = document.getElementById('alumni-page-overview');
 const alumniPageEditors = document.getElementById('alumni-page-editors');
+const alumniManagementSection = document.getElementById('alumni-management-section');
 const alumniPagePanels = document.querySelectorAll('[data-alumni-page-panel]');
+let alumniMap = null;
 
 function showAlumniPageOverview() {
     alumniPageEditors.classList.add('hidden');
+    alumniManagementSection.classList.add('hidden');
     alumniPageOverview.classList.remove('hidden');
     alumniPagePanels.forEach((panel) => panel.classList.add('hidden'));
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -353,6 +358,7 @@ function showAlumniPageEditor(panelId) {
     }
 
     alumniPageOverview.classList.add('hidden');
+    alumniManagementSection.classList.add('hidden');
     alumniPageEditors.classList.remove('hidden');
     alumniPagePanels.forEach((panel) => panel.classList.add('hidden'));
     target.classList.remove('hidden');
@@ -360,10 +366,31 @@ function showAlumniPageEditor(panelId) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+function showAlumniManagement() {
+    alumniPageOverview.classList.add('hidden');
+    alumniPageEditors.classList.add('hidden');
+    alumniPagePanels.forEach((panel) => panel.classList.add('hidden'));
+    alumniManagementSection.classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    setTimeout(() => {
+        if (alumniMap) {
+            alumniMap.invalidateSize();
+        }
+    }, 250);
+}
+
 document.querySelectorAll('[data-alumni-page-edit-target]').forEach((link) => {
     link.addEventListener('click', (event) => {
         event.preventDefault();
         showAlumniPageEditor(link.dataset.alumniPageEditTarget);
+    });
+});
+
+document.querySelectorAll('[data-alumni-management-target]').forEach((link) => {
+    link.addEventListener('click', (event) => {
+        event.preventDefault();
+        showAlumniManagement();
     });
 });
 
@@ -375,13 +402,20 @@ document.querySelectorAll('[data-alumni-page-back]').forEach((button) => {
     });
 });
 
+document.querySelectorAll('[data-alumni-management-back]').forEach((button) => {
+    button.addEventListener('click', (event) => {
+        event.preventDefault();
+        showAlumniPageOverview();
+    });
+});
+
 document.addEventListener("DOMContentLoaded", function() {
     // Set view awal ke tengah Indonesia
-    var map = L.map('mapAlumni').setView([-0.789275, 113.921327], 4);
+    alumniMap = L.map('mapAlumni').setView([-0.789275, 113.921327], 4);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
+    }).addTo(alumniMap);
 
     // Ambil data lokasi dari controller
     const lokasiData = JSON.parse('{!! json_encode($lokasi_sebaran) !!}');
@@ -393,7 +427,7 @@ document.addEventListener("DOMContentLoaded", function() {
             .then(data => {
                 if (data.length > 0) {
                     L.marker([data[0].lat, data[0].lon])
-                        .addTo(map)
+                        .addTo(alumniMap)
                         .bindPopup(`<b>${item.lokasi}</b>`);
                 }
             }).catch(err => console.log("Gagal load lokasi: ", err));

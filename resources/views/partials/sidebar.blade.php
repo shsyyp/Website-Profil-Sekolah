@@ -46,7 +46,7 @@
             <a href="{{ url('admin/chatbot') }}"
                 class="flex items-center gap-3 px-4 py-3 transition-all {{ request()->is('admin/chatbot*') ? 'text-blue-900 font-bold border-r-4 border-blue-800 bg-blue-50/50' : 'text-slate-500 hover:text-blue-700 hover:bg-slate-50' }}">
                 <span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span>
-                <span>Chatbot FAQ</span>
+                <span>Chatbot</span>
             </a>
 
             <hr class="my-4 border-slate-100">

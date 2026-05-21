@@ -185,7 +185,7 @@ $components = [
 }
 </style>
 
-<form action="{{ url('admin/homepage') }}" method="POST" enctype="multipart/form-data" class="p-8 space-y-10">
+<form action="{{ url('admin/homepage') }}" method="POST" enctype="multipart/form-data" class="px-8 pb-8 pt-0 space-y-10">
     @csrf
 
     @if(session('success'))
@@ -230,7 +230,6 @@ $components = [
                             <td class="px-6 py-4">
                                 <p class="font-bold text-blue-900 group-hover:text-primary transition-colors">
                                     {{ $component['title'] }}</p>
-                                <p class="text-xs text-slate-400 mt-1">{{ $component['meta'] }}</p>
                             </td>
                             <td class="px-6 py-4">
                                 <p

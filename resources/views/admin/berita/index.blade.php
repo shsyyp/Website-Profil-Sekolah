@@ -33,6 +33,14 @@
             'content' => $settings->newsletter_title ?? 'Berlangganan Warta',
             'meta' => $settings->newsletter_button_text ?? 'Daftar Sekarang',
         ],
+        [
+            'id' => 'news-management-section',
+            'icon' => 'edit_note',
+            'title' => 'Manajemen Berita',
+            'content' => 'Kelola semua berita sekolah',
+            'meta' => $totalBerita . ' artikel',
+            'type' => 'scroll',
+        ],
     ];
 @endphp
 
@@ -49,17 +57,8 @@
     @csrf
 
     <div id="news-page-overview" class="space-y-8">
-        <section class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-            <div class="space-y-1">
-                <span class="text-[11px] font-bold tracking-[0.2em] text-tertiary uppercase">Pengelolaan Halaman</span>
-                <h2 class="text-4xl font-extrabold text-primary tracking-tight font-headline">Tampilan Berita</h2>
-                <p class="text-on-surface-variant text-lg">Kelola teks yang tampil di halaman berita publik.</p>
-            </div>
-            <button type="submit"
-                class="bg-gradient-to-br from-[#00357f] to-[#004aad] text-white px-8 py-4 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all duration-200">
-                <span class="material-symbols-outlined">save</span>
-                Simpan Perubahan
-            </button>
+        <section>
+            <h2 class="text-4xl font-extrabold text-primary tracking-tight font-headline">Berita</h2>
         </section>
 
         <section class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
@@ -67,9 +66,9 @@
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="bg-surface-container-low/50">
-                            <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Preview</th>
+                            <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">No</th>
                             <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Komponen</th>
-                            <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Konten Utama</th>
+                            <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Deskripsi</th>
                             <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Status</th>
                             <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">Aksi</th>
                         </tr>
@@ -78,13 +77,12 @@
                         @foreach ($newsPageComponents as $component)
                         <tr class="group hover:bg-surface-container-low/30 transition-colors">
                             <td class="px-8 py-4">
-                                <div class="w-20 h-14 rounded-lg bg-blue-50 text-primary flex items-center justify-center">
-                                    <span class="material-symbols-outlined">{{ $component['icon'] }}</span>
-                                </div>
+                                <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-sm font-bold text-primary">
+                                    {{ $loop->iteration }}
+                                </span>
                             </td>
                             <td class="px-6 py-4">
                                 <p class="font-bold text-blue-900 group-hover:text-primary transition-colors">{{ $component['title'] }}</p>
-                                <p class="text-xs text-slate-400 mt-1">{{ $component['meta'] }}</p>
                             </td>
                             <td class="px-6 py-4">
                                 <p class="max-w-xl text-sm text-on-surface-variant font-medium leading-relaxed line-clamp-2">{{ $component['content'] }}</p>
@@ -95,10 +93,17 @@
                                 </span>
                             </td>
                             <td class="px-8 py-4 text-right">
+                                @if(($component['type'] ?? 'editor') === 'scroll')
+                                <a href="#{{ $component['id'] }}" data-news-scroll-target="{{ $component['id'] }}"
+                                    class="inline-flex w-9 h-9 items-center justify-center rounded-xl bg-slate-100 text-slate-500 hover:bg-amber-100 hover:text-amber-600 transition-all">
+                                    <span class="material-symbols-outlined text-[20px]">edit</span>
+                                </a>
+                                @else
                                 <a href="#{{ $component['id'] }}" data-news-edit-target="{{ $component['id'] }}"
                                     class="inline-flex w-9 h-9 items-center justify-center rounded-xl bg-slate-100 text-slate-500 hover:bg-amber-100 hover:text-amber-600 transition-all">
                                     <span class="material-symbols-outlined text-[20px]">edit</span>
                                 </a>
+                                @endif
                             </td>
                         </tr>
                         @endforeach
@@ -254,146 +259,113 @@
     </section>
 </form>
 
-{{-- Header Section --}}
-<section class="flex justify-between items-end mb-10">
-    <div class="space-y-1">
-        <span class="text-[11px] font-bold tracking-[0.2em] text-tertiary uppercase">Portal Editorial</span>
+<section id="news-management-section" class="hidden space-y-6">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h2 class="text-4xl font-extrabold text-primary tracking-tight font-headline">Manajemen Berita</h2>
-        <p class="text-on-surface-variant text-lg">Kelola semua berita sekolah</p>
+        <div class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center">
+            <button type="button" data-news-management-back
+                class="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-100 px-6 py-3.5 font-bold text-slate-600 hover:bg-slate-200 transition-colors">
+                <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                Kembali
+            </button>
+            <a href="{{ route('berita.create') }}"
+                class="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-primary to-primary-container px-8 py-3.5 font-bold text-on-primary shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all duration-200">
+                <span class="material-symbols-outlined">add_circle</span>
+                + Tambah Berita
+            </a>
+        </div>
     </div>
-    <a href="{{ route('berita.create') }}"
-        class="bg-gradient-to-br from-primary to-primary-container text-on-primary px-8 py-4 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all duration-200">
-        <span class="material-symbols-outlined">add_circle</span>
-        + Tambah Berita
-    </a>
+
+    {{-- Table Container --}}
+    <div class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] mb-8">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-surface-container-low/50">
+                        <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Preview</th>
+                        <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Judul Berita
+                        </th>
+                        <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Kategori</th>
+                        <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Tanggal</th>
+                        <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Status</th>
+                        <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">Aksi
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-surface-container">
+
+                    {{-- Loop Data Berita --}}
+                    @forelse ($berita as $item)
+                    <tr class="group hover:bg-surface-container-low/30 transition-colors">
+                        <td class="px-8 py-4">
+                            @if($item->gambar)
+                            <img src="{{ asset('storage/' . $item->gambar) }}"
+                                class="w-20 h-14 object-cover rounded-lg shadow-sm" alt="Thumbnail">
+                            @else
+                            <div
+                                class="w-20 h-14 bg-slate-200 rounded-lg flex items-center justify-center text-slate-400 text-xs">
+                                No Image</div>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4">
+                            <p
+                                class="font-bold text-blue-900 group-hover:text-primary transition-colors max-w-xs leading-snug">
+                                {{ $item->judul }}
+                            </p>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span
+                                class="bg-primary-fixed text-on-primary-fixed-variant px-3 py-1 rounded-full text-xs font-bold">{{ $item->kategori }}</span>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-on-surface-variant font-medium">
+                            {{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}
+                        </td>
+                        <td class="px-6 py-4">
+                            @if($item->status == 'publish')
+                            <span
+                                class="flex items-center gap-1.5 text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full w-fit">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Published
+                            </span>
+                            @else
+                            <span
+                                class="flex items-center gap-1.5 text-xs font-bold text-amber-600 bg-amber-50 px-3 py-1 rounded-full w-fit">
+                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Draft
+                            </span>
+                            @endif
+                        </td>
+                        <td class="px-8 py-4 text-right">
+                            <div class="flex justify-end gap-2">
+                                <a href="{{ route('berita.edit', $item->id) }}"
+                                    class="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-100 text-slate-500 hover:bg-amber-100 hover:text-amber-600 transition-all">
+                                    <span class="material-symbols-outlined text-[20px]">edit</span>
+                                </a>
+                                <form id="delete-form-{{ $item->id }}" action="{{ route('berita.destroy', $item->id) }}"
+                                    method="POST">
+                                    @csrf @method('DELETE')
+                                    <button type="button" onclick="openDeleteModal('delete-form-{{ $item->id }}')"
+                                        class="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-100 text-slate-500 hover:bg-error/10 hover:text-error transition-all">
+                                        <span class="material-symbols-outlined text-[20px]">delete</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="6" class="px-8 py-8 text-center text-slate-400">Belum ada data berita.</td>
+                    </tr>
+                    @endforelse
+
+                </tbody>
+            </table>
+        </div>
+
+        {{-- Pagination --}}
+        <div class="px-8 py-6 bg-surface-container-low/30 border-t border-surface-container">
+            {{ $berita->links() }}
+        </div>
+    </div>
 </section>
-
-{{-- Table Container --}}
-<div class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] mb-8">
-    <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
-            <thead>
-                <tr class="bg-surface-container-low/50">
-                    <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Preview</th>
-                    <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Judul Berita
-                    </th>
-                    <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Kategori</th>
-                    <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Tanggal</th>
-                    <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Status</th>
-                    <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">Aksi
-                    </th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-surface-container">
-
-                {{-- Loop Data Berita --}}
-                @forelse ($berita as $item)
-                <tr class="group hover:bg-surface-container-low/30 transition-colors">
-                    <td class="px-8 py-4">
-                        @if($item->gambar)
-                        <img src="{{ asset('storage/' . $item->gambar) }}"
-                            class="w-20 h-14 object-cover rounded-lg shadow-sm" alt="Thumbnail">
-                        @else
-                        <div
-                            class="w-20 h-14 bg-slate-200 rounded-lg flex items-center justify-center text-slate-400 text-xs">
-                            No Image</div>
-                        @endif
-                    </td>
-                    <td class="px-6 py-4">
-                        <p
-                            class="font-bold text-blue-900 group-hover:text-primary transition-colors max-w-xs leading-snug">
-                            {{ $item->judul }}
-                        </p>
-                    </td>
-                    <td class="px-6 py-4">
-                        <span
-                            class="bg-primary-fixed text-on-primary-fixed-variant px-3 py-1 rounded-full text-xs font-bold">{{ $item->kategori }}</span>
-                    </td>
-                    <td class="px-6 py-4 text-sm text-on-surface-variant font-medium">
-                        {{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}
-                    </td>
-                    <td class="px-6 py-4">
-                        @if($item->status == 'publish')
-                        <span
-                            class="flex items-center gap-1.5 text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full w-fit">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Published
-                        </span>
-                        @else
-                        <span
-                            class="flex items-center gap-1.5 text-xs font-bold text-amber-600 bg-amber-50 px-3 py-1 rounded-full w-fit">
-                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Draft
-                        </span>
-                        @endif
-                    </td>
-                    <td class="px-8 py-4 text-right">
-                        <div class="flex justify-end gap-2">
-                            <a href="{{ route('berita.edit', $item->id) }}"
-                                class="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-100 text-slate-500 hover:bg-amber-100 hover:text-amber-600 transition-all">
-                                <span class="material-symbols-outlined text-[20px]">edit</span>
-                            </a>
-                            <form id="delete-form-{{ $item->id }}" action="{{ route('berita.destroy', $item->id) }}"
-                                method="POST">
-                                @csrf @method('DELETE')
-                                {{-- Ubah type menjadi button, dan panggil fungsi openDeleteModal() --}}
-                                <button type="button" onclick="openDeleteModal('delete-form-{{ $item->id }}')"
-                                    class="w-full h-full w-9 h-9 flex items-center justify-center rounded-xl bg-slate-100 text-slate-500 hover:bg-error/10 hover:text-error transition-all">
-                                    <span class="material-symbols-outlined text-[20px]">delete</span>
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="6" class="px-8 py-8 text-center text-slate-400">Belum ada data berita.</td>
-                </tr>
-                @endforelse
-
-            </tbody>
-        </table>
-    </div>
-
-    {{-- Pagination --}}
-    <div class="px-8 py-6 bg-surface-container-low/30 border-t border-surface-container">
-        {{ $berita->links() }}
-    </div>
-</div>
-
-{{-- Widget Summary Bawah --}}
-<div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
-    <div
-        class="bg-surface-container-lowest p-6 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex items-center gap-5">
-        <div class="w-14 h-14 rounded-2xl bg-blue-50 text-primary flex items-center justify-center">
-            <span class="material-symbols-outlined text-3xl"
-                style="font-variation-settings: 'FILL' 1;">description</span>
-        </div>
-        <div>
-            <h4 class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Artikel</h4>
-            <p class="text-3xl font-extrabold text-blue-900 font-headline">{{ $totalBerita }}</p>
-        </div>
-    </div>
-    <div
-        class="bg-surface-container-lowest p-6 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex items-center gap-5">
-        <div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-            <span class="material-symbols-outlined text-3xl"
-                style="font-variation-settings: 'FILL' 1;">check_circle</span>
-        </div>
-        <div>
-            <h4 class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1">Diterbitkan</h4>
-            <p class="text-3xl font-extrabold text-blue-900 font-headline">{{ $totalPublished }}</p>
-        </div>
-    </div>
-    <div
-        class="bg-surface-container-lowest p-6 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex items-center gap-5 border-l-4 border-tertiary-container">
-        <div class="w-14 h-14 rounded-2xl bg-amber-50 text-tertiary flex items-center justify-center">
-            <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">pending</span>
-        </div>
-        <div>
-            <h4 class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1">Draft Pending</h4>
-            <p class="text-3xl font-extrabold text-blue-900 font-headline">{{ $totalDraft }}</p>
-        </div>
-    </div>
-</div>
 
 {{-- ========================================== --}}
 {{-- MODAL KONFIRMASI HAPUS (CUSTOM POP-UP)     --}}
@@ -448,10 +420,12 @@
 <script>
 const newsPageOverview = document.getElementById('news-page-overview');
 const newsPageEditors = document.getElementById('news-page-editors');
+const newsManagementSection = document.getElementById('news-management-section');
 const newsPagePanels = document.querySelectorAll('[data-news-panel]');
 
 function showNewsPageOverview() {
     newsPageEditors.classList.add('hidden');
+    newsManagementSection.classList.add('hidden');
     newsPageOverview.classList.remove('hidden');
     newsPagePanels.forEach((panel) => panel.classList.add('hidden'));
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -465,6 +439,7 @@ function showNewsPageEditor(panelId) {
     }
 
     newsPageOverview.classList.add('hidden');
+    newsManagementSection.classList.add('hidden');
     newsPageEditors.classList.remove('hidden');
     newsPagePanels.forEach((panel) => panel.classList.add('hidden'));
     target.classList.remove('hidden');
@@ -479,10 +454,32 @@ document.querySelectorAll('[data-news-edit-target]').forEach((link) => {
     });
 });
 
+function showNewsManagement() {
+    newsPageOverview.classList.add('hidden');
+    newsPageEditors.classList.add('hidden');
+    newsPagePanels.forEach((panel) => panel.classList.add('hidden'));
+    newsManagementSection.classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.querySelectorAll('[data-news-scroll-target]').forEach((link) => {
+    link.addEventListener('click', (event) => {
+        event.preventDefault();
+        showNewsManagement();
+    });
+});
+
 document.querySelectorAll('[data-news-back]').forEach((button) => {
     button.addEventListener('click', (event) => {
         event.preventDefault();
         event.stopPropagation();
+        showNewsPageOverview();
+    });
+});
+
+document.querySelectorAll('[data-news-management-back]').forEach((button) => {
+    button.addEventListener('click', (event) => {
+        event.preventDefault();
         showNewsPageOverview();
     });
 });

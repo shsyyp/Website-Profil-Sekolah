@@ -1,34 +1,35 @@
 @extends('layouts.admin')
 
-@section('title', 'Tambah Chatbot | Admin SMAN Pintar')
+@section('title', 'Edit Chatbot | Admin SMAN Pintar')
 
 @section('content')
 <div class="max-w-7xl mx-auto space-y-8">
-    <div class="mb-8">
-        <h2 class="text-4xl font-extrabold text-primary tracking-tight font-headline">Tambah Pertanyaan</h2>
+    <div>
+        <h2 class="text-3xl font-extrabold text-primary tracking-tight font-headline">Edit Chatbot</h2>
     </div>
 
     <div class="bg-surface-container-lowest rounded-2xl shadow-sm p-8">
-        <form action="{{ route('chatbot.store') }}" method="POST" class="space-y-6">
+        <form action="{{ route('chatbot.update', $chatbot->id) }}" method="POST" class="space-y-6">
             @csrf
+            @method('PUT')
 
             <div>
                 <label class="text-xs font-bold uppercase text-tertiary block mb-2">Kategori</label>
                 <select name="kategori"
                     class="w-full bg-surface-container border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary"
                     required>
-                    <option value="Profil">Profil</option>
-                    <option value="Fasilitas">Fasilitas</option>
-                    <option value="PMB">PMB</option>
-                    <option value="Alumni">Alumni</option>
-                    <option value="Umum">Umum</option>
+                    @foreach (['Profil', 'Fasilitas', 'PMB', 'Alumni', 'Umum'] as $kategori)
+                    <option value="{{ $kategori }}" @selected(old('kategori', $chatbot->kategori) === $kategori)>
+                        {{ $kategori }}
+                    </option>
+                    @endforeach
                 </select>
                 @error('kategori') <span class="text-error text-xs">{{ $message }}</span> @enderror
             </div>
 
             <div>
-                <label class="text-xs font-bold uppercase text-tertiary block mb-2">Pertanyaan (Keywords)</label>
-                <input name="pertanyaan" type="text" value="{{ old('pertanyaan') }}"
+                <label class="text-xs font-bold uppercase text-tertiary block mb-2">Pertanyaan</label>
+                <input name="pertanyaan" type="text" value="{{ old('pertanyaan', $chatbot->pertanyaan) }}"
                     class="w-full bg-surface-container border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary"
                     placeholder="Contoh: Bagaimana cara mendaftar?" required>
                 @error('pertanyaan') <span class="text-error text-xs">{{ $message }}</span> @enderror
@@ -38,16 +39,19 @@
                 <label class="text-xs font-bold uppercase text-tertiary block mb-2">Jawaban Bot</label>
                 <textarea name="jawaban" rows="5"
                     class="w-full bg-surface-container border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary"
-                    required>{{ old('jawaban') }}</textarea>
+                    required>{{ old('jawaban', $chatbot->jawaban) }}</textarea>
                 @error('jawaban') <span class="text-error text-xs">{{ $message }}</span> @enderror
             </div>
 
             <div class="pt-6 flex gap-3 border-t border-surface-container">
                 <a href="{{ route('chatbot.index') }}"
-                    class="px-8 py-3 border-2 border-outline-variant/30 text-on-surface font-bold rounded-xl text-sm hover:bg-surface-container transition-colors">Batal</a>
+                    class="px-8 py-3 border-2 border-outline-variant/30 text-on-surface font-bold rounded-xl text-sm hover:bg-surface-container transition-colors">
+                    Batal
+                </a>
                 <button type="submit"
-                    class="px-8 py-3 bg-primary text-white font-bold rounded-xl text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform">Simpan
-                    Data</button>
+                    class="px-8 py-3 bg-primary text-white font-bold rounded-xl text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform">
+                    Simpan Perubahan
+                </button>
             </div>
         </form>
     </div>

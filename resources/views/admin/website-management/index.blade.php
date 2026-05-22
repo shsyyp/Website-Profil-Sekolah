@@ -95,7 +95,7 @@ $pmbTestimonials = $pmb->testimonials ?: [
                     <label class="cms-input flex items-center gap-2"><input type="checkbox" name="show_news" value="1" @checked($homepage->show_news ?? true)> Tampilkan berita di Beranda</label>
                 </div>
             </x-cms-card>
-            <div class="flex justify-end"><button class="cms-save">Simpan Beranda</button></div>
+            <div class="flex justify-end"><button class="cms-save">Simpan</button></div>
         </form>
     </div>
     @endif
@@ -131,7 +131,7 @@ $pmbTestimonials = $pmb->testimonials ?: [
                     <textarea name="extracurricular_desc" class="cms-input" rows="2" placeholder="Deskripsi ekstrakurikuler">{{ old('extracurricular_desc', $about->extracurricular_desc ?? '') }}</textarea>
                 </div>
             </x-cms-card>
-            <div class="flex justify-end"><button class="cms-save">Simpan Tentang Kami</button></div>
+            <div class="flex justify-end"><button class="cms-save">Simpan</button></div>
         </form>
     </div>
     @endif
@@ -162,7 +162,7 @@ $pmbTestimonials = $pmb->testimonials ?: [
                 </div>
                 <div class="overflow-x-auto"><table class="w-full text-left text-sm"><tbody class="divide-y divide-surface-container">@forelse($berita as $item)<tr><td class="py-3 font-bold text-primary">{{ $item->judul }}</td><td>{{ $item->status }}</td><td class="text-right"><a href="{{ route('berita.edit', $item->id) }}" class="text-primary font-bold">Edit</a></td></tr>@empty<tr><td class="py-4 text-on-surface-variant">Belum ada berita.</td></tr>@endforelse</tbody></table></div>
             </x-cms-card>
-            <div class="flex justify-end"><button class="cms-save">Simpan Berita</button></div>
+            <div class="flex justify-end"><button class="cms-save">Simpan</button></div>
         </form>
     </div>
     @endif
@@ -202,7 +202,7 @@ $pmbTestimonials = $pmb->testimonials ?: [
                     <input name="cta_secondary_text" class="cms-input" value="{{ old('cta_secondary_text', $pmb->cta_secondary_text ?? 'Hubungi Panitia') }}" placeholder="Tombol CTA kedua">
                 </div>
             </x-cms-card>
-            <div class="flex justify-end"><button class="cms-save">Simpan PMB</button></div>
+            <div class="flex justify-end"><button class="cms-save">Simpan</button></div>
         </form>
     </div>
     @endif
@@ -253,7 +253,7 @@ $pmbTestimonials = $pmb->testimonials ?: [
                 </div>
                 <div class="overflow-x-auto"><table class="w-full text-left text-sm"><tbody class="divide-y divide-surface-container">@forelse($alumni as $item)<tr><td class="py-3 font-bold text-primary">{{ $item->nama }}</td><td>{{ $item->profesi }}</td><td class="text-right"><a href="{{ route('alumni.edit', $item->id) }}" class="text-primary font-bold">Edit</a></td></tr>@empty<tr><td class="py-4 text-on-surface-variant">Belum ada alumni.</td></tr>@endforelse</tbody></table></div>
             </x-cms-card>
-            <div class="flex justify-end"><button class="cms-save">Simpan Alumni</button></div>
+            <div class="flex justify-end"><button class="cms-save">Simpan</button></div>
         </form>
     </div>
     @endif

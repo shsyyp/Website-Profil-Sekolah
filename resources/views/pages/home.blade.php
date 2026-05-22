@@ -11,27 +11,50 @@ $tradisiItems = $homepage?->tradisi ?: [
     ['title' => 'Alumni Network', 'desc' => 'Jaringan alumni luas yang tersebar di berbagai sektor profesional dan perguruan tinggi bergengsi.', 'icon' => 'groups'],
 ];
 
-$fasilitasItems = $homepage?->fasilitas ?: [
+$defaultFasilitasItems = [
     ['title' => 'Perpustakaan Digital', 'desc' => 'Akses ke ribuan jurnal internasional dan koleksi buku fisik terlengkap di Riau.', 'icon' => 'local_library'],
     ['title' => 'Lab Terpadu', 'desc' => 'Fisika, Kimia, Biologi, dan Lab Komputer terbaru.', 'icon' => 'science'],
     ['title' => 'Asrama Modern', 'desc' => 'Kamar yang nyaman dengan pengawasan 24 jam.', 'icon' => 'apartment'],
     ['title' => 'Sport Center', 'desc' => 'Lapangan basket indoor, futsal, dan area atletik standar nasional.', 'icon' => 'sports_basketball'],
 ];
 
-$sharedFacilities = collect($about?->facilities ?? [])
+$fasilitasItems = $defaultFasilitasItems;
+
+$allSharedFacilities = collect($about?->facilities ?? [])
     ->filter(fn ($facility) => filled($facility['title'] ?? null))
-    ->take(4)
     ->values()
     ->map(fn ($facility) => [
         'title' => $facility['title'] ?? 'Fasilitas',
         'desc' => $facility['desc'] ?? ($facility['description'] ?? 'Deskripsi fasilitas akan diperbarui.'),
         'icon' => $facility['icon'] ?? 'domain',
         'image' => $facility['image'] ?? null,
-    ])
-    ->all();
+    ]);
 
-if (count($sharedFacilities) >= 4) {
-    $fasilitasItems = $sharedFacilities;
+$selectedFacilityIndexes = collect($homepage?->fasilitas ?? [0, 1, 2, 3])
+    ->map(fn ($index) => (int) $index)
+    ->filter(fn ($index) => $allSharedFacilities->has($index))
+    ->unique()
+    ->take(4)
+    ->values();
+
+$selectedSharedFacilities = $selectedFacilityIndexes->isNotEmpty()
+    ? $selectedFacilityIndexes->map(fn ($index) => $allSharedFacilities->get($index))->values()->all()
+    : $allSharedFacilities->take(4)->values()->all();
+
+if (count($selectedSharedFacilities) > 0) {
+    $fasilitasItems = collect($selectedSharedFacilities)
+        ->merge($allSharedFacilities->reject(fn ($facility) => collect($selectedSharedFacilities)->contains($facility))->values())
+        ->take(4)
+        ->values()
+        ->all();
+}
+
+if (count($fasilitasItems) < 4) {
+    $fasilitasItems = collect($fasilitasItems)
+        ->merge($defaultFasilitasItems)
+        ->take(4)
+        ->values()
+        ->all();
 }
 
 $facilityMainImage = $homepage?->facility_main_image
@@ -204,7 +227,7 @@ document.addEventListener('keydown', (event) => {
 <section class="py-24 bg-surface-container-low">
     <div class="max-w-7xl mx-auto px-6">
         <div class="text-center max-w-2xl mx-auto mb-16">
-            <h2 class="text-4xl font-black font-headline text-primary mb-4">{{ $homepage?->facilities_title ?? 'Fasilitas & Ekosistem' }}</h2>
+            <h2 class="text-4xl font-black font-headline text-primary mb-4">{{ $homepage?->facilities_title ?? 'Fasilitas' }}</h2>
             <p class="text-secondary">{{ $homepage?->facilities_subtitle ?? 'Kami menyediakan infrastruktur terbaik untuk mendukung setiap langkah eksplorasi siswa.' }}</p>
         </div>
         <div class="grid grid-cols-12 gap-6 h-auto md:h-[600px]">
@@ -273,7 +296,7 @@ document.addEventListener('keydown', (event) => {
     <div class="max-w-7xl mx-auto px-6">
         <div class="flex justify-between items-end mb-12">
             <div>
-                <h2 class="text-4xl font-black font-headline text-primary leading-tight">{{ $homepage?->news_title ?? 'Warta SMAN Pintar' }}</h2>
+                <h2 class="text-4xl font-black font-headline text-primary leading-tight">{{ str_replace('Warta', 'Berita', $homepage?->news_title ?? 'Berita SMAN Pintar') }}</h2>
                 <p class="text-secondary mt-2">{{ $homepage?->news_subtitle ?? 'Update terbaru seputar kegiatan dan prestasi sekolah.' }}</p>
             </div>
             <a href="{{ route('berita') }}"
@@ -359,7 +382,7 @@ document.addEventListener('keydown', (event) => {
 <section class="py-24 bg-surface-container">
     <div class="max-w-7xl mx-auto px-6">
         <div class="text-center mb-16">
-            <p class="text-tertiary font-bold text-sm tracking-[0.2em] uppercase mb-4">{{ $homepage?->alumni_label ?? 'Our Alumni' }}</p>
+            <p class="text-tertiary font-bold text-sm tracking-[0.2em] uppercase mb-4">{{ str_replace('Our Alumni', 'Alumni', $homepage?->alumni_label ?? 'Alumni') }}</p>
             <h2 class="text-4xl font-black font-headline text-primary">{{ $homepage?->alumni_title ?? 'Jejak Langkah Kesuksesan' }}</h2>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

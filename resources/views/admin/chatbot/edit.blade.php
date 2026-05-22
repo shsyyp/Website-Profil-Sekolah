@@ -49,7 +49,7 @@
                 </a>
                 <button type="submit"
                     class="px-8 py-3 bg-primary text-white font-bold rounded-xl text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform">
-                    Simpan Perubahan
+                    Simpan
                 </button>
             </div>
         </form>

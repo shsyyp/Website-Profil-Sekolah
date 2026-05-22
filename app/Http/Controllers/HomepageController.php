@@ -21,6 +21,13 @@ class HomepageController extends Controller
     public function update(Request $request)
     {
         $data = $request->except(['_token']);
+        $data['fasilitas'] = collect($request->input('fasilitas', []))
+            ->filter(fn ($index) => $index !== null && $index !== '')
+            ->map(fn ($index) => (int) $index)
+            ->unique()
+            ->take(4)
+            ->values()
+            ->all();
         $homepage = Homepage::first();
 
         if ($request->hasFile('hero_image')) {

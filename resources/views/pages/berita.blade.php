@@ -9,12 +9,6 @@
     $heroDescription = $settings->hero_description ?? 'Menyajikan informasi terbaru seputar prestasi, kegiatan kesiswaan, dan pengumuman resmi dari lingkungan sekolah.';
     $filterAllLabel = $settings->filter_all_label ?? 'Semua';
     $searchPlaceholder = $settings->search_placeholder ?? 'Ketik kata kunci...';
-    $popularTitle = $settings->popular_title ?? 'Berita Populer';
-    $categoriesTitle = $settings->categories_title ?? 'Kategori';
-    $newsletterTitle = $settings->newsletter_title ?? 'Berlangganan Warta';
-    $newsletterDescription = $settings->newsletter_description ?? 'Dapatkan update berita terbaru SMAN Pintar langsung ke email Anda setiap minggu.';
-    $newsletterPlaceholder = $settings->newsletter_placeholder ?? 'Email Anda';
-    $newsletterButtonText = $settings->newsletter_button_text ?? 'Daftar Sekarang';
 @endphp
 
 <div class="pt-24 pb-20">
@@ -59,12 +53,10 @@
         </div>
     </section>
 
-    {{-- Main Grid Layout (Berita & Sidebar) --}}
-    <div class="max-w-7xl mx-auto px-8 grid grid-cols-1 lg:grid-cols-12 gap-12">
-
-        {{-- Kiri: News Grid --}}
-        <div class="lg:col-span-8 space-y-12">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    {{-- News Grid --}}
+    <div class="max-w-7xl mx-auto px-8">
+        <div class="space-y-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
 
                 @forelse ($daftar_berita as $item)
                 <article
@@ -107,68 +99,6 @@
             </div>
         </div>
 
-        {{-- Kanan: Sidebar --}}
-        <aside class="lg:col-span-4 space-y-10">
-
-            {{-- Popular News --}}
-            <section class="bg-surface-container-low rounded-xl p-8">
-                <h2 class="text-xl font-bold font-headline text-primary mb-6 flex items-center gap-2">
-                    <span class="material-symbols-outlined text-tertiary">trending_up</span>
-                    {{ $popularTitle }}
-                </h2>
-                <div class="space-y-6">
-                    @forelse ($beritaPopuler as $item)
-                    <a class="group flex gap-4" href="#">
-                        <div class="w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden">
-                            <img class="w-full h-full object-cover group-hover:scale-110 transition-transform"
-                                src="{{ $item->gambar ? asset('storage/' . $item->gambar) : 'https://lh3.googleusercontent.com/aida-public/AB6AXuDqcs6FfnhfHAcoi1padYUKRX6lcOW9m_lm-AcXEqAjaPxxQj5qZhsPdNkYiB2GzVVwW1IWZZ4Wx9BE0IVRtymsYWLQH6N6vi2YLMIZ10RrsB5Oz3gqt8jQC1O3mv1fgBU-eZ2XmfDtevEcdX0t2vMjgpQwgECvs7Ba5Pepjp4BNhSXUFEtePQWAeC8nKjzg-dRQBw_SIE1lJjz_Ey7gLuE9PbwvDEMxfaqsDb3S5TilZ77lLYmIFPWYk2pImIo3oju_Usv90S1xHMq' }}" />
-                        </div>
-                        <div class="flex flex-col justify-center">
-                            <h4
-                                class="text-sm font-bold leading-snug group-hover:text-primary transition-colors line-clamp-2">
-                                {{ $item->judul }}</h4>
-                            <span class="text-[11px] text-outline mt-1 font-medium">{{ \Carbon\Carbon::parse($item->tanggal)->translatedFormat('d F Y') }}</span>
-                        </div>
-                    </a>
-                    @empty
-                    <p class="text-sm text-on-surface-variant">Belum ada berita populer.</p>
-                    @endforelse
-                </div>
-            </section>
-
-            {{-- Categories --}}
-            <section class="bg-surface-container-lowest border border-outline-variant/10 rounded-xl p-8">
-                <h2 class="text-xl font-bold font-headline text-primary mb-6">{{ $categoriesTitle }}</h2>
-                <div class="flex flex-wrap gap-2">
-                    @forelse ($kategoriBerita as $kategori)
-                    <a class="px-4 py-2 bg-surface-container rounded-lg text-sm font-semibold text-on-surface-variant hover:bg-primary-fixed hover:text-on-primary-fixed transition-all flex items-center gap-2"
-                        href="{{ route('berita', ['kategori' => $kategori->kategori]) }}">
-                        {{ $kategori->kategori }} <span class="text-[10px] bg-white px-1.5 py-0.5 rounded-full text-primary">{{ $kategori->total }}</span>
-                    </a>
-                    @empty
-                    <p class="text-sm text-on-surface-variant">Belum ada kategori.</p>
-                    @endforelse
-                </div>
-            </section>
-
-            {{-- Newsletter / CTA --}}
-            <section class="bg-primary p-8 rounded-xl text-white relative overflow-hidden">
-                <div class="relative z-10">
-                    <h2 class="text-2xl font-bold font-headline mb-4">{{ $newsletterTitle }}</h2>
-                    <p class="text-blue-100 text-sm mb-6">{{ $newsletterDescription }}</p>
-                    <form class="space-y-3">
-                        <input
-                            class="w-full px-4 py-3 rounded-lg bg-white/10 border-white/20 focus:ring-2 focus:ring-tertiary placeholder:text-blue-200 text-white border-none"
-                            placeholder="{{ $newsletterPlaceholder }}" type="email" />
-                        <button type="button"
-                            class="w-full bg-tertiary-fixed text-on-tertiary-fixed font-bold py-3 rounded-lg hover:scale-105 active:scale-95 transition-transform">{{ $newsletterButtonText }}</button>
-                    </form>
-                </div>
-                <span
-                    class="material-symbols-outlined absolute -bottom-6 -right-6 text-white/10 text-[120px] rotate-12">mail</span>
-            </section>
-
-        </aside>
     </div>
 </div>
 

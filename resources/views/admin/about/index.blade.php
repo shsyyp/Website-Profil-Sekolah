@@ -515,7 +515,7 @@ $components = [
                     Batal
                 </button>
                 <button type="submit" class="bg-primary text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:scale-105 transition-all">
-                    Simpan Tentang Kami
+                    Simpan
                 </button>
             </div>
         </div>

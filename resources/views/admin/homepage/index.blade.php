@@ -51,6 +51,17 @@ $facilityTitles = collect(range(0, 3))
 ->map(fn ($i) => data_get($sharedFacilities, $i . '.title') ?? $defaultFasilitas[$i]['title'])
 ->implode(', ');
 
+$selectedAlumniIds = collect($homepage->selected_alumni_ids ?? ($homepage->featured_alumni_id ? [$homepage->featured_alumni_id] : []))
+->map(fn ($id) => (int) $id)
+->filter(fn ($id) => $alumni->contains('id', $id))
+->unique()
+->take(3)
+->values();
+
+$selectedAlumniNames = $selectedAlumniIds->isNotEmpty()
+? $selectedAlumniIds->map(fn ($id) => optional($alumni->firstWhere('id', $id))->nama)->filter()->implode(', ')
+: 'Belum dipilih';
+
 $components = [
 [
 'id' => 'hero-section',
@@ -64,8 +75,8 @@ $components = [
 'id' => 'tradisi-section',
 'preview' => 'icon',
 'icon' => 'military_tech',
-'title' => 'Tradisi Keunggulan',
-'content' => $homepage->about_title ?? 'Tradisi Keunggulan, Masa Depan Gemilang',
+'title' => 'Keunggulan',
+'content' => $homepage->about_title ?? 'Keunggulan, Masa Depan Gemilang',
 'meta' => $tradisiTitles,
 ],
 [
@@ -81,15 +92,23 @@ $components = [
 'id' => 'berita-section',
 'preview' => 'icon',
 'icon' => 'newspaper',
-'title' => 'Berita & Alumni',
+'title' => 'Berita',
 'content' => str_replace('Warta', 'Berita', $homepage->news_title ?? 'Berita SMAN Pintar'),
 'meta' => 'Limit berita: ' . ($homepage->news_limit ?? 3) . ' item',
+],
+[
+'id' => 'alumni-section',
+'preview' => 'icon',
+'icon' => 'groups',
+'title' => 'Alumni',
+'content' => $homepage->alumni_title ?? 'Jejak Langkah Kesuksesan',
+'meta' => $selectedAlumniNames,
 ],
 [
 'id' => 'cta-section',
 'preview' => 'icon',
 'icon' => 'campaign',
-'title' => 'CTA PMB',
+'title' => 'PMB',
 'content' => $homepage->cta_title ?? 'Jadilah Bagian dari SMAN Pintar',
 'meta' => 'Tahun ' . ($homepage->cta_year ?? '2025'),
 ],
@@ -273,7 +292,7 @@ $components = [
                 <div>
                     <span class="text-xs font-bold text-tertiary uppercase tracking-widest mb-1 block">Component
                         02</span>
-                    <h3 class="text-2xl font-headline font-extrabold text-primary">Tradisi Keunggulan</h3>
+                    <h3 class="text-2xl font-headline font-extrabold text-primary">Keunggulan</h3>
                 </div>
                 <div class="flex items-center gap-3">
                     <button type="submit" data-save-editor
@@ -297,7 +316,7 @@ $components = [
                     <div>
                         <label>Judul Bagian</label>
                         <input name="about_title" type="text"
-                            value="{{ $homepage->about_title ?? 'Tradisi Keunggulan, Masa Depan Gemilang' }}"
+                            value="{{ $homepage->about_title ?? 'Keunggulan, Masa Depan Gemilang' }}"
                             placeholder="Contoh: Karakter Kuat, Ilmu Berdaya">
                     </div>
                     <div>
@@ -425,7 +444,7 @@ $components = [
                 <div>
                     <span class="text-xs font-bold text-tertiary uppercase tracking-widest mb-1 block">Component
                         04</span>
-                    <h3 class="text-2xl font-headline font-extrabold text-primary">Berita & Alumni</h3>
+                    <h3 class="text-2xl font-headline font-extrabold text-primary">Berita</h3>
                 </div>
                 <div class="flex items-center gap-3">
                     <button type="submit" data-save-editor
@@ -444,7 +463,6 @@ $components = [
             </summary>
             <div class="border-t border-slate-100 p-6 lg:p-8 space-y-8">
                 <input type="hidden" name="news_button_text" value="{{ $homepage->news_button_text ?? 'Semua Berita' }}">
-                <input type="hidden" name="alumni_label" value="{{ str_replace('Our Alumni', 'Alumni', $homepage->alumni_label ?? 'Alumni') }}">
 
                 <div class="space-y-6">
                     <div>
@@ -474,22 +492,80 @@ $components = [
                                 <span class="pointer-events-none material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-500">expand_more</span>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </details>
+
+        <details id="alumni-section" data-editor-panel
+            class="hidden group bg-surface-container-lowest rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <summary class="cursor-pointer list-none p-6 flex items-center justify-between gap-4">
+                <div>
+                    <span class="text-xs font-bold text-tertiary uppercase tracking-widest mb-1 block">Component
+                        05</span>
+                    <h3 class="text-2xl font-headline font-extrabold text-primary">Alumni</h3>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button type="submit" data-save-editor
+                        class="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-white hover:bg-primary-container transition-colors">
+                        <span class="material-symbols-outlined text-[18px]">save</span>
+                        Simpan
+                    </button>
+                    <button type="button" data-back-overview
+                        class="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors">
+                        <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                        Kembali
+                    </button>
+                    <span
+                        class="material-symbols-outlined text-slate-400 group-open:rotate-180 transition-transform">expand_more</span>
+                </div>
+            </summary>
+            <div class="border-t border-slate-100 p-6 lg:p-8 space-y-8">
+                <div class="space-y-6">
+                    <div>
+                        <label>Label Alumni</label>
+                        <input name="alumni_label" type="text"
+                            placeholder="Contoh: Alumni"
+                            value="{{ str_replace('Our Alumni', 'Alumni', $homepage->alumni_label ?? 'Alumni') }}">
+                    </div>
+                    <div>
+                        <label>Judul Alumni</label>
+                        <input name="alumni_title" type="text"
+                            placeholder="Contoh: Jejak Langkah Kesuksesan"
+                            value="{{ $homepage->alumni_title ?? 'Jejak Langkah Kesuksesan' }}">
+                    </div>
+                </div>
+
+                <div class="border-t border-surface-container pt-8">
+                    <h4 class="mb-5 text-lg font-bold text-primary font-headline">Pilihan Alumni</h4>
+                    @if($alumni->isNotEmpty())
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        @for ($slot = 0; $slot < 3; $slot++)
+                        @php
+                            $selectedAlumniId = $selectedAlumniIds->get($slot);
+                        @endphp
                         <div>
-                            <label>Alumni Sorotan</label>
+                            <label>Alumni {{ $slot + 1 }}</label>
                             <div class="relative">
-                                <select name="featured_alumni_id" class="appearance-none pr-12">
+                                <select name="selected_alumni_ids[]" class="appearance-none pr-12">
                                     <option value="">Tidak ditampilkan</option>
                                     @foreach ($alumni as $item)
                                     <option value="{{ $item->id }}"
-                                        {{ ($homepage->featured_alumni_id ?? '') == $item->id ? 'selected' : '' }}>
-                                        {{ $item->nama }}
+                                        {{ $selectedAlumniId === $item->id ? 'selected' : '' }}>
+                                        {{ $item->nama }}{{ $item->tahun_lulus ? ' - ' . $item->tahun_lulus : '' }}
                                     </option>
                                     @endforeach
                                 </select>
                                 <span class="pointer-events-none material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-500">expand_more</span>
                             </div>
                         </div>
+                        @endfor
                     </div>
+                    @else
+                    <div class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-6 text-sm text-on-surface-variant">
+                        Belum ada data alumni aktif. Tambahkan alumni terlebih dahulu di menu Alumni.
+                    </div>
+                    @endif
                 </div>
             </div>
         </details>
@@ -499,8 +575,8 @@ $components = [
             <summary class="cursor-pointer list-none p-6 flex items-center justify-between gap-4">
                 <div>
                     <span class="text-xs font-bold text-tertiary uppercase tracking-widest mb-1 block">Component
-                        05</span>
-                    <h3 class="text-2xl font-headline font-extrabold text-primary">CTA PMB Section</h3>
+                        06</span>
+                    <h3 class="text-2xl font-headline font-extrabold text-primary">PMB</h3>
                 </div>
                 <div class="flex items-center gap-3">
                     <button type="submit" data-save-editor
@@ -526,31 +602,26 @@ $components = [
                             value="{{ $homepage->cta_title ?? 'Jadilah Bagian dari SMAN Pintar' }}">
                         <input name="cta_year" class="bg-surface-container-low border-none rounded-xl px-4 py-3"
                             placeholder="Tahun" value="{{ $homepage->cta_year ?? '2025' }}">
-                        <input name="cta_button" class="bg-surface-container-low border-none rounded-xl px-4 py-3"
-                            placeholder="Teks Tombol" value="{{ $homepage->cta_button ?? 'Daftar Sekarang' }}">
                         <input name="cta_secondary_button"
                             class="bg-surface-container-low border-none rounded-xl px-4 py-3"
-                            placeholder="Teks Tombol Kedua"
+                            placeholder="Teks Tombol"
                             value="{{ $homepage->cta_secondary_button ?? 'Panduan Pendaftaran' }}">
                         <input name="cta_secondary_link"
                             class="bg-surface-container-low border-none rounded-xl px-4 py-3"
-                            placeholder="Link Tombol Kedua" value="{{ $homepage->cta_secondary_link ?? route('pmb') }}">
+                            placeholder="Link Tombol" value="{{ $homepage->cta_secondary_link ?? route('pmb') }}">
                         <input name="cta_badge" class="bg-surface-container-low border-none rounded-xl px-4 py-3"
                             placeholder="Label tahun" value="{{ $homepage->cta_badge ?? 'Batch Admission' }}">
                         <input name="cta_deadline_label"
                             class="bg-surface-container-low border-none rounded-xl px-4 py-3"
                             placeholder="Label countdown"
                             value="{{ $homepage->cta_deadline_label ?? 'Pendaftaran Berakhir Dalam' }}">
-                        <input name="cta_countdown_days"
-                            class="bg-surface-container-low border-none rounded-xl px-4 py-3" placeholder="Hari"
-                            value="{{ $homepage->cta_countdown_days ?? '14' }}">
-                        <input name="cta_countdown_hours"
-                            class="bg-surface-container-low border-none rounded-xl px-4 py-3" placeholder="Jam"
-                            value="{{ $homepage->cta_countdown_hours ?? '08' }}">
+                        <input name="cta_deadline_at" type="datetime-local"
+                            class="bg-surface-container-low border-none rounded-xl px-4 py-3"
+                            value="{{ $homepage->cta_deadline_at ? $homepage->cta_deadline_at->format('Y-m-d\TH:i') : now()->addDays((int) ($homepage->cta_countdown_days ?? 14))->addHours((int) ($homepage->cta_countdown_hours ?? 8))->format('Y-m-d\TH:i') }}">
                         <textarea name="cta_desc"
                             class="bg-surface-container-low border-none rounded-xl px-4 py-3 col-span-1 md:col-span-2"
                             placeholder="Deskripsi Singkat"
-                            rows="3">{{ $homepage->cta_desc ?? 'Daftarkan diri Anda hari ini...' }}</textarea>
+                            rows="3">{{ $homepage->cta_desc ?? 'Dapatkan informasi lengkap seputar Penerimaan Murid Baru, mulai dari jadwal, persyaratan, alur seleksi, hingga panduan pendaftaran offline.' }}</textarea>
                     </div>
                 </div>
             </div>
@@ -561,7 +632,7 @@ $components = [
             <summary class="cursor-pointer list-none p-6 flex items-center justify-between gap-4">
                 <div>
                     <span class="text-xs font-bold text-tertiary uppercase tracking-widest mb-1 block">Component
-                        06</span>
+                        07</span>
                     <h3 class="text-2xl font-headline font-extrabold text-primary">Footer Website</h3>
                 </div>
                 <div class="flex items-center gap-3">

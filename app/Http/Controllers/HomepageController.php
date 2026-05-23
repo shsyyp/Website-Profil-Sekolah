@@ -28,6 +28,17 @@ class HomepageController extends Controller
             ->take(4)
             ->values()
             ->all();
+        $data['selected_alumni_ids'] = collect($request->input('selected_alumni_ids', []))
+            ->filter(fn ($id) => $id !== null && $id !== '')
+            ->map(fn ($id) => (int) $id)
+            ->unique()
+            ->take(3)
+            ->values()
+            ->all();
+        $data['featured_alumni_id'] = $data['selected_alumni_ids'][0] ?? null;
+        $data['cta_deadline_at'] = $request->filled('cta_deadline_at')
+            ? $request->input('cta_deadline_at')
+            : null;
         $homepage = Homepage::first();
 
         if ($request->hasFile('hero_image')) {

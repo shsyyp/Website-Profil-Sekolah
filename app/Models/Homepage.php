@@ -15,14 +15,16 @@ class Homepage extends Model
         'facilities_title', 'facilities_subtitle', 'facility_main_image', 'facility_side_image',
         'news_title', 'news_subtitle', 'news_button_text',
         'cta_title', 'cta_desc', 'cta_year', 'cta_button', 'cta_secondary_button', 'cta_secondary_link',
-        'cta_badge', 'cta_deadline_label', 'cta_countdown_days', 'cta_countdown_hours',
-        'news_limit', 'featured_alumni_id', 'alumni_label', 'alumni_title',
+        'cta_badge', 'cta_deadline_label', 'cta_deadline_at', 'cta_countdown_days', 'cta_countdown_hours',
+        'news_limit', 'featured_alumni_id', 'selected_alumni_ids', 'alumni_label', 'alumni_title',
         'footer_desc', 'footer_address', 'footer_phone', 'newsletter_desc', 'footer_copyright', 'footer_note'
     ];
 
     // Otomatis convert JSON ke Array bolak-balik
     protected $casts = [
         'tradisi' => 'array',
-        'fasilitas' => 'array'
+        'fasilitas' => 'array',
+        'selected_alumni_ids' => 'array',
+        'cta_deadline_at' => 'datetime'
     ];
 }

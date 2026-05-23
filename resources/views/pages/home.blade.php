@@ -104,10 +104,6 @@ if ($profileVideoUrl && preg_match('~(?:youtube\.com/(?:watch\?v=|embed/|shorts/
                 {{ $homepage?->hero_subtitle ?? 'Sekolah Unggulan Berbasis Asrama di Riau yang mengintegrasikan kecerdasan akademik, karakter mulia, dan inovasi teknologi.' }}
             </p>
             <div class="flex flex-wrap gap-4">
-                <a href="{{ $homepage?->hero_button1_link ?: ($pmb?->link_pendaftaran ?: route('pmb')) }}"
-                    class="primary-gradient text-on-primary px-8 py-4 rounded-md font-bold text-lg hover:scale-105 active:scale-95 transition-all shadow-xl shadow-primary/20">
-                    {{ $homepage?->hero_button1_text ?? 'Daftar PMB' }}
-                </a>
                 @if($profileVideoEmbedUrl)
                 <button type="button" data-profile-video-open
                     class="px-8 py-4 rounded-md font-bold text-lg border-2 border-primary/20 text-primary hover:bg-primary/5 transition-all flex items-center gap-2">
@@ -350,13 +346,9 @@ document.addEventListener('keydown', (event) => {
                     {{ $homepage?->cta_title ?? 'Siap Menjadi Bagian dari SMAN Pintar?' }}
                 </h2>
                 <p class="text-on-primary-container text-lg mb-8 leading-relaxed">
-                    {{ $homepage?->cta_desc ?? 'Jangan lewatkan kesempatan untuk berkembang di lingkungan akademik yang prestisius. Pendaftaran Peserta Didik Baru telah dibuka secara online.' }}
+                    {{ $homepage?->cta_desc ?? 'Dapatkan informasi lengkap seputar Penerimaan Murid Baru, mulai dari jadwal, persyaratan, alur seleksi, hingga panduan pendaftaran offline.' }}
                 </p>
                 <div class="flex flex-wrap gap-4 justify-center md:justify-start">
-                    <a href="{{ $pmb?->link_pendaftaran ?: route('pmb') }}"
-                        class="bg-tertiary-fixed text-on-tertiary-fixed px-10 py-4 rounded-md font-bold text-lg hover:bg-tertiary-fixed-dim transition-colors shadow-lg">
-                        {{ $homepage?->cta_button ?? 'Daftar Sekarang' }}
-                    </a>
                     <a href="{{ $homepage?->cta_secondary_link ?: route('pmb') }}"
                         class="border border-white/30 text-white px-10 py-4 rounded-md font-bold text-lg hover:bg-white/10 transition-colors">
                         {{ $homepage?->cta_secondary_button ?? 'Panduan Pendaftaran' }}
@@ -366,18 +358,62 @@ document.addEventListener('keydown', (event) => {
             <div class="bg-white/10 backdrop-blur-md p-10 rounded-md border border-white/20 text-white text-center">
                 <div class="text-5xl font-black mb-2">{{ $homepage?->cta_year ?? '2025' }}</div>
                 <div class="text-sm font-bold uppercase tracking-widest opacity-80">{{ $homepage?->cta_badge ?? 'Batch Admission' }}</div>
-                <div class="mt-6 pt-6 border-t border-white/20">
+                @php
+                    $ctaDeadlineIso = $homepage?->cta_deadline_at?->toIso8601String();
+                @endphp
+                <div class="mt-6 pt-6 border-t border-white/20" data-countdown-deadline="{{ $ctaDeadlineIso }}">
                     <p class="text-xs opacity-60">{{ $homepage?->cta_deadline_label ?? 'Pendaftaran Berakhir Dalam' }}</p>
-                    <div class="flex gap-4 mt-2 justify-center font-headline font-bold text-2xl">
-                        <div>{{ $homepage?->cta_countdown_days ?? '14' }}<span class="block text-[10px] opacity-60">HARI</span></div>
+                    <div class="flex flex-wrap gap-4 mt-2 justify-center font-headline font-bold text-2xl">
+                        <div><span data-countdown-value="days">{{ $homepage?->cta_countdown_days ?? '14' }}</span><span class="block text-[10px] opacity-60">HARI</span></div>
                         <div>:</div>
-                        <div>{{ $homepage?->cta_countdown_hours ?? '08' }}<span class="block text-[10px] opacity-60">JAM</span></div>
+                        <div><span data-countdown-value="hours">{{ $homepage?->cta_countdown_hours ?? '08' }}</span><span class="block text-[10px] opacity-60">JAM</span></div>
+                        <div>:</div>
+                        <div><span data-countdown-value="minutes">00</span><span class="block text-[10px] opacity-60">MENIT</span></div>
+                        <div>:</div>
+                        <div><span data-countdown-value="seconds">00</span><span class="block text-[10px] opacity-60">DETIK</span></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
+
+<script>
+document.querySelectorAll('[data-countdown-deadline]').forEach((countdown) => {
+    const deadlineValue = countdown.dataset.countdownDeadline;
+    const deadline = deadlineValue ? new Date(deadlineValue).getTime() : null;
+
+    if (!deadline || Number.isNaN(deadline)) {
+        return;
+    }
+
+    const values = {
+        days: countdown.querySelector('[data-countdown-value="days"]'),
+        hours: countdown.querySelector('[data-countdown-value="hours"]'),
+        minutes: countdown.querySelector('[data-countdown-value="minutes"]'),
+        seconds: countdown.querySelector('[data-countdown-value="seconds"]'),
+    };
+
+    const format = (number) => String(number).padStart(2, '0');
+
+    const renderCountdown = () => {
+        const remaining = Math.max(0, deadline - Date.now());
+        const totalSeconds = Math.floor(remaining / 1000);
+        const days = Math.floor(totalSeconds / 86400);
+        const hours = Math.floor((totalSeconds % 86400) / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+
+        values.days.textContent = format(days);
+        values.hours.textContent = format(hours);
+        values.minutes.textContent = format(minutes);
+        values.seconds.textContent = format(seconds);
+    };
+
+    renderCountdown();
+    setInterval(renderCountdown, 1000);
+});
+</script>
 
 <section class="py-24 bg-surface-container">
     <div class="max-w-7xl mx-auto px-6">

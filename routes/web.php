@@ -29,6 +29,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/tentang', [AboutController::class, 'index'])->name('tentang');
 
 Route::get('/berita', [BeritaController::class, 'index'])->name('berita');
+Route::get('/berita/{berita}', [BeritaController::class, 'show'])->name('berita.detail');
 Route::get('/pmb', [PMBController::class, 'index'])->name('pmb');
 Route::get('/alumni', [AlumniController::class, 'index'])->name('alumni');
 

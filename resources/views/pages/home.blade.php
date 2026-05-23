@@ -303,7 +303,7 @@ document.addEventListener('keydown', (event) => {
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             {{-- LOOPING BERITA DARI DATABASE --}}
             @forelse ($berita as $item)
-            <div
+            <a href="{{ route('berita.detail', $item) }}"
                 class="group bg-surface-container-lowest rounded-md overflow-hidden shadow-sm hover:shadow-2xl transition-all border border-outline-variant/10">
                 <div class="h-56 overflow-hidden">
                     <img alt="News"
@@ -323,7 +323,7 @@ document.addEventListener('keydown', (event) => {
                     <p class="text-sm text-on-surface-variant line-clamp-2">
                         {{ \Illuminate\Support\Str::limit(strip_tags($item->isi), 120) }}</p>
                 </div>
-            </div>
+            </a>
             @empty
             <div class="md:col-span-3 bg-surface-container-lowest rounded-md p-10 text-center text-on-surface-variant">
                 Belum ada berita publish yang tersedia.

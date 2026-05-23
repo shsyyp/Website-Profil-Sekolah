@@ -61,23 +61,23 @@
                 @forelse ($daftar_berita as $item)
                 <article
                     class="group bg-surface-container-lowest rounded-xl overflow-hidden hover:shadow-[0_20px_50px_rgba(0,53,127,0.1)] transition-all duration-500 flex flex-col h-full">
-                    <div class="relative overflow-hidden aspect-[16/10]">
+                    <a href="{{ route('berita.detail', $item) }}" class="relative overflow-hidden aspect-[16/10] block">
                         <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                             src="{{ $item->gambar ? asset('storage/' . $item->gambar) : 'https://lh3.googleusercontent.com/aida-public/AB6AXuAUSqq79Uw_F-kdwXiJyOEP54AMX5t94IDTF9iVSXlu5ZE84GXdTQL5-bp-VqtOqm-W51p5Se_xxjWGRbu9UJLxwk6d11z3HF2_py9UKO5L_0vt78jQXJz_lMAcS78Lkvjba-_lCrL5eZLY_lvjMZIaBjnDLZKrZdn3GmwNBWpfeQzR-gPu5mSkTuatXeW5SBJ4tAVFRAZCWIdnBjdFLEDMxuT1zg5wQG_AnkMtNVZFQclNLVPjCWvKoJk36vMmagZzbWSiDSAMjPnU' }}" alt="{{ $item->judul }}" />
                         <span
                             class="absolute top-4 left-4 bg-primary-container text-on-primary px-3 py-1 rounded-md text-xs font-bold tracking-wider uppercase">{{ $item->kategori }}</span>
-                    </div>
+                    </a>
                     <div class="p-6 flex flex-col flex-grow">
                         <div class="flex items-center gap-2 text-outline text-xs font-medium mb-3">
                             <span class="material-symbols-outlined text-[14px]">calendar_today</span>
                             {{ \Carbon\Carbon::parse($item->tanggal)->translatedFormat('d F Y') }}
                         </div>
-                        <h3
+                        <a href="{{ route('berita.detail', $item) }}"
                             class="text-xl font-bold font-headline text-on-surface group-hover:text-primary transition-colors leading-tight mb-3">
-                            {{ $item->judul }}</h3>
+                            {{ $item->judul }}</a>
                         <p class="text-on-surface-variant text-sm leading-relaxed line-clamp-3 mb-6">
                             {{ \Illuminate\Support\Str::limit(strip_tags($item->isi), 140) }}</p>
-                        <a href="#"
+                        <a href="{{ route('berita.detail', $item) }}"
                             class="mt-auto inline-flex items-center gap-2 text-primary font-bold text-sm group/link">
                             Selengkapnya
                             <span

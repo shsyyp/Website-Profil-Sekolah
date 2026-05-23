@@ -46,4 +46,31 @@ class BeritaController extends Controller
             'settings'
         ));
     }
+
+    public function show(Berita $berita)
+    {
+        abort_unless($berita->status === 'publish', 404);
+
+        $beritaTerkait = Berita::where('status', 'publish')
+            ->where('id', '!=', $berita->id)
+            ->where('kategori', $berita->kategori)
+            ->latest('tanggal')
+            ->take(3)
+            ->get();
+
+        if ($beritaTerkait->count() < 3) {
+            $beritaTerkait = $beritaTerkait
+                ->merge(
+                    Berita::where('status', 'publish')
+                        ->where('id', '!=', $berita->id)
+                        ->whereNotIn('id', $beritaTerkait->pluck('id'))
+                        ->latest('tanggal')
+                        ->take(3 - $beritaTerkait->count())
+                        ->get()
+                )
+                ->values();
+        }
+
+        return view('pages.berita-detail', compact('berita', 'beritaTerkait'));
+    }
 }

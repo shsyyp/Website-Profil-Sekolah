@@ -17,7 +17,9 @@ class Homepage extends Model
         'cta_title', 'cta_desc', 'cta_year', 'cta_button', 'cta_secondary_button', 'cta_secondary_link',
         'cta_badge', 'cta_deadline_label', 'cta_deadline_at', 'cta_countdown_days', 'cta_countdown_hours',
         'news_limit', 'featured_alumni_id', 'selected_alumni_ids', 'alumni_label', 'alumni_title',
-        'footer_desc', 'footer_address', 'footer_phone', 'newsletter_desc', 'footer_copyright', 'footer_note'
+        'footer_desc', 'footer_address', 'footer_email', 'footer_phone', 'footer_operational_hours',
+        'footer_whatsapp_url', 'footer_instagram_url', 'footer_facebook_url', 'footer_youtube_url',
+        'newsletter_desc', 'footer_copyright', 'footer_note'
     ];
 
     // Otomatis convert JSON ke Array bolak-balik

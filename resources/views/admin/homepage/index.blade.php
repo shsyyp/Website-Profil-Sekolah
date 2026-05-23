@@ -132,6 +132,10 @@ $components = [
 #component-editors .editor-actions {
     border-top: 1px solid rgb(226 232 240);
 }
+
+#component-editors[data-active-panel="footer-section"] .editor-actions {
+    display: none;
+}
 </style>
 
 <form action="{{ url('admin/homepage') }}" method="POST" enctype="multipart/form-data" class="px-8 pb-8 pt-0 space-y-10">
@@ -650,26 +654,89 @@ $components = [
                         class="material-symbols-outlined text-slate-400 group-open:rotate-180 transition-transform">expand_more</span>
                 </div>
             </summary>
-            <div class="border-t border-slate-100 p-6 lg:p-8 bg-surface-container-low/40">
-                <div class="bg-surface-container-lowest p-8 rounded-2xl shadow-sm space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <textarea name="footer_desc"
-                            class="bg-surface-container-low border-none rounded-xl px-4 py-3 md:col-span-2" rows="2"
-                            placeholder="Deskripsi footer">{{ $homepage->footer_desc ?? 'Mewujudkan pendidikan menengah berkualitas dunia di bumi Lancang Kuning, Provinsi Riau.' }}</textarea>
-                        <input name="footer_address" class="bg-surface-container-low border-none rounded-xl px-4 py-3"
-                            placeholder="Alamat"
-                            value="{{ $homepage->footer_address ?? 'Jl. Pendidikan No. 01, Pekanbaru, Provinsi Riau' }}">
-                        <input name="footer_phone" class="bg-surface-container-low border-none rounded-xl px-4 py-3"
-                            placeholder="Telepon" value="{{ $homepage->footer_phone ?? '(0761) 1234567' }}">
-                        <textarea name="newsletter_desc"
-                            class="bg-surface-container-low border-none rounded-xl px-4 py-3 md:col-span-2" rows="2"
-                            placeholder="Deskripsi newsletter">{{ $homepage->newsletter_desc ?? 'Dapatkan info pendaftaran dan prestasi terbaru langsung di email Anda.' }}</textarea>
-                        <input name="footer_copyright" class="bg-surface-container-low border-none rounded-xl px-4 py-3"
-                            placeholder="Copyright"
-                            value="{{ $homepage->footer_copyright ?? 'SMAN Pintar. Excellence in Education.' }}">
-                        <input name="footer_note" class="bg-surface-container-low border-none rounded-xl px-4 py-3"
-                            placeholder="Catatan footer"
-                            value="{{ $homepage->footer_note ?? 'Made with Passion in Riau' }}">
+            <div class="border-t border-slate-100 p-6 lg:p-8 space-y-8">
+                <div>
+                    <label>Nama Sekolah</label>
+                    <input name="site_name" placeholder="Contoh: SMAN Pintar"
+                        value="{{ $homepage->site_name ?? 'SMAN Pintar' }}">
+                </div>
+
+                <div>
+                    <label>Deskripsi Singkat Sekolah</label>
+                    <textarea name="footer_desc" rows="4"
+                        placeholder="Contoh: Mewujudkan pendidikan menengah berkualitas melalui pembinaan karakter dan ilmu.">{{ $homepage->footer_desc ?? 'Mewujudkan pendidikan menengah berkualitas melalui pembinaan karakter, penguatan ilmu, dan lingkungan belajar yang inspiratif.' }}</textarea>
+                </div>
+
+                <div>
+                    <label>Link WhatsApp</label>
+                    <input name="footer_whatsapp_url" placeholder="Contoh: https://wa.me/6281234567890"
+                        value="{{ $homepage->footer_whatsapp_url ?? '' }}">
+                </div>
+
+                <div>
+                    <label>Link Instagram</label>
+                    <input name="footer_instagram_url" placeholder="Contoh: https://instagram.com/smanpintar"
+                        value="{{ $homepage->footer_instagram_url ?? '' }}">
+                </div>
+
+                <div>
+                    <label>Link Facebook</label>
+                    <input name="footer_facebook_url" placeholder="Contoh: https://facebook.com/smanpintar"
+                        value="{{ $homepage->footer_facebook_url ?? '' }}">
+                </div>
+
+                <div>
+                    <label>Link YouTube</label>
+                    <input name="footer_youtube_url" placeholder="Contoh: https://youtube.com/@smanpintar"
+                        value="{{ $homepage->footer_youtube_url ?? '' }}">
+                </div>
+
+                <div>
+                    <label>Alamat</label>
+                    <input name="footer_address"
+                        placeholder="Contoh: Jl. Proklamasi, Sei. Jering, Kuantan Tengah"
+                        value="{{ $homepage->footer_address ?? 'Jl. Pendidikan No. 01, Pekanbaru, Provinsi Riau' }}">
+                </div>
+
+                <div>
+                    <label>Email</label>
+                    <input name="footer_email" placeholder="Contoh: info@smanpintar.sch.id"
+                        value="{{ $homepage->footer_email ?? '' }}">
+                </div>
+
+                <div>
+                    <label>Telepon</label>
+                    <input name="footer_phone" placeholder="Contoh: (0760) 561925"
+                        value="{{ $homepage->footer_phone ?? '(0761) 1234567' }}">
+                </div>
+
+                <div>
+                    <label>Jam Operasional</label>
+                    <textarea name="footer_operational_hours" rows="4"
+                        placeholder="Contoh: Senin - Jumat: 07.30 - 16.00&#10;Sabtu: 08.00 - 12.00">{{ $homepage->footer_operational_hours ?? 'Senin - Jumat: 07.30 - 16.00' }}</textarea>
+                </div>
+
+                <div>
+                    <label>Copyright</label>
+                    <input name="footer_copyright" placeholder="Contoh: SMAN Pintar Provinsi Riau."
+                        value="{{ $homepage->footer_copyright ?? 'SMAN Pintar Provinsi Riau.' }}">
+                </div>
+
+                <div>
+                    <label>Slogan Singkat</label>
+                    <input name="footer_note" placeholder="Contoh: Karakter Kuat, Ilmu Berdaya."
+                        value="{{ $homepage->footer_note ?? 'Karakter Kuat, Ilmu Berdaya.' }}">
+                </div>
+
+                <div class="border-t border-surface-container pt-8">
+                    <div class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center">
+                        <button type="button" data-back-overview class="btn-cancel">
+                            Batal
+                        </button>
+                        <button type="submit"
+                            class="bg-primary text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:scale-105 transition-all">
+                            Simpan
+                        </button>
                     </div>
                 </div>
             </div>
@@ -698,6 +765,7 @@ const panels = document.querySelectorAll('[data-editor-panel]');
 function showOverview() {
     editors.classList.add('hidden');
     overview.classList.remove('hidden');
+    editors.removeAttribute('data-active-panel');
     panels.forEach((panel) => panel.classList.add('hidden'));
     window.scrollTo({
         top: 0,
@@ -714,6 +782,7 @@ function showEditor(panelId) {
 
     overview.classList.add('hidden');
     editors.classList.remove('hidden');
+    editors.dataset.activePanel = panelId;
     panels.forEach((panel) => panel.classList.add('hidden'));
     target.classList.remove('hidden');
     target.open = true;

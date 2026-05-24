@@ -9,8 +9,8 @@
         : 'https://lh3.googleusercontent.com/aida-public/AB6AXuAUSqq79Uw_F-kdwXiJyOEP54AMX5t94IDTF9iVSXlu5ZE84GXdTQL5-bp-VqtOqm-W51p5Se_xxjWGRbu9UJLxwk6d11z3HF2_py9UKO5L_0vt78jQXJz_lMAcS78Lkvjba-_lCrL5eZLY_lvjMZIaBjnDLZKrZdn3GmwNBWpfeQzR-gPu5mSkTuatXeW5SBJ4tAVFRAZCWIdnBjdFLEDMxuT1zg5wQG_AnkMtNVZFQclNLVPjCWvKoJk36vMmagZzbWSiDSAMjPnU';
 @endphp
 
-<article class="pt-24 pb-20">
-    <header class="max-w-6xl mx-auto px-8 py-12">
+<article class="pt-10 pb-20">
+    <header class="max-w-6xl mx-auto px-8 pt-10 pb-12">
         <nav class="flex flex-wrap items-center gap-2 text-sm font-medium text-outline">
             <a class="hover:text-primary transition-colors" href="{{ route('home') }}">Beranda</a>
             <span class="material-symbols-outlined text-[16px]">chevron_right</span>

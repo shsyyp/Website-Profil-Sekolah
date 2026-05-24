@@ -9,7 +9,7 @@
             'id' => 'news-hero-section',
             'icon' => 'newspaper',
             'title' => 'Hero Halaman',
-            'content' => $settings->hero_title ?? 'Warta SMAN Pintar',
+            'content' => str_replace('Warta', 'Berita', $settings->hero_title ?? 'Berita SMAN Pintar'),
             'meta' => $settings->hero_breadcrumb_label ?? 'Berita',
         ],
         [
@@ -110,7 +110,7 @@
                         <label class="text-sm font-bold text-slate-700">Judul</label>
                         <input name="hero_title" type="text"
                             class="w-full bg-surface-container-lowest border-none focus:ring-2 focus:ring-primary rounded-xl px-4 py-3 font-medium text-on-surface"
-                            value="{{ $settings->hero_title ?? 'Warta SMAN Pintar' }}">
+                            value="{{ str_replace('Warta', 'Berita', $settings->hero_title ?? 'Berita SMAN Pintar') }}">
                     </div>
                     <div class="space-y-2">
                         <label class="text-sm font-bold text-slate-700">Deskripsi</label>

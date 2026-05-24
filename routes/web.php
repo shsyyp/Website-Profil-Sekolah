@@ -62,6 +62,16 @@ Route::middleware('auth')->group(function () {
         // CMS Tentang Kami
         Route::get('/tentang', [AboutPageController::class, 'index'])->name('admin.about.index');
         Route::post('/tentang', [AboutPageController::class, 'update'])->name('admin.about.update');
+        Route::get('/tentang/fasilitas/create', [AboutPageController::class, 'createFacility'])->name('admin.about.facilities.create');
+        Route::post('/tentang/fasilitas', [AboutPageController::class, 'storeFacility'])->name('admin.about.facilities.store');
+        Route::get('/tentang/fasilitas/{index}/edit', [AboutPageController::class, 'editFacility'])->name('admin.about.facilities.edit');
+        Route::put('/tentang/fasilitas/{index}', [AboutPageController::class, 'updateFacility'])->name('admin.about.facilities.update');
+        Route::delete('/tentang/fasilitas/{index}', [AboutPageController::class, 'destroyFacility'])->name('admin.about.facilities.destroy');
+        Route::get('/tentang/ekstrakurikuler/create', [AboutPageController::class, 'createExtracurricular'])->name('admin.about.extracurriculars.create');
+        Route::post('/tentang/ekstrakurikuler', [AboutPageController::class, 'storeExtracurricular'])->name('admin.about.extracurriculars.store');
+        Route::get('/tentang/ekstrakurikuler/{index}/edit', [AboutPageController::class, 'editExtracurricular'])->name('admin.about.extracurriculars.edit');
+        Route::put('/tentang/ekstrakurikuler/{index}', [AboutPageController::class, 'updateExtracurricular'])->name('admin.about.extracurriculars.update');
+        Route::delete('/tentang/ekstrakurikuler/{index}', [AboutPageController::class, 'destroyExtracurricular'])->name('admin.about.extracurriculars.destroy');
 
         // CRUD Management Content
         Route::post('/berita/page-setting', [AdminBeritaController::class, 'updatePageSetting'])->name('admin.berita.page-setting.update');

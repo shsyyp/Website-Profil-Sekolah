@@ -1,11 +1,11 @@
 @extends('layouts.main')
 
-@section('title', 'Warta SMAN Pintar - Portal Berita Sekolah')
+@section('title', 'Berita SMAN Pintar - Portal Berita Sekolah')
 
 @section('content')
 @php
     $heroBreadcrumbLabel = $settings->hero_breadcrumb_label ?? 'Berita';
-    $heroTitle = $settings->hero_title ?? 'Warta SMAN Pintar';
+    $heroTitle = str_replace('Warta', 'Berita', $settings->hero_title ?? 'Berita SMAN Pintar');
     $heroDescription = $settings->hero_description ?? 'Menyajikan informasi terbaru seputar prestasi, kegiatan kesiswaan, dan pengumuman resmi dari lingkungan sekolah.';
     $filterAllLabel = $settings->filter_all_label ?? 'Semua';
     $searchPlaceholder = $settings->search_placeholder ?? 'Ketik kata kunci...';

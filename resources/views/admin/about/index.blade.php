@@ -31,8 +31,42 @@ $defaultExtracurriculars = [
     ['icon' => 'palette', 'title' => 'Visual Arts', 'desc' => 'Eksplorasi seni lukis, desain grafis, dan multimedia kreatif.'],
     ['icon' => 'campaign', 'title' => 'Journalism', 'desc' => 'Pelatihan penulisan berita, fotografi jurnalistik, dan penyiaran radio sekolah.'],
 ];
+$defaultHeroImage = 'https://lh3.googleusercontent.com/aida-public/AB6AXuCnyXL0n2V3ExwtRVjX6KOHtBjTOnVIX58cuwpTdsZ10cb_nCteZuARseMIS6crt1FFD6gNKlnBSigsoGo0P74haJ1Jyw94LOUG4oD5wQ79xQsCwHhuZ_bIF7y4n85MRdei8AZO8g-PC6vcDuMy5pwC_Kh6ZtrTRWEPXY6npGoVCdpwai3TpB4H79IomqONsqfd1asST1pPbdHvVm2Gp65yxax3CTGeOntbO7zMGDevw0loDMm0UX5LVbukJzyxTd_NawUdj_UgYnsu';
+$defaultProfileImage = 'https://lh3.googleusercontent.com/aida-public/AB6AXuBrZysYUdrrL-V6NkqRMcowI2PjJ3jJSnWaNfnkHkl-Cx_NlmDk7BWkZhqAzzuuqAWmuPDc3PFbbjm11r7Adqf3FEw_tC6POJL4IzaJKA1rh3cJBuPq3bCTGxQMldXLtlBmbWI7fNmV9YTpfHBXkJvuXFCJ85hF4zpr0pNx7LNg7GYKf0E6kv2oMcBp26bf8SSu8Er4npt_Fho9tE00K6tCPXKGkntv1FjLo9t1o6e2qcTa7n6HkbNo0FuojG1nRk1I7zj0QFoN02Lw';
+$heroImage = $about->hero_image ? asset('storage/' . $about->hero_image) : $defaultHeroImage;
+$profileImage = $about->profile_image ? asset('storage/' . $about->profile_image) : $defaultProfileImage;
 $defaultTags = ['#Creativity', '#Leadership', '#Innovation'];
-$facilitySlots = max(8, count($about->facilities ?? []));
+$missionItems = collect($about->missions ?? $defaultMissions)
+    ->filter(fn ($mission) => filled($mission))
+    ->values();
+
+if ($missionItems->isEmpty()) {
+    $missionItems = collect($defaultMissions);
+}
+
+$missionsText = $missionItems
+    ->map(fn ($mission, $index) => ($index + 1) . '. ' . $mission)
+    ->implode("\n");
+
+$facilityItems = collect($about->facilities ?? [])
+    ->filter(fn ($facility) => ($facility['title'] ?? null) || ($facility['desc'] ?? null) || ($facility['image'] ?? null))
+    ->values();
+
+if ($facilityItems->isEmpty()) {
+    $facilityItems = collect($defaultFacilities);
+}
+
+$facilitySlots = $facilityItems->count();
+
+$extracurricularItems = collect($about->extracurriculars ?? [])
+    ->filter(fn ($item) => ($item['title'] ?? null) || ($item['desc'] ?? null) || ($item['icon'] ?? null))
+    ->values();
+
+if ($extracurricularItems->isEmpty()) {
+    $extracurricularItems = collect($defaultExtracurriculars);
+}
+
+$extracurricularSlots = $extracurricularItems->count();
 
 $components = [
     [
@@ -40,7 +74,7 @@ $components = [
         'icon' => 'account_balance',
         'title' => 'Hero & Profil',
         'meta' => $about->profile_label ?? 'Ekselerasi Pendidikan',
-        'content' => $about->profile_title ?? 'Dedikasi Mencetak Generasi Unggul Riau',
+        'content' => $about->profile_title ?? 'Mencetak Generasi Unggul Riau',
     ],
     [
         'id' => 'highlight-section',
@@ -59,97 +93,42 @@ $components = [
     [
         'id' => 'facilities-section',
         'icon' => 'domain',
-        'title' => 'Fasilitas Unggulan',
-        'meta' => $facilitySlots . ' slot fasilitas',
+        'title' => 'Fasilitas',
+        'meta' => 'Pengaturan section',
         'content' => $about->facilities_title ?? 'Fasilitas Unggulan',
+    ],
+    [
+        'id' => 'facility-management-section',
+        'icon' => 'inventory_2',
+        'title' => 'Manajemen Fasilitas',
+        'meta' => $facilitySlots . ' data fasilitas',
+        'content' => 'Kelola daftar fasilitas yang ditampilkan di halaman Tentang Kami dan Beranda.',
     ],
     [
         'id' => 'extracurricular-section',
         'icon' => 'groups',
         'title' => 'Ekstrakurikuler',
-        'meta' => '4 kegiatan pilihan',
+        'meta' => 'Pengaturan section',
         'content' => $about->extracurricular_title ?? 'Ekstrakurikuler Pilihan',
+    ],
+    [
+        'id' => 'extracurricular-management-section',
+        'icon' => 'list_alt',
+        'title' => 'Manajemen Ekstrakurikuler',
+        'meta' => $extracurricularSlots . ' data ekstrakurikuler',
+        'content' => 'Kelola daftar ekstrakurikuler yang ditampilkan di halaman Tentang Kami.',
     ],
 ];
 @endphp
 
 <style>
-    #about-editors {
-        width: 100%;
-    }
-
-    #about-editors summary {
-        cursor: default;
-        list-style: none;
-        padding: 0;
-        margin-bottom: 2.5rem;
-    }
-
-    #about-editors summary::-webkit-details-marker {
+    #about-editors summary [data-save-editor],
+    #about-editors summary .group-open\:rotate-180 {
         display: none;
     }
 
-    #about-editors summary > div:first-child span {
-        display: none;
-    }
-
-    #about-editors summary h3 {
-        font-size: 2.25rem;
-        line-height: 2.5rem;
-        font-weight: 800;
-    }
-
-    #about-editors summary h3::after {
-        content: "Kelola konten halaman Tentang Kami";
-        display: block;
-        margin-top: .5rem;
-        color: rgb(71 85 105);
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 1.125rem;
-        line-height: 1.75rem;
-        font-weight: 500;
-    }
-
-    #about-editors [data-about-panel] {
-        border: 0;
-        background: transparent;
-        box-shadow: none;
-        overflow: visible;
-    }
-
-    #about-editors [data-about-panel] > div {
-        border-top: 0;
-        border-radius: 1rem;
-        background: rgb(255 255 255);
-        box-shadow: 0 8px 30px rgb(0 0 0 / 0.04);
-        padding: 2rem;
-    }
-
-    #about-editors label {
-        display: block;
-        margin-bottom: .5rem;
-        color: rgb(15 23 42);
-        font-size: .875rem;
-        font-weight: 700;
-    }
-
-    #about-editors input,
-    #about-editors textarea,
-    #about-editors select {
-        width: 100%;
-        border: 0;
-        border-radius: .75rem;
-        background: rgb(226 227 237);
-        padding: .75rem 1rem;
-        color: rgb(15 23 42);
-        font-weight: 500;
-    }
-
-    #about-editors input:focus,
-    #about-editors textarea:focus,
-    #about-editors select:focus {
-        outline: 0;
-        box-shadow: 0 0 0 2px rgb(0 74 173 / 0.2);
+    #about-editors .editor-actions {
+        border-top: 1px solid rgb(226 232 240);
     }
 </style>
 
@@ -226,58 +205,45 @@ $components = [
                 </button>
             </summary>
             <div class="space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label>Judul Hero</label>
-                        <input name="hero_title" placeholder="Judul hero" value="{{ $about->hero_title ?? 'Tentang Kami' }}">
+                <input type="hidden" name="hero_title" value="{{ $about->hero_title ?? 'Tentang Kami' }}">
+                <input type="hidden" name="profile_label" value="{{ $about->profile_label ?? 'Eksplorasi Pendidikan' }}">
+                <input type="hidden" name="profile_button_1_text" value="{{ $about->profile_button_1_text ?? 'Selengkapnya' }}">
+                <input type="hidden" name="profile_button_1_link" value="{{ $about->profile_button_1_link ?? '#visi-misi' }}">
+
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                    <div class="space-y-6">
+                        <div>
+                            <label>Judul Profil</label>
+                            <input name="profile_title" placeholder="Judul profil" value="{{ $about->profile_title ?? 'Mencetak Generasi Unggul Riau' }}">
+                        </div>
+                        <div>
+                            <label>Paragraf Profil 1</label>
+                            <textarea name="profile_paragraph_1" rows="4">{{ $about->profile_paragraph_1 ?? 'SMAN Pintar Provinsi Riau berdiri sebagai mercusuar pendidikan berkualitas yang memadukan kurikulum nasional dengan inovasi teknologi terkini.' }}</textarea>
+                        </div>
+                        <div>
+                            <label>Paragraf Profil 2</label>
+                            <textarea name="profile_paragraph_2" rows="4">{{ $about->profile_paragraph_2 ?? 'Berlokasi di lingkungan yang asri namun modern, sekolah kami menjadi laboratorium masa depan bagi putra-putri terbaik daerah.' }}</textarea>
+                        </div>
                     </div>
-                    <div>
-                        <label>Gambar Hero</label>
-                        <input name="hero_image" type="file" accept="image/*">
-                    </div>
-                    <div>
-                        <label>Label Profil</label>
-                        <input name="profile_label" placeholder="Label profil" value="{{ $about->profile_label ?? 'Ekselerasi Pendidikan' }}">
-                    </div>
-                    <div>
-                        <label>Judul Profil</label>
-                        <input name="profile_title" placeholder="Judul profil" value="{{ $about->profile_title ?? 'Dedikasi Mencetak Generasi Unggul Riau' }}">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label>Paragraf Profil 1</label>
-                        <textarea name="profile_paragraph_1" rows="3">{{ $about->profile_paragraph_1 ?? 'SMAN Pintar Provinsi Riau berdiri sebagai mercusuar pendidikan berkualitas yang memadukan kurikulum nasional dengan inovasi teknologi terkini.' }}</textarea>
-                    </div>
-                    <div class="md:col-span-2">
-                        <label>Paragraf Profil 2</label>
-                        <textarea name="profile_paragraph_2" rows="3">{{ $about->profile_paragraph_2 ?? 'Berlokasi di lingkungan yang asri namun modern, sekolah kami menjadi laboratorium masa depan bagi putra-putri terbaik daerah.' }}</textarea>
-                    </div>
-                    <div>
-                        <label>Tombol Utama</label>
-                        <input name="profile_button_1_text" value="{{ $about->profile_button_1_text ?? 'Selengkapnya' }}">
-                    </div>
-                    <div>
-                        <label>Link Tombol Utama</label>
-                        <input name="profile_button_1_link" value="{{ $about->profile_button_1_link ?? '#visi-misi' }}">
-                    </div>
-                    <div>
-                        <label>Tombol Kedua</label>
-                        <input name="profile_button_2_text" value="{{ $about->profile_button_2_text ?? 'Lihat Video Profil' }}">
-                    </div>
-                    <div>
-                        <label>Link Tombol Kedua</label>
-                        <input name="profile_button_2_link" value="{{ $about->profile_button_2_link ?? '#' }}">
-                    </div>
-                    <div>
-                        <label>Angka Dedikasi</label>
-                        <input name="dedication_number" value="{{ $about->dedication_number ?? '15+' }}">
-                    </div>
-                    <div>
-                        <label>Label Dedikasi</label>
-                        <input name="dedication_label" value="{{ $about->dedication_label ?? 'Tahun Dedikasi' }}">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label>Gambar Profil</label>
-                        <input name="profile_image" type="file" accept="image/*">
+
+                    <div class="space-y-6">
+                        <div>
+                            <label>Gambar Hero</label>
+                            <div class="overflow-hidden rounded-2xl bg-slate-100 shadow-sm">
+                                <img class="h-72 w-full object-cover" src="{{ $heroImage }}" alt="Preview gambar hero">
+                            </div>
+                            <input class="mt-4" name="hero_image" type="file" accept="image/*">
+                            <p class="mt-2 text-xs text-on-surface-variant">Gunakan gambar landscape yang jelas. Biarkan kosong jika tidak ingin mengganti gambar.</p>
+                        </div>
+
+                        <div>
+                            <label>Gambar Profil</label>
+                            <div class="overflow-hidden rounded-2xl bg-slate-100 shadow-sm">
+                                <img class="h-72 w-full object-cover" src="{{ $profileImage }}" alt="Preview gambar profil">
+                            </div>
+                            <input class="mt-4" name="profile_image" type="file" accept="image/*">
+                            <p class="mt-2 text-xs text-on-surface-variant">Biarkan kosong jika tidak ingin mengganti gambar profil.</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -295,13 +261,19 @@ $components = [
                 </button>
             </summary>
             <div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     @for ($i = 0; $i < 3; $i++)
-                    <div class="bg-surface-container-low p-5 rounded-xl space-y-3">
-                        <label>Highlight {{ $i + 1 }}</label>
-                        <input name="highlights[{{ $i }}][icon]" value="{{ data_get($about->highlights, $i.'.icon') ?? $defaultHighlights[$i]['icon'] }}">
-                        <input name="highlights[{{ $i }}][label]" value="{{ data_get($about->highlights, $i.'.label') ?? $defaultHighlights[$i]['label'] }}">
-                        <input name="highlights[{{ $i }}][title]" value="{{ data_get($about->highlights, $i.'.title') ?? $defaultHighlights[$i]['title'] }}">
+                    <div class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-slate-100 space-y-5">
+                        <h4 class="text-lg font-bold text-primary font-headline">Highlight {{ $i + 1 }}</h4>
+                        <input type="hidden" name="highlights[{{ $i }}][icon]" value="{{ $defaultHighlights[$i]['icon'] }}">
+                        <div>
+                            <label>Judul</label>
+                            <input name="highlights[{{ $i }}][label]" placeholder="Contoh: Status" value="{{ data_get($about->highlights, $i.'.label') ?? $defaultHighlights[$i]['label'] }}">
+                        </div>
+                        <div>
+                            <label>Isi</label>
+                            <input name="highlights[{{ $i }}][title]" placeholder="Contoh: Akreditasi A" value="{{ data_get($about->highlights, $i.'.title') ?? $defaultHighlights[$i]['title'] }}">
+                        </div>
                     </div>
                     @endfor
                 </div>
@@ -328,13 +300,10 @@ $components = [
                     <label>Visi</label>
                     <textarea name="vision" rows="4">{{ $about->vision ?? 'Menjadi institusi pendidikan model yang unggul dalam prestasi akademik, berwawasan teknologi global, serta berakar kuat pada nilai-nilai karakter bangsa.' }}</textarea>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    @for ($i = 0; $i < 4; $i++)
-                    <div>
-                        <label>Misi {{ $i + 1 }}</label>
-                        <textarea name="missions[{{ $i }}]" rows="2">{{ data_get($about->missions, $i) ?? $defaultMissions[$i] }}</textarea>
-                    </div>
-                    @endfor
+                <div>
+                    <label>Misi</label>
+                    <textarea name="missions_text" rows="8" placeholder="1. Tulis misi pertama&#10;2. Tulis misi kedua&#10;3. Tulis misi ketiga">{{ $missionsText }}</textarea>
+                    <p class="mt-2 text-xs text-on-surface-variant">Tulis satu misi per baris. Nomor seperti 1, 2, 3 boleh ditulis dan akan dirapikan otomatis.</p>
                 </div>
             </div>
         </details>
@@ -343,7 +312,7 @@ $components = [
             <summary class="list-none flex items-center justify-between gap-4">
                 <div>
                     <span>Component 04</span>
-                    <h3 class="font-headline text-primary">Fasilitas Unggulan</h3>
+                    <h3 class="font-headline text-primary">Fasilitas</h3>
                 </div>
                 <button type="button" data-about-back class="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors">
                     <span class="material-symbols-outlined text-[18px]">arrow_back</span>
@@ -360,103 +329,82 @@ $components = [
                         <label>Judul Fasilitas</label>
                         <input name="facilities_title" value="{{ $about->facilities_title ?? 'Fasilitas Unggulan' }}">
                     </div>
-                    <div>
-                        <label>Teks Tombol</label>
-                        <input name="facilities_button_text" value="{{ $about->facilities_button_text ?? 'Lihat Semua Fasilitas' }}">
-                    </div>
-                    <div>
-                        <label>Link Tombol</label>
-                        <input name="facilities_button_link" value="{{ $about->facilities_button_link ?? '#' }}">
-                    </div>
                 </div>
-                <div class="bg-surface-container-low rounded-2xl overflow-hidden border border-slate-100">
-                    <div class="flex flex-col gap-4 p-5 md:flex-row md:items-center md:justify-between">
-                        <div>
-                            <h4 class="text-lg font-bold text-primary">Daftar Fasilitas</h4>
-                            <p class="text-sm text-on-surface-variant">Edit langsung di tabel. Beranda otomatis memakai 4 fasilitas pertama.</p>
-                        </div>
-                        <button type="button" data-add-facility
-                            class="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-white hover:bg-primary-container transition-colors">
-                            <span class="material-symbols-outlined text-[18px]">add</span>
-                            Tambah Fasilitas
-                        </button>
-                    </div>
+                <input type="hidden" name="facilities_button_text" value="{{ $about->facilities_button_text ?? 'Lihat Semua Fasilitas' }}">
+                <input type="hidden" name="facilities_button_link" value="{{ $about->facilities_button_link ?? '#' }}">
+            </div>
+        </details>
+
+        <details id="facility-management-section" data-about-panel class="hidden group bg-surface-container-lowest rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <summary class="list-none flex items-center justify-between gap-4">
+                <div>
+                    <span>Component 05</span>
+                    <h3 class="font-headline text-primary">Manajemen Fasilitas</h3>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button type="button" data-about-back class="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors">
+                        <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                        Kembali
+                    </button>
+                    <a href="{{ route('admin.about.facilities.create') }}"
+                        class="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-white shadow-lg hover:bg-primary-container transition-colors">
+                        <span class="material-symbols-outlined text-[18px]">add</span>
+                        Tambah Fasilitas
+                    </a>
+                </div>
+            </summary>
+            <div class="space-y-6">
+                <div class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse table-fixed">
+                        <table class="w-full text-left border-collapse">
                             <thead>
-                                <tr class="bg-surface-container-lowest/70">
-                                    <th class="w-28 px-5 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Preview</th>
-                                    <th class="w-48 px-5 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Fasilitas</th>
-                                    <th class="px-5 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Deskripsi</th>
-                                    <th class="w-28 px-5 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Status</th>
-                                    <th class="w-28 px-5 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">Aksi</th>
+                                <tr class="bg-surface-container-low/50">
+                                    <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">No</th>
+                                    <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Fasilitas</th>
+                                    <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Deskripsi</th>
+                                    <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Status</th>
+                                    <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="facility-table-body" class="divide-y divide-surface-container">
-                                @for ($i = 0; $i < $facilitySlots; $i++)
-                                @php
-                                    $facilityImage = data_get($about->facilities, $i.'.image');
-                                    $facilityIcon = data_get($about->facilities, $i.'.icon') ?? data_get($defaultFacilities, $i.'.icon');
-                                @endphp
-                                <tr data-facility-row data-facility-display-row class="group hover:bg-surface-container-low/30 transition-colors">
-                                    <td class="px-5 py-4">
-                                        @if($facilityImage)
-                                        <img data-facility-preview src="{{ asset('storage/' . $facilityImage) }}" class="h-14 w-20 rounded-lg object-cover" alt="Preview fasilitas">
-                                        @else
-                                        <div data-facility-preview class="h-14 w-20 rounded-lg bg-blue-50 text-primary flex items-center justify-center text-[10px] font-bold uppercase">
-                                            No Image
-                                        </div>
-                                        @endif
+                                @foreach ($facilityItems as $i => $facility)
+                                <tr class="group hover:bg-surface-container-low/30 transition-colors">
+                                    <td class="px-8 py-4">
+                                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-sm font-bold text-primary">
+                                            {{ $i + 1 }}
+                                        </span>
                                     </td>
-                                    <td class="px-5 py-4">
-                                        <p data-facility-title class="font-bold text-blue-900 group-hover:text-primary transition-colors">
-                                            {{ data_get($about->facilities, $i.'.title') ?? data_get($defaultFacilities, $i.'.title') }}
-                                        </p>
-                                        <input data-facility-field="icon" name="facilities[{{ $i }}][icon]" type="hidden" value="{{ $facilityIcon }}">
-                                    </td>
-                                    <td class="px-5 py-4">
-                                        <p data-facility-desc class="max-w-xl text-sm text-on-surface-variant font-medium leading-relaxed line-clamp-2">
-                                            {{ data_get($about->facilities, $i.'.desc') ?? data_get($defaultFacilities, $i.'.desc') }}
+                                    <td class="px-6 py-4">
+                                        <p class="font-bold text-blue-900 group-hover:text-primary transition-colors">
+                                            {{ data_get($facility, 'title') }}
                                         </p>
                                     </td>
-                                    <td class="px-5 py-4">
+                                    <td class="px-6 py-4">
+                                        <p class="max-w-xl text-sm text-on-surface-variant font-medium leading-relaxed line-clamp-2">
+                                            {{ data_get($facility, 'desc') }}
+                                        </p>
+                                    </td>
+                                    <td class="px-6 py-4">
                                         <span class="flex items-center gap-1.5 text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full w-fit">
                                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Aktif
                                         </span>
                                     </td>
-                                    <td class="px-5 py-4 text-right">
-                                        <button type="button" data-edit-facility
+                                    <td class="px-8 py-4">
+                                        <div class="flex items-center justify-end gap-2">
+                                        <a href="{{ route('admin.about.facilities.edit', $i) }}"
                                             class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-500 hover:bg-amber-100 hover:text-amber-600 transition-colors"
                                             aria-label="Edit fasilitas">
                                             <span class="material-symbols-outlined text-[20px]">edit</span>
-                                        </button>
-                                        <button type="button" data-remove-facility
+                                        </a>
+                                        <button type="submit" form="delete-facility-{{ $i }}" onclick="return confirm('Hapus fasilitas ini?')"
                                             class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-error/10 text-error hover:bg-error hover:text-white transition-colors"
                                             aria-label="Hapus fasilitas">
                                             <span class="material-symbols-outlined text-[20px]">delete</span>
                                         </button>
-                                    </td>
-                                </tr>
-                                <tr data-facility-edit-row class="hidden bg-surface-container-low/50">
-                                    <td colspan="5" class="px-5 py-5">
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 rounded-2xl bg-white p-5">
-                                            <div>
-                                                <label>Nama Fasilitas</label>
-                                                <input data-facility-field="title" name="facilities[{{ $i }}][title]" placeholder="Nama fasilitas" value="{{ data_get($about->facilities, $i.'.title') ?? data_get($defaultFacilities, $i.'.title') }}">
-                                            </div>
-                                            <div class="md:col-span-2">
-                                                <label>Deskripsi</label>
-                                                <textarea data-facility-field="desc" name="facilities[{{ $i }}][desc]" rows="3" placeholder="Deskripsi fasilitas">{{ data_get($about->facilities, $i.'.desc') ?? data_get($defaultFacilities, $i.'.desc') }}</textarea>
-                                            </div>
-                                            <div class="md:col-span-2">
-                                                <label>Gambar</label>
-                                                <input data-facility-image name="facility_images[{{ $i }}]" type="file" accept="image/*">
-                                                <input data-facility-field="image" name="facilities[{{ $i }}][image]" type="hidden" value="{{ $facilityImage }}">
-                                            </div>
                                         </div>
                                     </td>
                                 </tr>
-                                @endfor
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -467,7 +415,7 @@ $components = [
         <details id="extracurricular-section" data-about-panel class="hidden group bg-surface-container-lowest rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
             <summary class="list-none flex items-center justify-between gap-4">
                 <div>
-                    <span>Component 05</span>
+                    <span>Component 06</span>
                     <h3 class="font-headline text-primary">Ekstrakurikuler</h3>
                 </div>
                 <button type="button" data-about-back class="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors">
@@ -476,40 +424,100 @@ $components = [
                 </button>
             </summary>
             <div class="space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label>Label Ekstrakurikuler</label>
-                        <input name="extracurricular_label" value="{{ $about->extracurricular_label ?? 'Pengembangan Diri' }}">
-                    </div>
-                    <div>
-                        <label>Judul Ekstrakurikuler</label>
-                        <input name="extracurricular_title" value="{{ $about->extracurricular_title ?? 'Ekstrakurikuler Pilihan' }}">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label>Deskripsi</label>
-                        <textarea name="extracurricular_desc" rows="3">{{ $about->extracurricular_desc ?? 'Kami menyediakan wadah bagi siswa untuk mengeksplorasi minat di luar jam akademik dengan mentor yang kompeten.' }}</textarea>
-                    </div>
-                    @for ($i = 0; $i < 3; $i++)
-                    <div>
-                        <label>Tag {{ $i + 1 }}</label>
-                        <input name="extracurricular_tags[{{ $i }}]" value="{{ data_get($about->extracurricular_tags, $i) ?? $defaultTags[$i] }}">
-                    </div>
-                    @endfor
+                <input type="hidden" name="extracurricular_label" value="{{ $about->extracurricular_label ?? 'Pengembangan Diri' }}">
+                @for ($i = 0; $i < 3; $i++)
+                <input type="hidden" name="extracurricular_tags[{{ $i }}]" value="{{ data_get($about->extracurricular_tags, $i) ?? $defaultTags[$i] }}">
+                @endfor
+
+                <div>
+                    <label>Judul Ekstrakurikuler</label>
+                    <input name="extracurricular_title" value="{{ $about->extracurricular_title ?? 'Ekstrakurikuler Pilihan' }}">
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    @for ($i = 0; $i < 4; $i++)
-                    <div class="bg-surface-container-low p-5 rounded-xl space-y-3">
-                        <label>Ekstrakurikuler {{ $i + 1 }}</label>
-                        <input name="extracurriculars[{{ $i }}][icon]" value="{{ data_get($about->extracurriculars, $i.'.icon') ?? $defaultExtracurriculars[$i]['icon'] }}">
-                        <input name="extracurriculars[{{ $i }}][title]" value="{{ data_get($about->extracurriculars, $i.'.title') ?? $defaultExtracurriculars[$i]['title'] }}">
-                        <textarea name="extracurriculars[{{ $i }}][desc]" rows="3">{{ data_get($about->extracurriculars, $i.'.desc') ?? $defaultExtracurriculars[$i]['desc'] }}</textarea>
-                    </div>
-                    @endfor
+                <div>
+                    <label>Deskripsi</label>
+                    <textarea name="extracurricular_desc" rows="5">{{ $about->extracurricular_desc ?? 'Kami menyediakan wadah bagi siswa untuk mengeksplorasi minat di luar jam akademik dengan mentor yang kompeten.' }}</textarea>
                 </div>
             </div>
         </details>
 
-        <div class="bg-surface-container-lowest rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-8 py-6">
+        <details id="extracurricular-management-section" data-about-panel class="hidden group bg-surface-container-lowest rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <summary class="list-none flex items-center justify-between gap-4">
+                <div>
+                    <span>Component 07</span>
+                    <h3 class="font-headline text-primary">Manajemen Ekstrakurikuler</h3>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button type="button" data-about-back class="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors">
+                        <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                        Kembali
+                    </button>
+                    <a href="{{ route('admin.about.extracurriculars.create') }}"
+                        class="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-white shadow-lg hover:bg-primary-container transition-colors">
+                        <span class="material-symbols-outlined text-[18px]">add</span>
+                        Tambah Ekstrakurikuler
+                    </a>
+                </div>
+            </summary>
+            <div class="space-y-6">
+                <div class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-surface-container-low/50">
+                                    <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">No</th>
+                                    <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Ekstrakurikuler</th>
+                                    <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Deskripsi</th>
+                                    <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Status</th>
+                                    <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-surface-container">
+                                @foreach ($extracurricularItems as $i => $item)
+                                <tr class="group hover:bg-surface-container-low/30 transition-colors">
+                                    <td class="px-8 py-4">
+                                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-sm font-bold text-primary">
+                                            {{ $i + 1 }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <p class="font-bold text-blue-900 group-hover:text-primary transition-colors">
+                                            {{ data_get($item, 'title') }}
+                                        </p>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <p class="max-w-xl text-sm text-on-surface-variant font-medium leading-relaxed line-clamp-2">
+                                            {{ data_get($item, 'desc') }}
+                                        </p>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="flex items-center gap-1.5 text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full w-fit">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Aktif
+                                        </span>
+                                    </td>
+                                    <td class="px-8 py-4">
+                                        <div class="flex items-center justify-end gap-2">
+                                            <a href="{{ route('admin.about.extracurriculars.edit', $i) }}"
+                                                class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-500 hover:bg-amber-100 hover:text-amber-600 transition-colors"
+                                                aria-label="Edit ekstrakurikuler">
+                                                <span class="material-symbols-outlined text-[20px]">edit</span>
+                                            </a>
+                                            <button type="submit" form="delete-extracurricular-{{ $i }}" onclick="return confirm('Hapus ekstrakurikuler ini?')"
+                                                class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-error/10 text-error hover:bg-error hover:text-white transition-colors"
+                                                aria-label="Hapus ekstrakurikuler">
+                                                <span class="material-symbols-outlined text-[20px]">delete</span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </details>
+
+        <div class="editor-actions bg-surface-container-lowest rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-8 py-6">
             <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end sm:items-center">
                 <button type="button" data-about-back class="btn-cancel">
                     Batal
@@ -522,165 +530,24 @@ $components = [
     </section>
 </form>
 
+@foreach ($facilityItems as $i => $facility)
+<form id="delete-facility-{{ $i }}" action="{{ route('admin.about.facilities.destroy', $i) }}" method="POST" class="hidden">
+    @csrf
+    @method('DELETE')
+</form>
+@endforeach
+
+@foreach ($extracurricularItems as $i => $item)
+<form id="delete-extracurricular-{{ $i }}" action="{{ route('admin.about.extracurriculars.destroy', $i) }}" method="POST" class="hidden">
+    @csrf
+    @method('DELETE')
+</form>
+@endforeach
+
 <script>
 const aboutOverview = document.getElementById('about-overview');
 const aboutEditors = document.getElementById('about-editors');
 const aboutPanels = document.querySelectorAll('[data-about-panel]');
-const facilityTableBody = document.getElementById('facility-table-body');
-const addFacilityButton = document.querySelector('[data-add-facility]');
-
-function facilityRowTemplate() {
-    return `
-        <td class="px-5 py-4">
-            <div class="h-14 w-20 rounded-lg bg-blue-50 text-primary flex items-center justify-center text-[10px] font-bold uppercase">
-                No Image
-            </div>
-        </td>
-        <td class="px-5 py-4">
-            <p data-facility-title class="font-bold text-blue-900 group-hover:text-primary transition-colors">Fasilitas Baru</p>
-            <input data-facility-field="icon" type="hidden" value="domain">
-        </td>
-        <td class="px-5 py-4">
-            <p data-facility-desc class="max-w-xl text-sm text-on-surface-variant font-medium leading-relaxed line-clamp-2">Deskripsi fasilitas akan diperbarui.</p>
-        </td>
-        <td class="px-5 py-4">
-            <span class="flex items-center gap-1.5 text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full w-fit">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Aktif
-            </span>
-        </td>
-        <td class="px-5 py-4 text-right">
-            <button type="button" data-edit-facility
-                class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-500 hover:bg-amber-100 hover:text-amber-600 transition-colors"
-                aria-label="Edit fasilitas">
-                <span class="material-symbols-outlined text-[20px]">edit</span>
-            </button>
-            <button type="button" data-remove-facility
-                class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-error/10 text-error hover:bg-error hover:text-white transition-colors"
-                aria-label="Hapus fasilitas">
-                <span class="material-symbols-outlined text-[20px]">delete</span>
-            </button>
-        </td>
-    `;
-}
-
-function facilityEditRowTemplate() {
-    return `
-        <td colspan="5" class="px-5 py-5">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 rounded-2xl bg-white p-5">
-                <div>
-                    <label>Nama Fasilitas</label>
-                    <input data-facility-field="title" placeholder="Nama fasilitas" value="Fasilitas Baru">
-                </div>
-                <div class="md:col-span-2">
-                    <label>Deskripsi</label>
-                    <textarea data-facility-field="desc" rows="3" placeholder="Deskripsi fasilitas">Deskripsi fasilitas akan diperbarui.</textarea>
-                </div>
-                <div class="md:col-span-2">
-                    <label>Gambar</label>
-                    <input data-facility-image type="file" accept="image/*">
-                    <input data-facility-field="image" type="hidden" value="">
-                </div>
-            </div>
-        </td>
-    `;
-}
-
-function reindexFacilityRows() {
-    if (!facilityTableBody) {
-        return;
-    }
-
-    facilityTableBody.querySelectorAll('[data-facility-display-row]').forEach((row, index) => {
-        const editRow = row.nextElementSibling?.matches('[data-facility-edit-row]')
-            ? row.nextElementSibling
-            : null;
-
-        row.querySelectorAll('[data-facility-field]').forEach((field) => {
-            field.name = `facilities[${index}][${field.dataset.facilityField}]`;
-        });
-
-        editRow?.querySelectorAll('[data-facility-field]').forEach((field) => {
-            field.name = `facilities[${index}][${field.dataset.facilityField}]`;
-        });
-
-        const imageInput = editRow?.querySelector('[data-facility-image]');
-        if (imageInput) {
-            imageInput.name = `facility_images[${index}]`;
-        }
-    });
-}
-
-addFacilityButton?.addEventListener('click', () => {
-    const displayRow = document.createElement('tr');
-    displayRow.dataset.facilityRow = '';
-    displayRow.dataset.facilityDisplayRow = '';
-    displayRow.className = 'group hover:bg-surface-container-low/30 transition-colors';
-    displayRow.innerHTML = facilityRowTemplate();
-
-    const editRow = document.createElement('tr');
-    editRow.dataset.facilityEditRow = '';
-    editRow.className = 'bg-surface-container-low/50';
-    editRow.innerHTML = facilityEditRowTemplate();
-
-    facilityTableBody.appendChild(displayRow);
-    facilityTableBody.appendChild(editRow);
-    reindexFacilityRows();
-});
-
-facilityTableBody?.addEventListener('click', (event) => {
-    const removeButton = event.target.closest('[data-remove-facility]');
-    const editButton = event.target.closest('[data-edit-facility]');
-
-    if (editButton) {
-        const displayRow = editButton.closest('[data-facility-display-row]');
-        const editRow = displayRow?.nextElementSibling;
-
-        if (editRow?.matches('[data-facility-edit-row]')) {
-            editRow.classList.toggle('hidden');
-        }
-
-        return;
-    }
-
-    if (!removeButton) {
-        return;
-    }
-
-    const displayRow = removeButton.closest('[data-facility-display-row]');
-    const editRow = displayRow?.nextElementSibling;
-
-    if (editRow?.matches('[data-facility-edit-row]')) {
-        editRow.remove();
-    }
-
-    displayRow?.remove();
-    reindexFacilityRows();
-});
-
-facilityTableBody?.addEventListener('input', (event) => {
-    const field = event.target.closest('[data-facility-field]');
-
-    if (!field) {
-        return;
-    }
-
-    const editRow = field.closest('[data-facility-edit-row]');
-    const displayRow = editRow?.previousElementSibling;
-
-    if (!displayRow?.matches('[data-facility-display-row]')) {
-        return;
-    }
-
-    if (field.dataset.facilityField === 'title') {
-        displayRow.querySelector('[data-facility-title]').textContent = field.value || 'Fasilitas Baru';
-    }
-
-    if (field.dataset.facilityField === 'desc') {
-        displayRow.querySelector('[data-facility-desc]').textContent = field.value || 'Deskripsi fasilitas akan diperbarui.';
-    }
-});
-
-reindexFacilityRows();
 
 function showAboutOverview() {
     aboutEditors.classList.add('hidden');
@@ -718,5 +585,13 @@ document.querySelectorAll('[data-about-back]').forEach((button) => {
         showAboutOverview();
     });
 });
+
+@if(session('open_facility_management'))
+showAboutEditor('facility-management-section');
+@endif
+
+@if(session('open_extracurricular_management'))
+showAboutEditor('extracurricular-management-section');
+@endif
 </script>
 @endsection

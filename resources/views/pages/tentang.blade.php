@@ -39,6 +39,9 @@ $extracurriculars = $about?->extracurriculars ?: [
     ['icon' => 'palette', 'title' => 'Visual Arts', 'desc' => 'Eksplorasi seni lukis, desain grafis, dan multimedia kreatif.'],
     ['icon' => 'campaign', 'title' => 'Journalism', 'desc' => 'Pelatihan penulisan berita, fotografi jurnalistik, dan penyiaran radio sekolah.'],
 ];
+$extracurriculars = collect($extracurriculars)
+    ->filter(fn ($item) => filled($item['title'] ?? null))
+    ->values();
 @endphp
 
 {{-- Hero Section & Breadcrumb --}}
@@ -81,7 +84,7 @@ $extracurriculars = $about?->extracurriculars ?: [
 <section class="py-20 max-w-7xl mx-auto px-8 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
     <div class="order-2 lg:order-1">
         <span class="text-tertiary font-bold text-sm tracking-[0.2em] uppercase mb-4 block">{{ $about?->profile_label ?? 'Ekselerasi Pendidikan' }}</span>
-        <h2 class="text-4xl md:text-5xl font-extrabold font-headline leading-tight mb-8">{{ $about?->profile_title ?? 'Dedikasi Mencetak Generasi Unggul Riau' }}</h2>
+        <h2 class="text-4xl md:text-5xl font-extrabold font-headline leading-tight mb-8">{{ $about?->profile_title ?? 'Mencetak Generasi Unggul Riau' }}</h2>
         <div class="space-y-6 text-on-surface-variant leading-relaxed text-lg">
             <p>{{ $about?->profile_paragraph_1 ?? 'SMAN Pintar Provinsi Riau berdiri sebagai mercusuar pendidikan berkualitas yang memadukan kurikulum nasional dengan inovasi teknologi terkini.' }}</p>
             <p>{{ $about?->profile_paragraph_2 ?? 'Berlokasi di lingkungan yang asri namun modern, sekolah kami menjadi laboratorium masa depan bagi putra-putri terbaik daerah.' }}</p>
@@ -89,8 +92,6 @@ $extracurriculars = $about?->extracurriculars ?: [
         <div class="mt-10 flex gap-4">
             <a href="{{ $about?->profile_button_1_link ?? '#visi-misi' }}"
                 class="bg-primary text-on-primary px-8 py-4 rounded-xl font-bold font-headline hover:shadow-lg transition-shadow">{{ $about?->profile_button_1_text ?? 'Selengkapnya' }}</a>
-            <a href="{{ $about?->profile_button_2_link ?? '#' }}"
-                class="border-2 border-outline-variant text-primary px-8 py-4 rounded-xl font-bold font-headline hover:bg-surface-container transition-colors">{{ $about?->profile_button_2_text ?? 'Lihat Video Profil' }}</a>
         </div>
     </div>
     <div class="order-1 lg:order-2 relative">
@@ -98,10 +99,6 @@ $extracurriculars = $about?->extracurriculars ?: [
             <img alt="School building architecture" class="w-full h-full object-cover"
                 data-alt="Modern architectural view of a university or high school campus"
                 src="{{ $about?->profile_image ? asset('storage/' . $about->profile_image) : $defaultProfileImage }}" />
-        </div>
-        <div class="absolute -bottom-6 -left-6 bg-tertiary text-on-tertiary p-8 rounded-xl shadow-xl hidden md:block">
-            <p class="text-4xl font-black font-headline">{{ $about?->dedication_number ?? '15+' }}</p>
-            <p class="text-sm font-medium opacity-90 uppercase tracking-tighter">{{ $about?->dedication_label ?? 'Tahun Dedikasi' }}</p>
         </div>
     </div>
 </section>
@@ -149,6 +146,14 @@ $extracurriculars = $about?->extracurriculars ?: [
     .facility-scrollbar::-webkit-scrollbar {
         display: none;
     }
+
+    .extracurricular-scrollbar {
+        scrollbar-width: none;
+    }
+
+    .extracurricular-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
 </style>
 
 {{-- Fasilitas --}}
@@ -165,7 +170,7 @@ $extracurriculars = $about?->extracurriculars ?: [
                 <span class="material-symbols-outlined">chevron_left</span>
             </button>
             <button type="button" data-facility-next
-                class="w-11 h-11 rounded-xl bg-primary text-on-primary flex items-center justify-center hover:bg-primary-container transition-colors"
+                class="w-11 h-11 rounded-xl bg-surface-container text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors"
                 aria-label="Fasilitas berikutnya">
                 <span class="material-symbols-outlined">chevron_right</span>
             </button>
@@ -203,6 +208,7 @@ function scrollFacilities(direction) {
 
 facilityPrev?.addEventListener('click', () => scrollFacilities(-1));
 facilityNext?.addEventListener('click', () => scrollFacilities(1));
+
 </script>
 
 {{-- Ekstrakurikuler --}}
@@ -212,27 +218,50 @@ facilityNext?.addEventListener('click', () => scrollFacilities(1));
             <div>
                 <span class="text-tertiary-fixed font-bold text-sm tracking-[0.2em] uppercase mb-4 block">{{ $about?->extracurricular_label ?? 'Pengembangan Diri' }}</span>
                 <h2 class="text-4xl font-extrabold font-headline leading-tight mb-6">{{ $about?->extracurricular_title ?? 'Ekstrakurikuler Pilihan' }}</h2>
-                <p class="text-on-primary/70 mb-10 text-lg">{{ $about?->extracurricular_desc ?? 'Kami menyediakan wadah bagi siswa untuk mengeksplorasi minat di luar jam akademik dengan mentor yang kompeten.' }}</p>
-                <div class="flex flex-wrap gap-3">
-                    @foreach ($extracurricularTags as $tag)
-                    <span class="bg-white/10 px-4 py-2 rounded-full text-sm font-medium">{{ $tag }}</span>
+                <p class="text-on-primary/70 text-lg">{{ $about?->extracurricular_desc ?? 'Kami menyediakan wadah bagi siswa untuk mengeksplorasi minat di luar jam akademik dengan mentor yang kompeten.' }}</p>
+            </div>
+            <div class="lg:col-span-2 min-w-0">
+                <div class="mb-8 flex items-center justify-end gap-3">
+                    <button type="button" data-extracurricular-prev
+                        class="w-11 h-11 rounded-xl bg-white/10 text-on-primary flex items-center justify-center hover:bg-tertiary-fixed hover:text-on-tertiary-fixed transition-colors"
+                        aria-label="Ekstrakurikuler sebelumnya">
+                        <span class="material-symbols-outlined">chevron_left</span>
+                    </button>
+                    <button type="button" data-extracurricular-next
+                        class="w-11 h-11 rounded-xl bg-white/10 text-on-primary flex items-center justify-center hover:bg-tertiary-fixed hover:text-on-tertiary-fixed transition-colors"
+                        aria-label="Ekstrakurikuler berikutnya">
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </button>
+                </div>
+                <div data-extracurricular-slider class="extracurricular-scrollbar flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4">
+                    @foreach ($extracurriculars as $index => $item)
+                    <div class="min-w-[240px] sm:min-w-[280px] lg:min-w-[320px] min-h-[150px] snap-start bg-white/5 backdrop-blur-md p-6 rounded-xl border border-white/10 hover:bg-white/10 transition-colors">
+                        <h4 class="text-xl font-bold font-headline mb-2">{{ $item['title'] ?? 'Ekstrakurikuler' }}</h4>
+                        <p class="text-sm text-on-primary/60">{{ $item['desc'] ?? 'Deskripsi ekstrakurikuler akan diperbarui.' }}</p>
+                    </div>
                     @endforeach
                 </div>
-            </div>
-            <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
-                @foreach ($extracurriculars as $index => $item)
-                <div
-                    class="bg-white/5 backdrop-blur-md p-6 rounded-xl border border-white/10 hover:bg-white/10 transition-colors">
-                    <div
-                        class="w-12 h-12 rounded-lg {{ $index === 0 ? 'bg-tertiary-fixed text-on-tertiary-fixed' : ($index === 1 ? 'bg-secondary-fixed text-on-secondary-fixed' : ($index === 2 ? 'bg-primary-fixed text-on-primary-fixed' : 'bg-surface-container-highest text-on-surface')) }} flex items-center justify-center mb-4">
-                        <span class="material-symbols-outlined text-2xl">{{ $item['icon'] ?? 'school' }}</span>
-                    </div>
-                    <h4 class="text-xl font-bold font-headline mb-2">{{ $item['title'] ?? 'Ekstrakurikuler' }}</h4>
-                    <p class="text-sm text-on-primary/60">{{ $item['desc'] ?? 'Deskripsi ekstrakurikuler akan diperbarui.' }}</p>
-                </div>
-                @endforeach
             </div>
         </div>
     </div>
 </section>
+
+<script>
+const extracurricularSlider = document.querySelector('[data-extracurricular-slider]');
+const extracurricularPrev = document.querySelector('[data-extracurricular-prev]');
+const extracurricularNext = document.querySelector('[data-extracurricular-next]');
+
+function scrollExtracurriculars(direction) {
+    if (!extracurricularSlider) {
+        return;
+    }
+
+    const card = extracurricularSlider.querySelector('.snap-start');
+    const distance = card ? card.getBoundingClientRect().width + 24 : 360;
+    extracurricularSlider.scrollBy({ left: direction * distance, behavior: 'smooth' });
+}
+
+extracurricularPrev?.addEventListener('click', () => scrollExtracurriculars(-1));
+extracurricularNext?.addEventListener('click', () => scrollExtracurriculars(1));
+</script>
 @endsection

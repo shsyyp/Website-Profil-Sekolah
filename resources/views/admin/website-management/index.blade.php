@@ -143,13 +143,13 @@ $pmbTestimonials = $pmb->testimonials ?: [
             <x-cms-card title="Teks Halaman Berita" icon="newspaper">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <input name="hero_breadcrumb_label" class="cms-input" value="{{ old('hero_breadcrumb_label', $newsSetting->hero_breadcrumb_label ?? 'Berita') }}" placeholder="Breadcrumb">
-                    <input name="hero_title" class="cms-input font-bold" value="{{ old('hero_title', $newsSetting->hero_title ?? 'Warta SMAN Pintar') }}" placeholder="Judul hero">
+                    <input name="hero_title" class="cms-input font-bold" value="{{ old('hero_title', str_replace('Warta', 'Berita', $newsSetting->hero_title ?? 'Berita SMAN Pintar')) }}" placeholder="Judul hero">
                     <textarea name="hero_description" class="cms-input md:col-span-2" rows="3" placeholder="Deskripsi hero">{{ old('hero_description', $newsSetting->hero_description ?? '') }}</textarea>
                     <input name="filter_all_label" class="cms-input" value="{{ old('filter_all_label', $newsSetting->filter_all_label ?? 'Semua') }}" placeholder="Label filter semua">
                     <input name="search_placeholder" class="cms-input" value="{{ old('search_placeholder', $newsSetting->search_placeholder ?? 'Ketik kata kunci...') }}" placeholder="Placeholder pencarian">
                     <input name="popular_title" class="cms-input font-bold" value="{{ old('popular_title', $newsSetting->popular_title ?? 'Berita Populer') }}" placeholder="Judul berita populer">
                     <input name="categories_title" class="cms-input font-bold" value="{{ old('categories_title', $newsSetting->categories_title ?? 'Kategori') }}" placeholder="Judul kategori">
-                    <input name="newsletter_title" class="cms-input font-bold" value="{{ old('newsletter_title', $newsSetting->newsletter_title ?? 'Berlangganan Warta') }}" placeholder="Judul newsletter">
+                    <input name="newsletter_title" class="cms-input font-bold" value="{{ old('newsletter_title', str_replace('Warta', 'Berita', $newsSetting->newsletter_title ?? 'Berlangganan Berita')) }}" placeholder="Judul newsletter">
                     <input name="newsletter_button_text" class="cms-input" value="{{ old('newsletter_button_text', $newsSetting->newsletter_button_text ?? 'Daftar Sekarang') }}" placeholder="Tombol newsletter">
                     <textarea name="newsletter_description" class="cms-input md:col-span-2" rows="2" placeholder="Deskripsi newsletter">{{ old('newsletter_description', $newsSetting->newsletter_description ?? '') }}</textarea>
                     <input name="newsletter_placeholder" class="cms-input md:col-span-2" value="{{ old('newsletter_placeholder', $newsSetting->newsletter_placeholder ?? 'Email Anda') }}" placeholder="Placeholder email">

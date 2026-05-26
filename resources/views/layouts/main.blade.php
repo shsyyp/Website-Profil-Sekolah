@@ -67,6 +67,7 @@
         background: linear-gradient(135deg, #00357f 0%, #004aad 100%);
     }
     </style>
+    @stack('styles')
 </head>
 
 <body class="bg-surface font-body text-on-surface">
@@ -81,6 +82,7 @@
 
     @include('partials.chatbot')
 
+    @stack('scripts')
 </body>
 
 </html>

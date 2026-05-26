@@ -3,184 +3,88 @@
 @section('title', 'Jejak Alumni - SMAN Pintar Provinsi Riau')
 
 @section('content')
-@php
-    $heroImage = $settings->hero_image
-        ? asset('storage/' . $settings->hero_image)
-        : 'https://lh3.googleusercontent.com/aida-public/AB6AXuDMwvvOLKRtfIxH2Qq18Ps6U-a_YTVILX0ftk_QVoGZ7553gSYV8unNCe1vWI3QO9BzaMyZO10VEAUVIdMoOFhCMXgO8690yxRCJWm7jTfP2i0QpBL0su9IiqdSPMoaSR4-OjpKUuqasNqW88U36bzj9FXDXjxEsbR9xQaTzuumZyLxEdPH9-lNqmM4U4m4RKCe2EIYqZLQXiy3eK3zHthbi0aHxiGpO9CKEjsSlr-JfJjXThobtMrfawkaYNcxq_3ELaRtZ4RVk_I9';
-    $mapImage = $settings->map_image
-        ? asset('storage/' . $settings->map_image)
-        : 'https://lh3.googleusercontent.com/aida-public/AB6AXuCQi24Ka19CQa7GxJbyNCSoqQbzg0RWJH1COvHl4YnPFV156JvxnxdPOwEX-LC4v9zTXzWfTEJDpK-smbaDV-3cMoGM_1gPXIDDZ_Cjf_ekRcVqyIV-s5_9qqGrEJxHdyqcVQ9Uj_1XGPTN3XqtTbnX_Qg3EQOCvEVJy32qAybo7jyO_tvqwaYPlSS8FEzKOplbqZq0KRdePAZgGnEOMH3H0PFwwandzHr6iwfFMSxDQLGVinWVEWqIcSqAIVmQFJVHTfwPo3EEKECg';
-    $defaultStats = [
-        ['icon' => 'groups', 'value' => $totalAlumni . '+', 'label' => 'Total Alumni'],
-        ['icon' => 'school', 'value' => '95%', 'label' => 'Lolos PTN'],
-        ['icon' => 'work', 'value' => '30%', 'label' => 'Fortune 500'],
-        ['icon' => 'public', 'value' => $totalLokasi . '+', 'label' => 'Lokasi Alumni'],
-    ];
-    $stats = collect($settings->stats ?: $defaultStats)->take(4);
-@endphp
-
-{{-- Hero Section --}}
-<section class="relative w-full py-24 overflow-hidden pt-32">
-    <div class="absolute inset-0 z-0">
-        <img class="w-full h-full object-cover opacity-10 grayscale"
-            src="{{ $heroImage }}"
-            alt="Alumni Background" />
-        <div class="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background"></div>
-    </div>
-    <div class="relative z-10 max-w-7xl mx-auto px-6">
-        <nav class="flex items-center gap-2 text-sm font-medium mb-6 text-tertiary">
-            <a href="{{ url('/') }}" class="hover:text-primary transition-colors">Beranda</a>
-            <span class="material-symbols-outlined text-xs">chevron_right</span>
-            <span class="text-on-surface-variant">{{ $settings->hero_breadcrumb_label ?? 'Alumni' }}</span>
-        </nav>
-        <div class="max-w-3xl">
-            <h1 class="font-headline text-5xl md:text-7xl font-extrabold tracking-tighter text-primary mb-6">{{ $settings->hero_title ?? 'Jejak Alumni Kami' }}</h1>
-            <p class="text-lg text-on-surface-variant leading-relaxed">
-                {{ $settings->hero_description ?? 'Membangun masa depan melalui warisan keunggulan. Alumni SMAN Pintar Riau tersebar di seluruh penjuru dunia, membawa semangat inovasi dan integritas dari tanah Lancang Kuning ke panggung global.' }}
-            </p>
-        </div>
-    </div>
-</section>
-
-{{-- Statistik --}}
-<section class="max-w-7xl mx-auto px-6 -mt-16 relative z-20">
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        @foreach ($stats as $stat)
-        <div
-            class="bg-surface-container-lowest p-8 rounded-xl shadow-[0_24px_40px_rgba(25,27,34,0.04)] hover:scale-[1.02] transition-transform">
-            <span class="material-symbols-outlined text-tertiary text-4xl mb-4">{{ data_get($stat, 'icon') }}</span>
-            <h3 class="text-3xl font-extrabold text-primary mb-1">{{ data_get($stat, 'value') }}</h3>
-            <p class="text-on-surface-variant font-medium text-sm uppercase tracking-wider">{{ data_get($stat, 'label') }}</p>
-        </div>
-        @endforeach
-    </div>
-</section>
+@push('styles')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+@endpush
 
 {{-- Map Persebaran --}}
-<section class="py-24 max-w-7xl mx-auto px-6">
+<section class="pb-24 pt-16 max-w-7xl mx-auto px-6">
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
         <div class="max-w-xl">
-            <span class="text-tertiary font-bold tracking-[0.2em] text-xs uppercase block mb-3">{{ $settings->map_label ?? 'Global Network' }}</span>
             <h2 class="text-4xl font-extrabold text-primary tracking-tight">{{ $settings->map_title ?? 'Sebaran Alumni Global' }}</h2>
             <p class="mt-4 text-on-surface-variant">{{ $settings->map_description ?? 'Dari Riau untuk Dunia. Lihat bagaimana komunitas alumni kami berkembang di berbagai pusat ekonomi dan pendidikan global.' }}</p>
         </div>
-        <div class="flex gap-4">
+        <div class="flex flex-wrap gap-4">
             <select
-                class="bg-surface-container-high border-none rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-primary">
+                class="min-w-36 bg-surface-container-high border-none rounded-xl py-2.5 pl-4 pr-10 text-sm font-medium focus:ring-2 focus:ring-primary">
                 <option>Angkatan</option>
                 <option>2023</option>
                 <option>2022</option>
             </select>
             <select
-                class="bg-surface-container-high border-none rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-primary">
+                class="min-w-40 bg-surface-container-high border-none rounded-xl py-2.5 pl-4 pr-10 text-sm font-medium focus:ring-2 focus:ring-primary">
                 <option>Bidang Studi</option>
                 <option>Teknologi</option>
                 <option>Kesehatan</option>
             </select>
         </div>
     </div>
-    <div class="relative bg-surface-container-low rounded-3xl p-8 aspect-[16/9] overflow-hidden group">
-        <img class="w-full h-full object-cover rounded-2xl opacity-40"
-            src="{{ $mapImage }}"
-            alt="World Map" />
-        <div class="absolute inset-0 flex items-center justify-center">
-
-            {{-- DYNAMIC LOOP: Titik Persebaran Map --}}
-            @foreach ($lokasi as $loc)
-            <div class="absolute flex flex-col items-center" @style(['top: ' . $loc->top, ' left: ' . $loc->left])>
-                @if(isset($loc->ping) && $loc->ping)
-                <div class="w-4 h-4 {{ $loc->color }} rounded-full animate-ping absolute"></div>
-                <div class="w-4 h-4 {{ $loc->color }} rounded-full relative shadow-lg"></div>
-                @else
-                <div class="w-3 h-3 {{ $loc->color }} rounded-full relative"></div>
-                @endif
-                <span
-                    class="mt-2 text-[10px] font-bold bg-white px-2 py-0.5 rounded shadow text-primary">{{ $loc->kota }}</span>
-            </div>
-            @endforeach
-
-        </div>
+    <div class="bg-surface-container-low rounded-3xl p-4 md:p-6 overflow-hidden shadow-sm">
+        <div id="alumniPublicMap" class="h-[360px] md:h-[520px] w-full rounded-2xl overflow-hidden border border-outline-variant/20"></div>
     </div>
 </section>
 
-{{-- Featured Alumni --}}
-<section class="py-24 bg-surface-container-low">
-    <div class="max-w-7xl mx-auto px-6">
-        <div
-            class="bg-surface-container-lowest rounded-3xl overflow-hidden shadow-[0_32px_64px_rgba(25,27,34,0.06)] flex flex-col lg:flex-row">
-            <div class="lg:w-1/2 h-[500px] relative">
-                <img class="w-full h-full object-cover"
-                    src="{{ $featuredAlumni?->foto ? asset('storage/' . $featuredAlumni->foto) : 'https://lh3.googleusercontent.com/aida-public/AB6AXuA5b9EKh9EPOhCkOHOD9OhGHtMgEYqREHpizcz4yCCG-bZdDvNF9f7UrIJ1wHBEhzBLiLp5YzkV-TEHddVtGY_d_x0XJ99stYk4ko2d5loipZ8A0_opvHMrJ9H5NcHyo_kGvDoyGqCoMIRljXVe7u9CitFKpB3AAFe0qYMBsRGYOl2iqn1dtoRR_w4HqsywZMt9H9umODxX5V5K2g66_Z-xqoFRL6lU-wUoCYdePmIfmfqGWb__uFu67oUKxb3WZjNHoBPC1rnidCm9' }}"
-                    alt="{{ $featuredAlumni?->nama ?? 'Alumni SMAN Pintar' }}" />
-                <div class="absolute top-8 left-8">
-                    <span
-                        class="bg-tertiary-container text-on-tertiary-container px-6 py-2 rounded-full font-bold text-xs uppercase tracking-widest backdrop-blur-md">{{ $settings->featured_badge ?? 'Featured Alumna' }}</span>
-                </div>
-            </div>
-            <div class="lg:w-1/2 p-12 lg:p-16 flex flex-col justify-center">
-                <h3 class="text-4xl font-extrabold text-primary mb-4">{{ $featuredAlumni?->nama ?? 'Alumni SMAN Pintar' }}</h3>
-                <p class="text-tertiary font-bold mb-8 text-lg">{{ $featuredAlumni?->profesi ?? 'Profil alumni akan diperbarui' }}{{ $featuredAlumni?->instansi ? ', ' . $featuredAlumni->instansi : '' }} | Class of {{ $featuredAlumni?->tahun_lulus ?? '-' }}</p>
-                <blockquote class="text-xl italic text-on-surface-variant mb-8 leading-relaxed">
-                    "{{ $featuredAlumni?->deskripsi ?: 'SMAN Pintar menjadi ruang tumbuh untuk membangun karakter, disiplin, dan keberanian bermimpi lebih besar.' }}"
-                </blockquote>
-                <div class="flex gap-4 items-center">
-                    <button
-                        class="bg-primary text-on-primary px-8 py-4 rounded-xl font-bold flex items-center gap-2 hover:translate-x-2 transition-transform shadow-lg">
-                        {{ $settings->featured_button_text ?? 'Baca Kisah Selengkapnya' }}
-                        <span class="material-symbols-outlined">arrow_forward</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+@push('scripts')
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const mapElement = document.getElementById('alumniPublicMap');
 
-{{-- Alumni Grid --}}
-<section class="py-24 max-w-7xl mx-auto px-6">
-    <div class="text-center mb-16">
-        <h2 class="text-4xl font-extrabold text-primary mb-4">{{ $settings->grid_title ?? 'Inspirasi Alumni' }}</h2>
-        <p class="text-on-surface-variant max-w-2xl mx-auto">{{ $settings->grid_description ?? 'Mengenal lebih dekat para alumni berprestasi yang kini berkarya di berbagai sektor industri strategis.' }}</p>
-    </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        if (!mapElement || typeof L === 'undefined') {
+            return;
+        }
 
-        {{-- DYNAMIC LOOP: Data Alumni --}}
-        @forelse ($daftar_alumni as $item)
-        <div
-            class="group bg-surface-container-lowest rounded-2xl p-6 shadow-sm hover:shadow-[0_20px_40px_rgba(25,27,34,0.08)] transition-all duration-300">
-            <div class="relative mb-6">
-                <img class="w-24 h-24 rounded-2xl object-cover mb-4" src="{{ $item->foto ? asset('storage/' . $item->foto) : 'https://lh3.googleusercontent.com/aida-public/AB6AXuA3kk9jqHFB1bwe8T3UOsjV_sL3xqb9csJjS7ZD042fBVAd2C1XKZenZBSonVAEJQXtXFX6FPYkhv92fLkf3eqw7AaNz8GNPmtR2-0doASR5iHvDVsWGACZ5nWxtWJYwrtdkY5KSU9Fep_xYRvUYHdY3VKWQYaeQK8KPqjTMdUEFfLQsYOxTZ43UAzhLiSN3UVZ-ggTeMHgzGk7766ySmdXXbBjNuP6slDcPj4zsZS8EwjyvcBA3qhVsN3P0r8IjwZ9XheX4N25zYYQ' }}"
-                    alt="{{ $item->nama }}" />
-                @if($loop->first)
-                <span
-                    class="absolute top-0 right-0 bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-1 rounded-full uppercase">Featured</span>
-                @endif
-            </div>
-            <h4 class="text-xl font-bold text-primary group-hover:text-tertiary transition-colors">{{ $item->nama }}
-            </h4>
-            <p class="text-on-surface-variant text-sm mt-1 mb-6">{{ $item->profesi }}{{ $item->instansi ? ', ' . $item->instansi : '' }}</p>
-            <div class="flex items-center gap-2">
-                <span
-                    class="text-xs font-semibold bg-surface-container px-3 py-1 rounded-full text-on-surface-variant">Class of {{ $item->tahun_lulus }}</span>
-                @if($item->lokasi)
-                <span
-                    class="text-xs font-semibold bg-surface-container px-3 py-1 rounded-full text-on-surface-variant">{{ $item->lokasi }}</span>
-                @endif
-            </div>
-        </div>
-        @empty
-        <div class="lg:col-span-3 bg-surface-container-lowest rounded-2xl p-10 text-center text-on-surface-variant">
-            Belum ada data alumni aktif yang tersedia.
-        </div>
-        @endforelse
+        const locations = @json($lokasi->values()->map(fn ($item) => [
+            'name' => $item->kota,
+            'total' => $item->total,
+        ]));
 
-    </div>
-    <div class="mt-16 text-center">
-        <button class="text-primary font-bold flex items-center gap-2 mx-auto hover:gap-4 transition-all">
-            {{ $settings->grid_button_text ?? 'Lihat Semua Direktori Alumni' }}
-            <span class="material-symbols-outlined">east</span>
-        </button>
-    </div>
-</section>
+        const map = L.map(mapElement, {
+            scrollWheelZoom: false,
+        }).setView([-0.789275, 113.921327], 5);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors',
+        }).addTo(map);
+
+        const bounds = [];
+
+        locations.forEach((location) => {
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(location.name + ', Indonesia')}`)
+                .then((response) => response.json())
+                .then((results) => {
+                    if (!results.length) {
+                        return;
+                    }
+
+                    const latLng = [Number(results[0].lat), Number(results[0].lon)];
+                    bounds.push(latLng);
+
+                    L.marker(latLng)
+                        .addTo(map)
+                        .bindPopup(`<strong>${location.name}</strong><br>${location.total} alumni`);
+
+                    if (bounds.length > 1) {
+                        map.fitBounds(bounds, { padding: [48, 48], maxZoom: 7 });
+                    } else {
+                        map.setView(latLng, 8);
+                    }
+                })
+                .catch(() => {});
+        });
+    });
+</script>
+@endpush
 
 {{-- Testimoni --}}
 <section class="py-24 overflow-hidden bg-primary relative">
@@ -191,7 +95,10 @@
     </div>
     <div class="max-w-7xl mx-auto px-6 relative z-10">
         <div class="flex flex-col items-center text-center">
-            <span class="material-symbols-outlined text-tertiary-fixed text-6xl mb-8">format_quote</span>
+            <img
+                class="mb-8 h-20 w-20 rounded-full border-4 border-white/20 object-cover shadow-2xl"
+                src="{{ $featuredAlumni?->foto ? asset('storage/' . $featuredAlumni->foto) : 'https://lh3.googleusercontent.com/aida-public/AB6AXuA3kk9jqHFB1bwe8T3UOsjV_sL3xqb9csJjS7ZD042fBVAd2C1XKZenZBSonVAEJQXtXFX6FPYkhv92fLkf3eqw7AaNz8GNPmtR2-0doASR5iHvDVsWGACZ5nWxtWJYwrtdkY5KSU9Fep_xYRvUYHdY3VKWQYaeQK8KPqjTMdUEFfLQsYOxTZ43UAzhLiSN3UVZ-ggTeMHgzGk7766ySmdXXbBjNuP6slDcPj4zsZS8EwjyvcBA3qhVsN3P0r8IjwZ9XheX4N25zYYQ' }}"
+                alt="{{ $settings->testimonial_name ?? $featuredAlumni?->nama ?? 'Alumni SMAN Pintar' }}">
             <div class="max-w-4xl">
                 <p class="text-2xl md:text-3xl font-medium text-white leading-relaxed mb-12">
                     "{{ $settings->testimonial_quote ?? 'Berada di SMAN Pintar membuka mata saya bahwa keterbatasan geografis bukan penghalang untuk bersaing secara global. Kurikulum dan dukungan pengajarnya benar-benar mempersiapkan mentalitas juara.' }}"

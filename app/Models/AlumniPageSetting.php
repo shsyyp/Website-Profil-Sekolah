@@ -24,6 +24,7 @@ class AlumniPageSetting extends Model
         'testimonial_quote',
         'testimonial_name',
         'testimonial_meta',
+        'testimonial_alumni_ids',
         'cta_title',
         'cta_description',
         'cta_primary_text',
@@ -34,5 +35,6 @@ class AlumniPageSetting extends Model
 
     protected $casts = [
         'stats' => 'array',
+        'testimonial_alumni_ids' => 'array',
     ];
 }

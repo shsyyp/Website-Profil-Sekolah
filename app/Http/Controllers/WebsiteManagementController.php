@@ -26,7 +26,7 @@ class WebsiteManagementController extends Controller
         $pmb = PMB::first() ?? new PMB();
         $newsSetting = NewsPageSetting::first() ?? NewsPageSetting::create();
         $alumniSetting = AlumniPageSetting::first() ?? AlumniPageSetting::create();
-        $alumniOptions = Alumni::where('status', 'aktif')->get();
+        $alumniOptions = Alumni::latest()->get();
         $berita = Berita::latest()->take(8)->get();
         $alumni = Alumni::latest()->take(8)->get();
 
@@ -35,7 +35,7 @@ class WebsiteManagementController extends Controller
             'totalPublished' => Berita::where('status', 'publish')->count(),
             'totalDraft' => Berita::where('status', 'draft')->count(),
             'totalAlumni' => Alumni::count(),
-            'alumniAktif' => Alumni::where('status', 'aktif')->count(),
+            'alumniAktif' => Alumni::count(),
         ];
 
         abort_unless(in_array($section, ['beranda', 'tentang', 'berita', 'pmb', 'alumni'], true), 404);
@@ -115,6 +115,8 @@ class WebsiteManagementController extends Controller
             'testimonial_quote' => ['nullable', 'string'],
             'testimonial_name' => ['nullable', 'string', 'max:255'],
             'testimonial_meta' => ['nullable', 'string', 'max:255'],
+            'testimonial_alumni_ids' => ['nullable', 'array'],
+            'testimonial_alumni_ids.*' => ['nullable', 'integer', 'exists:alumni,id'],
             'cta_title' => ['nullable', 'string', 'max:255'],
             'cta_description' => ['nullable', 'string'],
             'cta_primary_text' => ['nullable', 'string', 'max:255'],
@@ -122,6 +124,13 @@ class WebsiteManagementController extends Controller
             'cta_secondary_text' => ['nullable', 'string', 'max:255'],
             'cta_secondary_link' => ['nullable', 'string', 'max:255'],
         ]);
+        $data['testimonial_alumni_ids'] = collect($request->input('testimonial_alumni_ids', []))
+            ->map(fn ($id) => (int) $id)
+            ->filter()
+            ->unique()
+            ->take(5)
+            ->values()
+            ->all();
 
         $setting = AlumniPageSetting::first() ?? new AlumniPageSetting();
 

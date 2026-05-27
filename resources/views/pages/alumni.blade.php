@@ -5,27 +5,34 @@
 @section('content')
 @push('styles')
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+    #alumniPublicMap,
+    #alumniPublicMap .leaflet-pane,
+    #alumniPublicMap .leaflet-control-container {
+        z-index: 0;
+    }
+
+    #alumniPublicMap .leaflet-top,
+    #alumniPublicMap .leaflet-bottom {
+        z-index: 10;
+    }
+</style>
 @endpush
 
 {{-- Map Persebaran --}}
-<section class="pb-24 pt-16 max-w-7xl mx-auto px-6">
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
-        <div class="max-w-xl">
-            <h2 class="text-4xl font-extrabold text-primary tracking-tight">{{ $settings->map_title ?? 'Sebaran Alumni Global' }}</h2>
-            <p class="mt-4 text-on-surface-variant">{{ $settings->map_description ?? 'Dari Riau untuk Dunia. Lihat bagaimana komunitas alumni kami berkembang di berbagai pusat ekonomi dan pendidikan global.' }}</p>
+<section class="pb-24 pt-24 max-w-7xl mx-auto px-8">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12 py-12">
+        <div class="max-w-2xl">
+            <h1 class="text-5xl font-extrabold font-headline tracking-tight text-primary">{{ $settings->map_title ?? 'Sebaran Alumni Global' }}</h1>
+            <p class="text-on-surface-variant max-w-2xl mt-4 leading-relaxed">{{ $settings->map_description ?? 'Dari Riau untuk Dunia. Lihat bagaimana komunitas alumni kami berkembang di berbagai pusat ekonomi dan pendidikan global.' }}</p>
         </div>
         <div class="flex flex-wrap gap-4">
-            <select
+            <select data-alumni-year-filter
                 class="min-w-36 bg-surface-container-high border-none rounded-xl py-2.5 pl-4 pr-10 text-sm font-medium focus:ring-2 focus:ring-primary">
-                <option>Angkatan</option>
-                <option>2023</option>
-                <option>2022</option>
-            </select>
-            <select
-                class="min-w-40 bg-surface-container-high border-none rounded-xl py-2.5 pl-4 pr-10 text-sm font-medium focus:ring-2 focus:ring-primary">
-                <option>Bidang Studi</option>
-                <option>Teknologi</option>
-                <option>Kesehatan</option>
+                <option value="all">Semua Angkatan</option>
+                @foreach($angkatanOptions as $year)
+                    <option value="{{ $year }}">{{ $year }}</option>
+                @endforeach
             </select>
         </div>
     </div>
@@ -44,9 +51,10 @@
             return;
         }
 
-        const locations = @json($lokasi->values()->map(fn ($item) => [
-            'name' => $item->kota,
-            'total' => $item->total,
+        const yearFilter = document.querySelector('[data-alumni-year-filter]');
+        const alumniLocations = @json($daftar_alumni->values()->map(fn ($item) => [
+            'name' => $item->lokasi,
+            'year' => (string) $item->tahun_lulus,
         ]));
 
         const map = L.map(mapElement, {
@@ -57,31 +65,85 @@
             attribution: '&copy; OpenStreetMap contributors',
         }).addTo(map);
 
-        const bounds = [];
+        const markerLayer = L.layerGroup().addTo(map);
+        const coordinateCache = {};
 
-        locations.forEach((location) => {
-            fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(location.name + ', Indonesia')}`)
-                .then((response) => response.json())
-                .then((results) => {
-                    if (!results.length) {
+        const groupLocations = (selectedYear) => {
+            const grouped = {};
+
+            alumniLocations
+                .filter((item) => selectedYear === 'all' || item.year === selectedYear)
+                .forEach((item) => {
+                    if (!item.name) {
                         return;
                     }
 
-                    const latLng = [Number(results[0].lat), Number(results[0].lon)];
-                    bounds.push(latLng);
+                    const key = item.name.trim();
+                    grouped[key] = grouped[key] || { name: key, total: 0 };
+                    grouped[key].total += 1;
+                });
 
-                    L.marker(latLng)
-                        .addTo(map)
-                        .bindPopup(`<strong>${location.name}</strong><br>${location.total} alumni`);
+            return Object.values(grouped);
+        };
+
+        const resolveLocation = (location) => {
+            const cacheKey = location.name.toLowerCase();
+
+            if (coordinateCache[cacheKey]) {
+                return Promise.resolve(coordinateCache[cacheKey]);
+            }
+
+            return fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(location.name + ', Indonesia')}`)
+                .then((response) => response.json())
+                .then((results) => {
+                    if (!results.length) {
+                        return null;
+                    }
+
+                    coordinateCache[cacheKey] = [Number(results[0].lat), Number(results[0].lon)];
+
+                    return coordinateCache[cacheKey];
+                })
+                .catch(() => null);
+        };
+
+        const renderMarkers = (selectedYear = 'all') => {
+            const locations = groupLocations(selectedYear);
+            const bounds = [];
+
+            markerLayer.clearLayers();
+
+            if (!locations.length) {
+                map.setView([-0.789275, 113.921327], 5);
+                return;
+            }
+
+            Promise.all(locations.map((location) => resolveLocation(location).then((latLng) => ({ location, latLng }))))
+                .then((items) => {
+                    items.forEach(({ location, latLng }) => {
+                        if (!latLng) {
+                            return;
+                        }
+
+                        bounds.push(latLng);
+                        L.marker(latLng)
+                            .addTo(markerLayer)
+                            .bindPopup(`<strong>${location.name}</strong><br>${location.total} alumni`);
+                    });
 
                     if (bounds.length > 1) {
                         map.fitBounds(bounds, { padding: [48, 48], maxZoom: 7 });
-                    } else {
-                        map.setView(latLng, 8);
+                    } else if (bounds.length === 1) {
+                        map.setView(bounds[0], 8);
                     }
-                })
-                .catch(() => {});
+                });
+        };
+
+        yearFilter?.addEventListener('change', (event) => {
+            renderMarkers(event.target.value);
         });
+
+        renderMarkers(yearFilter?.value || 'all');
     });
 </script>
 @endpush
@@ -95,25 +157,53 @@
     </div>
     <div class="max-w-7xl mx-auto px-6 relative z-10">
         <div class="flex flex-col items-center text-center">
-            <img
-                class="mb-8 h-20 w-20 rounded-full border-4 border-white/20 object-cover shadow-2xl"
-                src="{{ $featuredAlumni?->foto ? asset('storage/' . $featuredAlumni->foto) : 'https://lh3.googleusercontent.com/aida-public/AB6AXuA3kk9jqHFB1bwe8T3UOsjV_sL3xqb9csJjS7ZD042fBVAd2C1XKZenZBSonVAEJQXtXFX6FPYkhv92fLkf3eqw7AaNz8GNPmtR2-0doASR5iHvDVsWGACZ5nWxtWJYwrtdkY5KSU9Fep_xYRvUYHdY3VKWQYaeQK8KPqjTMdUEFfLQsYOxTZ43UAzhLiSN3UVZ-ggTeMHgzGk7766ySmdXXbBjNuP6slDcPj4zsZS8EwjyvcBA3qhVsN3P0r8IjwZ9XheX4N25zYYQ' }}"
-                alt="{{ $settings->testimonial_name ?? $featuredAlumni?->nama ?? 'Alumni SMAN Pintar' }}">
-            <div class="max-w-4xl">
-                <p class="text-2xl md:text-3xl font-medium text-white leading-relaxed mb-12">
-                    "{{ $settings->testimonial_quote ?? 'Berada di SMAN Pintar membuka mata saya bahwa keterbatasan geografis bukan penghalang untuk bersaing secara global. Kurikulum dan dukungan pengajarnya benar-benar mempersiapkan mentalitas juara.' }}"
-                </p>
-                <div class="flex flex-col items-center">
-                    <h5 class="text-white font-bold text-lg">{{ $settings->testimonial_name ?? 'Fandi Ahmad' }}</h5>
-                    <p class="text-on-primary-container text-sm">{{ $settings->testimonial_meta ?? 'PhD Candidate, University of Oxford | Class of 2016' }}</p>
-                </div>
+            <div class="w-full" data-alumni-testimonials>
+                @forelse($testimonialAlumni as $alumnus)
+                    @php
+                        $meta = collect([
+                            trim(collect([$alumnus->profesi, $alumnus->instansi])->filter()->join(', ')),
+                            $alumnus->tahun_lulus ? 'Class of ' . $alumnus->tahun_lulus : null,
+                        ])->filter()->join(' | ');
+                    @endphp
+                    <article class="{{ $loop->first ? '' : 'hidden' }}" data-alumni-testimonial>
+                        <img
+                            class="mx-auto mb-8 h-20 w-20 rounded-full border-4 border-white/20 object-cover shadow-2xl"
+                            src="{{ $alumnus->foto ? asset('storage/' . $alumnus->foto) : 'https://ui-avatars.com/api/?name=' . urlencode($alumnus->nama) . '&background=e9eef8&color=0b3f8a&bold=true' }}"
+                            alt="{{ $alumnus->nama }}">
+                        <div class="mx-auto max-w-4xl">
+                            <p class="text-2xl md:text-3xl font-medium text-white leading-relaxed mb-12">
+                                "{{ $alumnus->deskripsi ?: 'Bangga menjadi bagian dari keluarga besar SMAN Pintar Provinsi Riau.' }}"
+                            </p>
+                            <div class="flex flex-col items-center">
+                                <h5 class="text-white font-bold text-lg">{{ $alumnus->nama }}</h5>
+                                <p class="text-on-primary-container text-sm">{{ $meta }}</p>
+                            </div>
+                        </div>
+                    </article>
+                @empty
+                    <article data-alumni-testimonial>
+                        <img
+                            class="mx-auto mb-8 h-20 w-20 rounded-full border-4 border-white/20 object-cover shadow-2xl"
+                            src="https://ui-avatars.com/api/?name=Alumni+SMAN+Pintar&background=e9eef8&color=0b3f8a&bold=true"
+                            alt="Alumni SMAN Pintar">
+                        <div class="mx-auto max-w-4xl">
+                            <p class="text-2xl md:text-3xl font-medium text-white leading-relaxed mb-12">
+                                "{{ $settings->testimonial_quote ?? 'Bangga menjadi bagian dari keluarga besar SMAN Pintar Provinsi Riau.' }}"
+                            </p>
+                            <div class="flex flex-col items-center">
+                                <h5 class="text-white font-bold text-lg">{{ $settings->testimonial_name ?? 'Alumni SMAN Pintar' }}</h5>
+                                <p class="text-on-primary-container text-sm">{{ $settings->testimonial_meta ?? 'Komunitas Alumni' }}</p>
+                            </div>
+                        </div>
+                    </article>
+                @endforelse
             </div>
             <div class="flex gap-4 mt-12">
-                <button
+                <button type="button" data-alumni-testimonial-prev
                     class="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white/10 transition-colors">
                     <span class="material-symbols-outlined">chevron_left</span>
                 </button>
-                <button
+                <button type="button" data-alumni-testimonial-next
                     class="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white/10 transition-colors">
                     <span class="material-symbols-outlined">chevron_right</span>
                 </button>
@@ -121,6 +211,31 @@
         </div>
     </div>
 </section>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const slides = Array.from(document.querySelectorAll('[data-alumni-testimonial]'));
+        const previousButton = document.querySelector('[data-alumni-testimonial-prev]');
+        const nextButton = document.querySelector('[data-alumni-testimonial-next]');
+        let activeIndex = 0;
+
+        if (!slides.length) {
+            return;
+        }
+
+        const showSlide = (index) => {
+            activeIndex = (index + slides.length) % slides.length;
+            slides.forEach((slide, slideIndex) => {
+                slide.classList.toggle('hidden', slideIndex !== activeIndex);
+            });
+        };
+
+        previousButton?.addEventListener('click', () => showSlide(activeIndex - 1));
+        nextButton?.addEventListener('click', () => showSlide(activeIndex + 1));
+    });
+</script>
+@endpush
 
 {{-- CTA Section --}}
 <section class="py-24 max-w-7xl mx-auto px-6">
@@ -133,11 +248,6 @@
         <p class="text-lg text-on-surface-variant max-w-2xl mb-12">{{ $settings->cta_description ?? 'Lanjutkan legacy keunggulan ini. Apakah Anda calon siswa yang ambisius atau alumni yang ingin kembali berkontribusi?' }}</p>
 
         <div class="flex flex-col sm:flex-row gap-6 relative z-10">
-            <a href="{{ $settings->cta_primary_link ?? url('/pmb') }}"
-                class="bg-tertiary text-on-tertiary px-10 py-4 rounded-xl font-bold text-lg hover:scale-105 transition-all shadow-lg flex items-center gap-3">
-                {{ $settings->cta_primary_text ?? 'Daftar PMB' }}
-                <span class="material-symbols-outlined">rocket_launch</span>
-            </a>
             <a href="{{ $settings->cta_secondary_link ?? '#' }}"
                 class="bg-primary text-on-primary px-10 py-4 rounded-xl font-bold text-lg hover:scale-105 transition-all shadow-lg flex items-center gap-3">
                 {{ $settings->cta_secondary_text ?? 'Gabung Alumni' }}

@@ -4,10 +4,21 @@
 
 @section('content')
 @php
+    $testimonialAlumniIds = collect(old('testimonial_alumni_ids', $settings->testimonial_alumni_ids ?? []))
+        ->map(fn ($id) => (int) $id)
+        ->filter()
+        ->take(5)
+        ->values();
+    $selectedTestimonialNames = $allAlumni
+        ->whereIn('id', $testimonialAlumniIds)
+        ->pluck('nama')
+        ->take(3)
+        ->join(', ');
+
     $pageComponents = [
         ['id' => 'alumni-map-section', 'icon' => 'public', 'title' => 'Sebaran Alumni', 'meta' => 'Peta alumni', 'content' => $settings->map_title ?? 'Sebaran Alumni Global'],
-        ['id' => 'alumni-testimonial-section', 'icon' => 'format_quote', 'title' => 'Testimoni Alumni', 'meta' => $settings->testimonial_name ?? 'Fandi Ahmad', 'content' => $settings->testimonial_quote ?? 'Berada di SMAN Pintar membuka mata saya...'],
-        ['id' => 'alumni-cta-section', 'icon' => 'campaign', 'title' => 'Ajakan Alumni', 'meta' => $settings->cta_primary_text ?? 'Daftar PMB', 'content' => $settings->cta_title ?? 'Jadilah Bagian dari Alumni Hebat Kami'],
+        ['id' => 'alumni-testimonial-section', 'icon' => 'format_quote', 'title' => 'Testimoni Alumni', 'meta' => $testimonialAlumniIds->count() . ' dipilih', 'content' => $selectedTestimonialNames ?: 'Pilih alumni yang ingin ditampilkan sebagai testimoni.'],
+        ['id' => 'alumni-cta-section', 'icon' => 'campaign', 'title' => 'Ajakan Alumni', 'meta' => $settings->cta_secondary_text ?? 'Gabung Alumni', 'content' => $settings->cta_title ?? 'Jadilah Bagian dari Alumni Hebat Kami'],
         ['id' => 'alumni-management-section', 'icon' => 'manage_accounts', 'title' => 'Manajemen Alumni', 'meta' => $alumni->total() . ' alumni', 'content' => 'Kelola data lulusan SMAN Pintar seluruh angkatan.', 'type' => 'management'],
     ];
 @endphp
@@ -99,6 +110,7 @@
         outline-offset: 2px;
         box-shadow: none;
     }
+
 </style>
 
 {{-- Load CSS Leaflet --}}
@@ -196,18 +208,24 @@
                 <div><span class="text-xs font-bold text-tertiary uppercase tracking-widest mb-1 block">Component 02</span><h3 class="text-2xl font-headline font-extrabold text-primary">Testimoni Alumni</h3></div>
                 <button type="button" data-alumni-page-back class="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors"><span class="material-symbols-outlined text-[18px]">arrow_back</span>Kembali</button>
             </summary>
-            <div class="border-t border-slate-100 p-6 lg:p-8 bg-surface-container-low/40 grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="md:col-span-2">
-                    <label>Isi Testimoni</label>
-                    <textarea name="testimonial_quote" rows="5" placeholder="Tulis kutipan alumni yang ingin ditampilkan.">{{ old('testimonial_quote', $settings->testimonial_quote ?? 'Berada di SMAN Pintar membuka mata saya bahwa keterbatasan geografis bukan penghalang untuk bersaing secara global. Kurikulum dan dukungan pengajarnya benar-benar mempersiapkan mentalitas juara.') }}</textarea>
-                </div>
+            <div class="border-t border-slate-100 p-6 lg:p-8 bg-surface-container-low/40 space-y-6">
                 <div>
-                    <label>Nama Alumni</label>
-                    <input name="testimonial_name" value="{{ old('testimonial_name', $settings->testimonial_name ?? 'Fandi Ahmad') }}" placeholder="Contoh: Fandi Ahmad">
-                </div>
-                <div>
-                    <label>Keterangan Alumni</label>
-                    <input name="testimonial_meta" value="{{ old('testimonial_meta', $settings->testimonial_meta ?? 'PhD Candidate, University of Oxford | Class of 2016') }}" placeholder="Contoh: Class of 2016">
+                    <h4 class="text-xl font-extrabold text-primary font-headline mb-6">Pilihan Alumni</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                        @for($slot = 0; $slot < 5; $slot++)
+                        <div>
+                            <label>Alumni {{ $slot + 1 }}</label>
+                            <select name="testimonial_alumni_ids[]">
+                                <option value="">Tidak ditampilkan</option>
+                                @foreach($allAlumni as $item)
+                                    <option value="{{ $item->id }}" @selected($testimonialAlumniIds->get($slot) === $item->id)>
+                                        {{ $item->nama }} - {{ $item->tahun_lulus }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        @endfor
+                    </div>
                 </div>
             </div>
         </details>
@@ -226,11 +244,17 @@
                     <label>Deskripsi Ajakan</label>
                     <textarea name="cta_description" rows="4" placeholder="Tuliskan ajakan singkat untuk calon siswa atau alumni.">{{ old('cta_description', $settings->cta_description ?? 'Lanjutkan legacy keunggulan ini. Apakah Anda calon siswa yang ambisius atau alumni yang ingin kembali berkontribusi?') }}</textarea>
                 </div>
+                <div>
+                    <label>Teks Tombol</label>
+                    <input name="cta_secondary_text" value="{{ old('cta_secondary_text', $settings->cta_secondary_text ?? 'Gabung Alumni') }}" placeholder="Contoh: Gabung Alumni">
+                </div>
+                <div>
+                    <label>Link Tombol</label>
+                    <input name="cta_secondary_link" value="{{ old('cta_secondary_link', $settings->cta_secondary_link ?? '#') }}" placeholder="Contoh: https://wa.me/6281234567890">
+                </div>
                 <input name="grid_button_text" type="hidden" value="{{ old('grid_button_text', $settings->grid_button_text ?? 'Lihat Semua Direktori Alumni') }}">
-                <input name="cta_primary_text" type="hidden" value="{{ old('cta_primary_text', $settings->cta_primary_text ?? 'Daftar PMB') }}">
-                <input name="cta_primary_link" type="hidden" value="{{ old('cta_primary_link', $settings->cta_primary_link ?? url('/pmb')) }}">
-                <input name="cta_secondary_text" type="hidden" value="{{ old('cta_secondary_text', $settings->cta_secondary_text ?? 'Gabung Alumni') }}">
-                <input name="cta_secondary_link" type="hidden" value="{{ old('cta_secondary_link', $settings->cta_secondary_link ?? '#') }}">
+                <input name="cta_primary_text" type="hidden" value="">
+                <input name="cta_primary_link" type="hidden" value="">
             </div>
         </details>
 
@@ -260,17 +284,11 @@
         </div>
     </div>
 
-    {{-- Visual Analytics Grid --}}
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-    {{-- Map Section --}}
-    <div class="lg:col-span-2 bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
-        <div class="p-6 flex justify-between items-center border-b border-surface-container-high/30">
-            <h3 class="font-bold flex items-center gap-2">
-                <span class="material-symbols-outlined text-tertiary">public</span>
-                Persebaran Alumni
-            </h3>
+    <div class="bg-surface-container-lowest rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+        <div class="p-8 border-b border-surface-container-high/30">
+            <h3 class="font-headline text-2xl font-extrabold text-primary">Peta Persebaran Alumni</h3>
         </div>
-        <div class="flex-1 relative bg-[#f0f4f9] p-6 flex flex-col gap-4">
+        <div class="relative bg-[#f0f4f9] p-8 flex flex-col gap-5">
             <div>
                 <p class="text-xs text-outline mb-2">Lokasi terdaftar saat ini:</p>
                 <div class="flex flex-wrap gap-2">
@@ -282,80 +300,60 @@
             </div>
 
             {{-- Container Map Leaflet --}}
-            <div id="mapAlumni" class="w-full h-[350px] rounded-xl border border-outline-variant/30"
+            <div id="mapAlumni" class="w-full h-[420px] rounded-xl border border-outline-variant/30"
                 style="z-index: 10;"></div>
         </div>
     </div>
 
-    {{-- Chart Section --}}
-    <div class="bg-surface-container-lowest rounded-xl shadow-sm p-6 flex flex-col space-y-6">
-        <h3 class="font-bold flex items-center gap-2">
-            <span class="material-symbols-outlined text-tertiary">analytics</span>
-            Statistik
-        </h3>
-        <div class="flex-1 flex flex-col justify-center gap-4">
-            <div class="p-4 bg-surface-container-low rounded-xl text-center">
-                <p class="text-3xl font-extrabold text-primary">{{ $alumni->total() }}</p>
-                <p class="text-xs font-bold text-outline uppercase tracking-widest mt-1">Total Terdata</p>
-            </div>
-        </div>
-    </div>
-    </div>
-
-    {{-- Table Alumni --}}
-    <div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden">
-    <div class="p-6 border-b border-surface-container-high/30 flex justify-between items-center">
-        <h3 class="font-bold">Database Alumni Terbaru</h3>
-    </div>
+    <div class="bg-surface-container-lowest rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
     <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
             <thead>
                 <tr
-                    class="bg-surface-container-low text-on-surface-variant text-[11px] uppercase tracking-wider font-bold">
-                    <th class="px-6 py-4">Foto</th>
-                    <th class="px-6 py-4">Nama Lengkap</th>
-                    <th class="px-6 py-4">Profesi / Instansi</th>
-                    <th class="px-6 py-4">Angkatan</th>
-                    <th class="px-6 py-4">Lokasi Saat Ini</th>
-                    <th class="px-6 py-4 text-center">Aksi</th>
+                    class="bg-surface-container-low/50 text-on-surface-variant text-[11px] uppercase tracking-wider font-bold">
+                    <th class="px-8 py-5">No</th>
+                    <th class="px-6 py-5">Alumni</th>
+                    <th class="px-6 py-5">Profesi / Instansi</th>
+                    <th class="px-6 py-5">Angkatan</th>
+                    <th class="px-6 py-5">Lokasi Saat Ini</th>
+                    <th class="px-8 py-5 text-right">Aksi</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-surface-container-high/50 text-sm">
                 @forelse ($alumni as $item)
                 <tr class="hover:bg-surface-container-low/30 transition-colors">
-                    <td class="px-6 py-4">
-                        @if($item->foto)
-                        <img class="w-10 h-10 rounded-full object-cover ring-2 ring-surface"
-                            src="{{ asset('storage/' . $item->foto) }}" />
-                        @else
-                        <div
-                            class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-400 ring-2 ring-surface">
-                            No Pic</div>
-                        @endif
+                    <td class="px-8 py-5">
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-sm font-bold text-primary">
+                            {{ $loop->iteration + ($alumni->currentPage() - 1) * $alumni->perPage() }}
+                        </span>
                     </td>
-                    <td class="px-6 py-4 font-bold text-on-surface">{{ $item->nama }}</td>
-                    <td class="px-6 py-4">{{ $item->profesi }} <br> <span
+                    <td class="px-6 py-5">
+                        <span class="font-bold text-primary">{{ $item->nama }}</span>
+                    </td>
+                    <td class="px-6 py-5">{{ $item->profesi }} <br> <span
                             class="text-xs text-outline">{{ $item->instansi }}</span></td>
-                    <td class="px-6 py-4">
+                    <td class="px-6 py-5">
                         <span
                             class="px-3 py-1 bg-secondary-container text-on-secondary-container rounded-full text-[10px] font-bold">LULUS
                             {{ $item->tahun_lulus }}</span>
                     </td>
-                    <td class="px-6 py-4 flex items-center gap-2">
+                    <td class="px-6 py-5">
+                        <div class="flex items-center gap-2">
                         <span class="material-symbols-outlined text-tertiary text-lg">location_on</span>
                         {{ $item->lokasi }}
+                        </div>
                     </td>
-                    <td class="px-6 py-4">
-                        <div class="flex justify-center gap-2">
+                    <td class="px-8 py-5">
+                        <div class="flex justify-end gap-2">
                             <a href="{{ route('alumni.edit', $item->id) }}"
-                                class="p-2 bg-surface-container-high text-secondary rounded-lg hover:scale-110 transition-transform">
+                                class="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 text-slate-500 hover:bg-amber-100 hover:text-amber-600 transition-all">
                                 <span class="material-symbols-outlined text-[18px]">edit</span>
                             </a>
                             <form action="{{ route('alumni.destroy', $item->id) }}" method="POST"
                                 onsubmit="return confirm('Hapus data alumni ini?');">
                                 @csrf @method('DELETE')
                                 <button type="submit"
-                                    class="p-2 bg-surface-container-high text-error rounded-lg hover:scale-110 transition-transform">
+                                    class="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-red-50 text-error hover:bg-red-100 transition-all">
                                     <span class="material-symbols-outlined text-[18px]">delete</span>
                                 </button>
                             </form>

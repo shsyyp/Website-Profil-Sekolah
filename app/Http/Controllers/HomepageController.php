@@ -13,7 +13,7 @@ class HomepageController extends Controller
     {
         $homepage = Homepage::first() ?? new Homepage();
         $about = AboutPage::first() ?? new AboutPage();
-        $alumni = Alumni::where('status', 'aktif')->get();
+        $alumni = Alumni::latest()->get();
 
         return view('admin.homepage.index', compact('homepage', 'about', 'alumni'));
     }

@@ -21,7 +21,7 @@ class HomeController extends Controller
             ->take($newsLimit)
             ->get();
 
-        $alumniQuery = Alumni::where('status', 'aktif');
+        $alumniQuery = Alumni::query();
 
         if ($homepage?->featured_alumni_id) {
             $alumniQuery->orderByRaw('id = ? DESC', [$homepage->featured_alumni_id]);

@@ -10,12 +10,9 @@ class AlumniController extends Controller
 {
     public function index()
     {
-        $daftar_alumni = Alumni::where('status', 'aktif')
-            ->latest()
-            ->get();
+        $daftar_alumni = Alumni::latest()->get();
 
-        $lokasi = Alumni::where('status', 'aktif')
-            ->selectRaw('lokasi, COUNT(*) as total')
+        $lokasi = Alumni::selectRaw('lokasi, COUNT(*) as total')
             ->groupBy('lokasi')
             ->orderByDesc('total')
             ->get()
@@ -42,17 +39,35 @@ class AlumniController extends Controller
                 ];
             });
 
-        $featuredAlumni = $daftar_alumni->first();
+        $settings = AlumniPageSetting::first() ?? new AlumniPageSetting();
+        $testimonialIds = collect($settings->testimonial_alumni_ids ?? [])
+            ->map(fn ($id) => (int) $id)
+            ->filter()
+            ->values();
+        $testimonialAlumni = $testimonialIds->isNotEmpty()
+            ? $daftar_alumni
+                ->whereIn('id', $testimonialIds)
+                ->sortBy(fn ($item) => $testimonialIds->search($item->id))
+                ->values()
+            : collect();
+        $featuredAlumni = $testimonialAlumni->first() ?? $daftar_alumni->first();
         $totalAlumni = $daftar_alumni->count();
         $totalLokasi = $lokasi->count();
-        $settings = AlumniPageSetting::first() ?? new AlumniPageSetting();
+        $angkatanOptions = $daftar_alumni
+            ->pluck('tahun_lulus')
+            ->filter()
+            ->unique()
+            ->sortDesc()
+            ->values();
 
         return view('pages.alumni', compact(
             'lokasi',
             'daftar_alumni',
+            'testimonialAlumni',
             'featuredAlumni',
             'totalAlumni',
             'totalLokasi',
+            'angkatanOptions',
             'settings'
         ));
     }

@@ -1,18 +1,28 @@
 @extends('layouts.admin')
 
-@section('title', 'Tambah Alumni | Admin SMAN Pintar')
+@section('title', 'Edit Alumni | Admin SMAN Pintar')
 
 @section('content')
 @php
-    $alumniCondition = old('alumni_condition', 'kerja');
-    $selectedLocation = old('lokasi');
+    $profession = strtolower($alumnus->profesi ?? '');
+    $institution = strtolower($alumnus->instansi ?? '');
+    $isStudying = str_contains($profession, 'mahasiswa')
+        || str_contains($profession, 'kuliah')
+        || str_contains($profession, 'student')
+        || str_contains($institution, 'universitas')
+        || str_contains($institution, 'university')
+        || str_contains($institution, 'kampus')
+        || str_contains($institution, 'institut')
+        || str_contains($institution, 'politeknik');
+    $alumniCondition = old('alumni_condition', $isStudying ? 'kuliah' : 'kerja');
+    $selectedLocation = old('lokasi', $alumnus->lokasi);
     if ($selectedLocation && ! in_array($selectedLocation, $locationOptions, true)) {
         array_unshift($locationOptions, $selectedLocation);
     }
 @endphp
 
 <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-8">
-    <h2 class="text-4xl font-extrabold text-primary tracking-tight font-headline">Tambah Alumni</h2>
+    <h2 class="text-4xl font-extrabold text-primary tracking-tight font-headline">Edit Alumni</h2>
     <a href="{{ route('alumni.index') }}"
         class="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-100 px-6 py-3 font-bold text-slate-600 hover:bg-slate-200 transition-colors">
         <span class="material-symbols-outlined text-[18px]">arrow_back</span>
@@ -20,21 +30,25 @@
     </a>
 </div>
 
-<form action="{{ route('alumni.store') }}" method="POST" enctype="multipart/form-data" class="space-y-8">
+<form action="{{ route('alumni.update', $alumnus->id) }}" method="POST" enctype="multipart/form-data" class="space-y-8">
     @csrf
+    @method('PUT')
 
     <div class="bg-surface-container-lowest rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-8 lg:p-10 space-y-6">
         <div>
             <label class="block text-xs font-extrabold uppercase text-tertiary mb-3">Foto Alumni</label>
+            @if($alumnus->foto)
+            <img class="mb-3 h-24 w-24 rounded-2xl object-cover ring-2 ring-surface" src="{{ asset('storage/' . $alumnus->foto) }}" alt="{{ $alumnus->nama }}">
+            @endif
             <input type="file" name="foto" accept="image/*"
                 class="w-full bg-surface-container border-none rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-primary">
-            <p class="mt-2 text-sm font-medium text-slate-500">Gunakan foto yang jelas. Foto ini akan dipakai di tampilan alumni.</p>
+            <p class="mt-2 text-sm font-medium text-slate-500">Biarkan kosong jika foto tidak ingin diganti.</p>
             @error('foto') <span class="text-error text-xs">{{ $message }}</span> @enderror
         </div>
 
         <div>
             <label class="block text-xs font-extrabold uppercase text-tertiary mb-3">Nama Alumni</label>
-            <input name="nama" type="text" value="{{ old('nama') }}"
+            <input name="nama" type="text" value="{{ old('nama', $alumnus->nama) }}"
                 class="w-full bg-surface-container border-none rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-primary"
                 placeholder="Contoh: Luthfi" required>
             @error('nama') <span class="text-error text-xs">{{ $message }}</span> @enderror
@@ -53,14 +67,14 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
                 <label id="profesi_label" class="block text-xs font-extrabold uppercase text-tertiary mb-3">Profesi / Jabatan</label>
-                <input id="profesi_input" name="profesi" type="text" value="{{ old('profesi') }}"
+                <input id="profesi_input" name="profesi" type="text" value="{{ old('profesi', $alumnus->profesi) }}"
                     class="w-full bg-surface-container border-none rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-primary"
                     placeholder="Contoh: Dokter" required>
                 @error('profesi') <span class="text-error text-xs">{{ $message }}</span> @enderror
             </div>
             <div>
                 <label id="instansi_label" class="block text-xs font-extrabold uppercase text-tertiary mb-3">Instansi / Tempat Kerja</label>
-                <input id="instansi_input" name="instansi" type="text" value="{{ old('instansi') }}"
+                <input id="instansi_input" name="instansi" type="text" value="{{ old('instansi', $alumnus->instansi) }}"
                     class="w-full bg-surface-container border-none rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-primary"
                     placeholder="Contoh: RS">
             </div>
@@ -69,7 +83,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
                 <label class="block text-xs font-extrabold uppercase text-tertiary mb-3">Tahun Lulus</label>
-                <input name="tahun_lulus" type="number" value="{{ old('tahun_lulus') }}"
+                <input name="tahun_lulus" type="number" value="{{ old('tahun_lulus', $alumnus->tahun_lulus) }}"
                     class="w-full bg-surface-container border-none rounded-xl px-4 py-3 text-base focus:ring-2 focus:ring-primary"
                     placeholder="Contoh: 2022" required>
                 @error('tahun_lulus') <span class="text-error text-xs">{{ $message }}</span> @enderror
@@ -97,7 +111,7 @@
             <label class="block text-xs font-extrabold uppercase text-tertiary mb-3">Cerita Singkat</label>
             <textarea name="deskripsi" rows="5"
                 class="w-full bg-surface-container border-none rounded-xl px-4 py-3 text-base leading-relaxed focus:ring-2 focus:ring-primary"
-                placeholder="Tulis kutipan atau cerita singkat alumni.">{{ old('deskripsi') }}</textarea>
+                placeholder="Tulis kutipan atau cerita singkat alumni.">{{ old('deskripsi', $alumnus->deskripsi) }}</textarea>
         </div>
     </div>
 

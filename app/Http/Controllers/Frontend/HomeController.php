@@ -38,16 +38,14 @@ class HomeController extends Controller
         }
 
         if ($selectedAlumniIds->isNotEmpty()) {
-            $selectedAlumni = Alumni::where('status', 'aktif')
-                ->whereIn('id', $selectedAlumniIds)
+            $selectedAlumni = Alumni::whereIn('id', $selectedAlumniIds)
                 ->get()
                 ->sortBy(fn ($item) => $selectedAlumniIds->search($item->id))
                 ->values();
 
             $alumni = $selectedAlumni
                 ->merge(
-                    Alumni::where('status', 'aktif')
-                        ->whereNotIn('id', $selectedAlumniIds)
+                    Alumni::whereNotIn('id', $selectedAlumniIds)
                         ->latest()
                         ->take(3 - $selectedAlumni->count())
                         ->get()
@@ -55,8 +53,7 @@ class HomeController extends Controller
                 ->take(3)
                 ->values();
         } else {
-            $alumni = Alumni::where('status', 'aktif')
-                ->latest()
+            $alumni = Alumni::latest()
                 ->take(3)
                 ->get();
         }

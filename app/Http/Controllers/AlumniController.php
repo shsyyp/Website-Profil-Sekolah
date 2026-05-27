@@ -12,12 +12,13 @@ class AlumniController extends Controller
     public function index()
     {
         $alumni = Alumni::latest()->paginate(10);
+        $allAlumni = Alumni::latest()->get();
         
         // Query distinktif buat visualisasi map persebaran nanti
         $lokasi_sebaran = Alumni::select('lokasi')->distinct()->get();
         $settings = AlumniPageSetting::first() ?? new AlumniPageSetting();
         
-        return view('admin.alumni.index', compact('alumni', 'lokasi_sebaran', 'settings'));
+        return view('admin.alumni.index', compact('alumni', 'allAlumni', 'lokasi_sebaran', 'settings'));
     }
 
     public function updatePageSetting(Request $request)
@@ -43,6 +44,8 @@ class AlumniController extends Controller
             'testimonial_quote' => 'nullable|string',
             'testimonial_name' => 'nullable|string|max:255',
             'testimonial_meta' => 'nullable|string|max:255',
+            'testimonial_alumni_ids' => 'nullable|array',
+            'testimonial_alumni_ids.*' => 'nullable|integer|exists:alumni,id',
             'cta_title' => 'nullable|string|max:255',
             'cta_description' => 'nullable|string',
             'cta_primary_text' => 'nullable|string|max:255',
@@ -50,6 +53,13 @@ class AlumniController extends Controller
             'cta_secondary_text' => 'nullable|string|max:255',
             'cta_secondary_link' => 'nullable|string|max:255',
         ]);
+        $data['testimonial_alumni_ids'] = collect($request->input('testimonial_alumni_ids', []))
+            ->map(fn ($id) => (int) $id)
+            ->filter()
+            ->unique()
+            ->take(5)
+            ->values()
+            ->all();
 
         $settings = AlumniPageSetting::first();
 
@@ -78,7 +88,9 @@ class AlumniController extends Controller
 
     public function create()
     {
-        return view('admin.alumni.create');
+        $locationOptions = $this->locationOptions();
+
+        return view('admin.alumni.create', compact('locationOptions'));
     }
 
     public function store(Request $request)
@@ -89,7 +101,7 @@ class AlumniController extends Controller
             'instansi'    => 'nullable',
             'tahun_lulus' => 'required|numeric',
             'lokasi'      => 'required',
-            'status'      => 'required|in:aktif,nonaktif',
+            'deskripsi'   => 'nullable|string',
             'foto'        => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
         ]);
 
@@ -105,7 +117,9 @@ class AlumniController extends Controller
     public function edit($id)
     {
         $alumnus = Alumni::findOrFail($id);
-        return view('admin.alumni.edit', compact('alumnus'));
+        $locationOptions = $this->locationOptions($alumnus->lokasi);
+
+        return view('admin.alumni.edit', compact('alumnus', 'locationOptions'));
     }
 
     public function update(Request $request, $id)
@@ -118,7 +132,7 @@ class AlumniController extends Controller
             'instansi'    => 'nullable',
             'tahun_lulus' => 'required|numeric',
             'lokasi'      => 'required',
-            'status'      => 'required|in:aktif,nonaktif',
+            'deskripsi'   => 'nullable|string',
             'foto'        => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
         ]);
 
@@ -145,5 +159,63 @@ class AlumniController extends Controller
         $alumnus->delete();
         
         return back()->with('success', 'Data alumni berhasil dihapus');
+    }
+
+    private function locationOptions(?string $currentLocation = null): array
+    {
+        $locations = [
+            'Pekanbaru',
+            'Jakarta',
+            'Bandung',
+            'Yogyakarta',
+            'Surabaya',
+            'Medan',
+            'Padang',
+            'Batam',
+            'Malang',
+            'Semarang',
+            'Bogor',
+            'Depok',
+            'Tangerang',
+            'Bekasi',
+            'Makassar',
+            'Palembang',
+            'Denpasar',
+            'Banda Aceh',
+            'Jambi',
+            'Bengkulu',
+            'Bandar Lampung',
+            'Pangkalpinang',
+            'Tanjungpinang',
+            'Serang',
+            'Cirebon',
+            'Solo',
+            'Madiun',
+            'Kediri',
+            'Batu',
+            'Pontianak',
+            'Palangka Raya',
+            'Banjarmasin',
+            'Samarinda',
+            'Balikpapan',
+            'Tarakan',
+            'Manado',
+            'Palu',
+            'Kendari',
+            'Gorontalo',
+            'Mamuju',
+            'Ambon',
+            'Ternate',
+            'Mataram',
+            'Kupang',
+            'Jayapura',
+            'Sorong',
+        ];
+
+        if ($currentLocation && ! in_array($currentLocation, $locations, true)) {
+            array_unshift($locations, $currentLocation);
+        }
+
+        return array_values(array_unique($locations));
     }
 }

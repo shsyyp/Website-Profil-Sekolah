@@ -3,7 +3,6 @@
     <div class="flex flex-col h-full">
         <div class="p-8">
             <span class="text-xl font-bold tracking-tighter text-blue-900 dark:text-blue-100">SMAN Pintar</span>
-            <p class="text-[10px] uppercase tracking-widest text-tertiary mt-1 font-bold">Administrative Suite</p>
         </div>
         <nav class="flex-1 px-4 space-y-1">
             <a href="{{ url('admin/dashboard') }}"
@@ -57,16 +56,5 @@
                 <span>Lihat Website</span>
             </a>
         </nav>
-
-        <div class="p-4 border-t border-slate-100/50">
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button type="submit"
-                    class="w-full flex items-center gap-3 px-4 py-3 text-error hover:bg-error/5 rounded-xl transition-all">
-                    <span class="material-symbols-outlined" data-icon="logout">logout</span>
-                    <span>Logout</span>
-                </button>
-            </form>
-        </div>
     </div>
 </aside>

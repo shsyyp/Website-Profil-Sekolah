@@ -54,7 +54,7 @@
 
     {{-- Kanan: Login Form Section --}}
     <section
-        class="w-full lg:w-1/2 bg-surface-container-lowest flex items-center justify-center p-6 md:p-12 relative z-10">
+        class="w-full lg:w-1/2 bg-surface-container-lowest flex items-start justify-center p-6 pt-20 md:p-12 md:pt-28 relative z-10">
         <div class="w-full max-w-md">
 
             <div class="lg:hidden flex flex-col items-center mb-10">
@@ -121,36 +121,14 @@
                         </div>
                     </div>
 
-                    <div class="flex items-center space-x-3 px-1">
-                        <input type="checkbox" id="remember" name="remember"
-                            class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary/20 cursor-pointer" />
-                        <label class="text-sm text-on-surface-variant font-medium cursor-pointer select-none"
-                            for="remember">
-                            Ingat saya untuk 30 hari
-                        </label>
-                    </div>
-
                     <button type="submit"
                         class="w-full bg-gradient-to-r from-primary to-primary-container text-white font-headline font-bold py-4 rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2">
                         Login ke Dashboard
                         <span class="material-symbols-outlined text-xl">arrow_forward</span>
                     </button>
                 </form>
-
-                <div
-                    class="mt-10 pt-8 border-t border-surface-container flex items-center justify-center gap-2 text-on-surface-variant/60">
-                    <span class="material-symbols-outlined text-lg"
-                        style="font-variation-settings: 'FILL' 1;">verified_user</span>
-                    <span class="text-xs font-medium uppercase tracking-tighter">Akses terbatas hanya untuk
-                        administrator resmi</span>
-                </div>
             </div>
 
-            <div class="mt-8 flex justify-center gap-6 relative z-10">
-                <a href="{{ url('/') }}"
-                    class="text-xs font-bold text-on-surface-variant/60 hover:text-primary transition-colors">Beranda
-                    Sekolah</a>
-            </div>
         </div>
 
         <div class="absolute top-0 right-0 -z-10 pointer-events-none opacity-20">

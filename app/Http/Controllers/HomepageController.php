@@ -39,6 +39,7 @@ class HomepageController extends Controller
         $data['cta_deadline_at'] = $request->filled('cta_deadline_at')
             ? $request->input('cta_deadline_at')
             : null;
+        $data['cta_is_active'] = $request->boolean('cta_is_active');
         $homepage = Homepage::first();
 
         if ($request->hasFile('hero_image')) {

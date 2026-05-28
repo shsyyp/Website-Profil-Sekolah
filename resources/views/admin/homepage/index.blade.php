@@ -164,8 +164,6 @@ $components = [
                                 Komponen</th>
                             <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
                                 Deskripsi</th>
-                            <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Status
-                            </th>
                             <th
                                 class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">
                                 Aksi</th>
@@ -188,12 +186,6 @@ $components = [
                                 <p
                                     class="max-w-xl text-sm text-on-surface-variant font-medium leading-relaxed line-clamp-2">
                                     {{ $component['content'] }}</p>
-                            </td>
-                            <td class="px-6 py-4">
-                                <span
-                                    class="flex items-center gap-1.5 text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full w-fit">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Aktif
-                                </span>
                             </td>
                             <td class="px-8 py-4 text-right">
                                 <a href="#{{ $component['id'] }}" data-edit-target="{{ $component['id'] }}"
@@ -599,33 +591,26 @@ $components = [
             </summary>
             <div class="border-t border-slate-100 p-6 lg:p-8 bg-surface-container-low/40">
                 <div class="bg-surface-container-lowest p-8 rounded-2xl shadow-sm space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input name="cta_title"
-                            class="bg-surface-container-low border-none rounded-xl px-4 py-3 font-bold"
-                            placeholder="Judul CTA"
-                            value="{{ $homepage->cta_title ?? 'Jadilah Bagian dari SMAN Pintar' }}">
-                        <input name="cta_year" class="bg-surface-container-low border-none rounded-xl px-4 py-3"
-                            placeholder="Tahun" value="{{ $homepage->cta_year ?? '2025' }}">
-                        <input name="cta_secondary_button"
-                            class="bg-surface-container-low border-none rounded-xl px-4 py-3"
-                            placeholder="Teks Tombol"
-                            value="{{ $homepage->cta_secondary_button ?? 'Panduan Pendaftaran' }}">
-                        <input name="cta_secondary_link"
-                            class="bg-surface-container-low border-none rounded-xl px-4 py-3"
-                            placeholder="Link Tombol" value="{{ $homepage->cta_secondary_link ?? route('pmb') }}">
-                        <input name="cta_badge" class="bg-surface-container-low border-none rounded-xl px-4 py-3"
-                            placeholder="Label tahun" value="{{ $homepage->cta_badge ?? 'Batch Admission' }}">
-                        <input name="cta_deadline_label"
-                            class="bg-surface-container-low border-none rounded-xl px-4 py-3"
-                            placeholder="Label countdown"
-                            value="{{ $homepage->cta_deadline_label ?? 'Pendaftaran Berakhir Dalam' }}">
-                        <input name="cta_deadline_at" type="datetime-local"
-                            class="bg-surface-container-low border-none rounded-xl px-4 py-3"
-                            value="{{ $homepage->cta_deadline_at ? $homepage->cta_deadline_at->format('Y-m-d\TH:i') : now()->addDays((int) ($homepage->cta_countdown_days ?? 14))->addHours((int) ($homepage->cta_countdown_hours ?? 8))->format('Y-m-d\TH:i') }}">
-                        <textarea name="cta_desc"
-                            class="bg-surface-container-low border-none rounded-xl px-4 py-3 col-span-1 md:col-span-2"
-                            placeholder="Deskripsi Singkat"
-                            rows="3">{{ $homepage->cta_desc ?? 'Dapatkan informasi lengkap seputar Penerimaan Murid Baru, mulai dari jadwal, persyaratan, alur seleksi, hingga panduan pendaftaran offline.' }}</textarea>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label>Tahun PMB</label>
+                            <input name="cta_year" placeholder="Contoh: 2026"
+                                value="{{ $homepage->cta_year ?? '2025' }}">
+                        </div>
+                        <div>
+                            <label>Batas Waktu Pendaftaran</label>
+                            <input name="cta_deadline_at" type="datetime-local"
+                                value="{{ $homepage->cta_deadline_at ? $homepage->cta_deadline_at->format('Y-m-d\TH:i') : now()->addDays((int) ($homepage->cta_countdown_days ?? 14))->addHours((int) ($homepage->cta_countdown_hours ?? 8))->format('Y-m-d\TH:i') }}">
+                        </div>
+                    </div>
+                    <div>
+                        <input type="hidden" name="cta_is_active" value="0">
+                        <label class="inline-flex items-center gap-3 normal-case tracking-normal text-on-surface">
+                            <input type="checkbox" name="cta_is_active" value="1"
+                                class="h-5 w-5 rounded border-outline-variant bg-surface-container-low text-primary focus:ring-primary"
+                                @checked((bool) ($homepage->cta_is_active ?? true))>
+                            <span class="text-sm font-medium text-on-surface-variant">Aktif di Website</span>
+                        </label>
                     </div>
                 </div>
             </div>

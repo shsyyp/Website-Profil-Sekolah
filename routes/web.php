@@ -13,6 +13,7 @@ use App\Http\Controllers\AlumniController as AdminAlumniController;
 use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\HomepageController; // Tambahan Controller Homepage
 use App\Http\Controllers\AboutPageController;
+use App\Http\Controllers\AdminProfileController;
 
 // --- FRONTEND CONTROLLERS ---
 use App\Http\Controllers\Frontend\HomeController;
@@ -54,6 +55,8 @@ Route::middleware('auth')->group(function () {
         
         // Halaman Utama Admin
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/profil', [AdminProfileController::class, 'edit'])->name('admin.profile.edit');
+        Route::post('/profil', [AdminProfileController::class, 'update'])->name('admin.profile.update');
 
         // CMS Homepage
         Route::get('/homepage', [HomepageController::class, 'index'])->name('admin.homepage.index');

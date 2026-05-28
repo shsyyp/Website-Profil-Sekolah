@@ -155,7 +155,6 @@ $components = [
                             <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">No</th>
                             <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Komponen</th>
                             <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Deskripsi</th>
-                            <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Status</th>
                             <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">Aksi</th>
                         </tr>
                     </thead>
@@ -172,11 +171,6 @@ $components = [
                             </td>
                             <td class="px-6 py-4">
                                 <p class="max-w-xl text-sm text-on-surface-variant font-medium leading-relaxed line-clamp-2">{{ $component['content'] }}</p>
-                            </td>
-                            <td class="px-6 py-4">
-                                <span class="flex items-center gap-1.5 text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full w-fit">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Aktif
-                                </span>
                             </td>
                             <td class="px-8 py-4 text-right">
                                 <a href="#{{ $component['id'] }}" data-about-edit-target="{{ $component['id'] }}"

@@ -333,6 +333,7 @@ document.addEventListener('keydown', (event) => {
     </div>
 </section>
 
+@if((bool) ($homepage?->cta_is_active ?? true))
 <section class="py-24 px-6">
     <div class="max-w-7xl mx-auto primary-gradient rounded-md overflow-hidden shadow-2xl relative">
         <div class="absolute top-0 right-0 w-1/3 h-full opacity-10 pointer-events-none">
@@ -377,6 +378,7 @@ document.addEventListener('keydown', (event) => {
         </div>
     </div>
 </section>
+@endif
 
 <script>
 document.querySelectorAll('[data-countdown-deadline]').forEach((countdown) => {

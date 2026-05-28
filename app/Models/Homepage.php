@@ -15,7 +15,7 @@ class Homepage extends Model
         'facilities_title', 'facilities_subtitle', 'facility_main_image', 'facility_side_image',
         'news_title', 'news_subtitle', 'news_button_text',
         'cta_title', 'cta_desc', 'cta_year', 'cta_button', 'cta_secondary_button', 'cta_secondary_link',
-        'cta_badge', 'cta_deadline_label', 'cta_deadline_at', 'cta_countdown_days', 'cta_countdown_hours',
+        'cta_badge', 'cta_deadline_label', 'cta_deadline_at', 'cta_countdown_days', 'cta_countdown_hours', 'cta_is_active',
         'news_limit', 'featured_alumni_id', 'selected_alumni_ids', 'alumni_label', 'alumni_title',
         'footer_desc', 'footer_address', 'footer_email', 'footer_phone', 'footer_operational_hours',
         'footer_whatsapp_url', 'footer_instagram_url', 'footer_facebook_url', 'footer_youtube_url',
@@ -27,6 +27,7 @@ class Homepage extends Model
         'tradisi' => 'array',
         'fasilitas' => 'array',
         'selected_alumni_ids' => 'array',
-        'cta_deadline_at' => 'datetime'
+        'cta_deadline_at' => 'datetime',
+        'cta_is_active' => 'boolean',
     ];
 }

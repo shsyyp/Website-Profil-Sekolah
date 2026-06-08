@@ -19,6 +19,11 @@ class AboutPage extends Model
         'profile_button_2_text',
         'profile_button_2_link',
         'profile_image',
+        'male_student_count',
+        'female_student_count',
+        'class_count',
+        'educator_count',
+        'staff_count',
         'dedication_number',
         'dedication_label',
         'vision_mission_title',
@@ -37,6 +42,11 @@ class AboutPage extends Model
     ];
 
     protected $casts = [
+        'male_student_count' => 'integer',
+        'female_student_count' => 'integer',
+        'class_count' => 'integer',
+        'educator_count' => 'integer',
+        'staff_count' => 'integer',
         'highlights' => 'array',
         'missions' => 'array',
         'facilities' => 'array',

@@ -42,6 +42,16 @@ $extracurriculars = $about?->extracurriculars ?: [
 $extracurriculars = collect($extracurriculars)
     ->filter(fn ($item) => filled($item['title'] ?? null))
     ->values();
+$maleStudentCount = (int) ($about?->male_student_count ?? 168);
+$femaleStudentCount = (int) ($about?->female_student_count ?? 182);
+$studentCount = $maleStudentCount + $femaleStudentCount;
+$classCount = (int) ($about?->class_count ?? 12);
+$educatorCount = (int) ($about?->educator_count ?? 42);
+$staffCount = (int) ($about?->staff_count ?? 18);
+$maleBar = $studentCount > 0 ? (int) round(($maleStudentCount / $studentCount) * 100) : 0;
+$femaleBar = $studentCount > 0 ? 100 - $maleBar : 0;
+$malePercentage = $maleBar . '%';
+$femalePercentage = $femaleBar . '%';
 @endphp
 
 {{-- Hero Section & Breadcrumb --}}
@@ -99,6 +109,60 @@ $extracurriculars = collect($extracurriculars)
             <img alt="School building architecture" class="w-full h-full object-cover"
                 data-alt="Modern architectural view of a university or high school campus"
                 src="{{ $about?->profile_image ? asset('storage/' . $about->profile_image) : $defaultProfileImage }}" />
+        </div>
+    </div>
+</section>
+
+{{-- Data Sekolah & SDM --}}
+<section class="pb-20 max-w-7xl mx-auto px-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div class="bg-surface-container-lowest rounded-xl border border-slate-100 p-6 shadow-[0_24px_40px_rgba(25,27,34,0.04)]">
+                <p class="text-sm font-bold uppercase tracking-widest text-primary">Jumlah Siswa</p>
+                <p class="mt-5 text-4xl font-extrabold font-headline text-on-surface">{{ $studentCount }}</p>
+            </div>
+            <div class="bg-surface-container-lowest rounded-xl border border-slate-100 p-6 shadow-[0_24px_40px_rgba(25,27,34,0.04)]">
+                <p class="text-sm font-bold uppercase tracking-widest text-tertiary">Jumlah Kelas</p>
+                <p class="mt-5 text-4xl font-extrabold font-headline text-on-surface">{{ $classCount }}</p>
+            </div>
+            <div class="sm:col-span-2 bg-surface-container-lowest rounded-xl border border-slate-100 p-6 shadow-[0_24px_40px_rgba(25,27,34,0.04)]">
+                <p class="mb-6 text-sm font-bold uppercase tracking-widest text-secondary">Perbandingan Siswa</p>
+                <div class="space-y-5">
+                    <div>
+                        <div class="mb-2 flex items-center justify-between text-sm font-bold">
+                            <span>Laki-laki</span>
+                            <span>{{ $malePercentage }}</span>
+                        </div>
+                        <div class="h-3 rounded-full bg-surface-container overflow-hidden">
+                            <div class="h-full rounded-full bg-primary" style="width: {{ $maleBar }}%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="mb-2 flex items-center justify-between text-sm font-bold">
+                            <span>Perempuan</span>
+                            <span>{{ $femalePercentage }}</span>
+                        </div>
+                        <div class="h-3 rounded-full bg-surface-container overflow-hidden">
+                            <div class="h-full rounded-full bg-tertiary" style="width: {{ $femaleBar }}%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="bg-primary text-on-primary rounded-xl p-8 shadow-[0_24px_40px_rgba(25,27,34,0.08)]">
+            <p class="text-tertiary-fixed font-bold text-sm tracking-[0.2em] uppercase mb-4">Profil SDM</p>
+            <h3 class="text-2xl font-extrabold font-headline leading-tight mb-5">Tenaga pendidik dan kependidikan profesional</h3>
+            <p class="text-on-primary/75 leading-relaxed">Kegiatan belajar didampingi guru, tenaga kependidikan, dan tim layanan sekolah yang bekerja terpadu untuk mendukung perkembangan akademik, karakter, dan keseharian siswa.</p>
+            <div class="mt-8 grid grid-cols-2 gap-4">
+                <div class="rounded-lg bg-white/10 p-4">
+                    <p class="text-3xl font-extrabold font-headline">{{ $educatorCount }}</p>
+                    <p class="mt-1 text-xs font-bold uppercase tracking-widest text-on-primary/65">Pendidik</p>
+                </div>
+                <div class="rounded-lg bg-white/10 p-4">
+                    <p class="text-3xl font-extrabold font-headline">{{ $staffCount }}</p>
+                    <p class="mt-1 text-xs font-bold uppercase tracking-widest text-on-primary/65">Kependidikan</p>
+                </div>
+            </div>
         </div>
     </div>
 </section>

@@ -77,6 +77,13 @@ $components = [
         'content' => $about->profile_title ?? 'Mencetak Generasi Unggul Riau',
     ],
     [
+        'id' => 'school-profile-section',
+        'icon' => 'groups',
+        'title' => 'Data Sekolah & SDM',
+        'meta' => (($about->male_student_count ?? 168) + ($about->female_student_count ?? 182)) . ' siswa',
+        'content' => ($about->class_count ?? 12) . ' kelas, ' . ($about->educator_count ?? 42) . ' pendidik, ' . ($about->staff_count ?? 18) . ' tenaga kependidikan',
+    ],
+    [
         'id' => 'highlight-section',
         'icon' => 'verified',
         'title' => 'Highlight Atas',
@@ -243,10 +250,50 @@ $components = [
             </div>
         </details>
 
-        <details id="highlight-section" data-about-panel class="hidden group bg-surface-container-lowest rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+        <details id="school-profile-section" data-about-panel class="hidden group bg-surface-container-lowest rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
             <summary class="list-none flex items-center justify-between gap-4">
                 <div>
                     <span>Component 02</span>
+                    <h3 class="font-headline text-primary">Data Sekolah & SDM</h3>
+                </div>
+                <button type="button" data-about-back class="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                    Kembali
+                </button>
+            </summary>
+            <div class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                    <div>
+                        <label>Jumlah Siswa Laki-laki</label>
+                        <input name="male_student_count" type="number" min="0" placeholder="Contoh: 168" value="{{ $about->male_student_count ?? 168 }}">
+                    </div>
+                    <div>
+                        <label>Jumlah Siswa Perempuan</label>
+                        <input name="female_student_count" type="number" min="0" placeholder="Contoh: 182" value="{{ $about->female_student_count ?? 182 }}">
+                    </div>
+                    <div>
+                        <label>Total Kelas</label>
+                        <input name="class_count" type="number" min="0" placeholder="Contoh: 12" value="{{ $about->class_count ?? 12 }}">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label>Jumlah Tenaga Pendidik</label>
+                        <input name="educator_count" type="number" min="0" placeholder="Contoh: 42" value="{{ $about->educator_count ?? 42 }}">
+                    </div>
+                    <div>
+                        <label>Jumlah Tenaga Kependidikan</label>
+                        <input name="staff_count" type="number" min="0" placeholder="Contoh: 18" value="{{ $about->staff_count ?? 18 }}">
+                    </div>
+                </div>
+            </div>
+        </details>
+
+        <details id="highlight-section" data-about-panel class="hidden group bg-surface-container-lowest rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <summary class="list-none flex items-center justify-between gap-4">
+                <div>
+                    <span>Component 03</span>
                     <h3 class="font-headline text-primary">Highlight Atas</h3>
                 </div>
                 <button type="button" data-about-back class="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors">
@@ -277,7 +324,7 @@ $components = [
         <details id="vision-section" data-about-panel class="hidden group bg-surface-container-lowest rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
             <summary class="list-none flex items-center justify-between gap-4">
                 <div>
-                    <span>Component 03</span>
+                    <span>Component 04</span>
                     <h3 class="font-headline text-primary">Visi & Misi</h3>
                 </div>
                 <button type="button" data-about-back class="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors">
@@ -305,7 +352,7 @@ $components = [
         <details id="facilities-section" data-about-panel class="hidden group bg-surface-container-lowest rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
             <summary class="list-none flex items-center justify-between gap-4">
                 <div>
-                    <span>Component 04</span>
+                    <span>Component 05</span>
                     <h3 class="font-headline text-primary">Fasilitas</h3>
                 </div>
                 <button type="button" data-about-back class="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors">
@@ -332,7 +379,7 @@ $components = [
         <details id="facility-management-section" data-about-panel class="hidden group bg-surface-container-lowest rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
             <summary class="list-none flex items-center justify-between gap-4">
                 <div>
-                    <span>Component 05</span>
+                    <span>Component 06</span>
                     <h3 class="font-headline text-primary">Manajemen Fasilitas</h3>
                 </div>
                 <div class="flex items-center gap-3">
@@ -409,7 +456,7 @@ $components = [
         <details id="extracurricular-section" data-about-panel class="hidden group bg-surface-container-lowest rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
             <summary class="list-none flex items-center justify-between gap-4">
                 <div>
-                    <span>Component 06</span>
+                    <span>Component 07</span>
                     <h3 class="font-headline text-primary">Ekstrakurikuler</h3>
                 </div>
                 <button type="button" data-about-back class="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors">
@@ -437,7 +484,7 @@ $components = [
         <details id="extracurricular-management-section" data-about-panel class="hidden group bg-surface-container-lowest rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
             <summary class="list-none flex items-center justify-between gap-4">
                 <div>
-                    <span>Component 07</span>
+                    <span>Component 08</span>
                     <h3 class="font-headline text-primary">Manajemen Ekstrakurikuler</h3>
                 </div>
                 <div class="flex items-center gap-3">

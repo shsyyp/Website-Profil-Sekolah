@@ -164,7 +164,7 @@ $components = [
                             <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
                                 Komponen</th>
                             <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-                                Deskripsi</th>
+                                Ringkasan</th>
                             <th
                                 class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">
                                 Aksi</th>

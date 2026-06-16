@@ -162,7 +162,7 @@ $components = [
                         <tr class="bg-surface-container-low/50">
                             <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">No</th>
                             <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Komponen</th>
-                            <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Deskripsi</th>
+                            <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Ringkasan</th>
                             <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">Aksi</th>
                         </tr>
                     </thead>
@@ -403,7 +403,7 @@ $components = [
                                 <tr class="bg-surface-container-low/50">
                                     <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">No</th>
                                     <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Fasilitas</th>
-                                    <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Deskripsi</th>
+                                    <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Ringkasan</th>
                                     <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Status</th>
                                     <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">Aksi</th>
                                 </tr>
@@ -508,7 +508,7 @@ $components = [
                                 <tr class="bg-surface-container-low/50">
                                     <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">No</th>
                                     <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Ekstrakurikuler</th>
-                                    <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Deskripsi</th>
+                                    <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Ringkasan</th>
                                     <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Status</th>
                                     <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">Aksi</th>
                                 </tr>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Berita;
 use App\Models\NewsPageSetting;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
 
 class BeritaController extends Controller
@@ -64,7 +65,7 @@ class BeritaController extends Controller
     {
         $data = $request->validate([
             'judul' => 'required',
-            'kategori' => 'required',
+            'kategori' => ['required', Rule::in(['Prestasi', 'Kegiatan', 'Pengumuman'])],
             'isi' => 'required',
             'tanggal' => 'required|date',
             'status' => 'required|in:draft,publish',
@@ -94,7 +95,12 @@ class BeritaController extends Controller
     {
         $data = $request->validate([
             'judul' => 'required',
-            'kategori' => 'required',
+            'kategori' => ['required', Rule::in(array_unique([
+                'Prestasi',
+                'Kegiatan',
+                'Pengumuman',
+                $beritum->kategori,
+            ]))],
             'isi' => 'required',
             'tanggal' => 'required|date',
             'status' => 'required|in:draft,publish',

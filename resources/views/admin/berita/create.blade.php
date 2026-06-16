@@ -26,7 +26,6 @@
                     <select name="kategori"
                         class="w-full bg-surface-container border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary"
                         required>
-                        <option value="Akademik" @selected(old('kategori') === 'Akademik')>Akademik</option>
                         <option value="Prestasi" @selected(old('kategori') === 'Prestasi')>Prestasi</option>
                         <option value="Kegiatan" @selected(old('kategori') === 'Kegiatan')>Kegiatan</option>
                         <option value="Pengumuman" @selected(old('kategori') === 'Pengumuman')>Pengumuman</option>

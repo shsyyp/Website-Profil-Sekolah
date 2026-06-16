@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -22,16 +24,25 @@ class AuthController extends Controller
     {
         // 1. Validasi input
         $request->validate([
-            'email'    => 'required|email',
+            'email'    => 'required|string',
             'password' => 'required'
         ]);
 
-        // 2. Ambil credential
-        $credentials = $request->only('email', 'password');
+        // 2. Cari user dari email, nama, atau bagian awal email sebagai username.
+        $login = trim((string) $request->input('email'));
+        $user = User::query()
+            ->where('email', $login)
+            ->orWhere('name', $login)
+            ->when(! str_contains($login, '@'), function ($query) use ($login) {
+                $query->orWhere('email', 'like', $login . '@%');
+            })
+            ->first();
+
         $remember = $request->has('remember');
 
         // 3. Proses autentikasi
-        if (Auth::attempt($credentials, $remember)) {
+        if ($user && Hash::check((string) $request->input('password'), $user->password)) {
+            Auth::login($user, $remember);
             $request->session()->regenerate();
             
             // PERBAIKAN DI SINI: Gunakan route('dashboard') agar dinamis ke /admin/dashboard
@@ -39,7 +50,7 @@ class AuthController extends Controller
         }
 
         // 4. Jika gagal
-        return back()->with('error', 'Email atau password salah!')->withInput($request->only('email'));
+        return back()->with('error', 'Email, username, atau password salah!')->withInput($request->only('email'));
     }
 
     // Memproses logout

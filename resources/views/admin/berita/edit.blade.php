@@ -28,7 +28,10 @@
                     <select name="kategori"
                         class="w-full bg-surface-container border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary"
                         required>
-                        @foreach (['Akademik', 'Prestasi', 'Kegiatan', 'Pengumuman'] as $kategori)
+                        @if(old('kategori', $berita->kategori) === 'Akademik')
+                        <option value="Akademik" selected>Akademik (lama)</option>
+                        @endif
+                        @foreach (['Prestasi', 'Kegiatan', 'Pengumuman'] as $kategori)
                         <option value="{{ $kategori }}" @selected(old('kategori', $berita->kategori) === $kategori)>
                             {{ $kategori }}
                         </option>

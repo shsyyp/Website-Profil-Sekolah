@@ -94,9 +94,9 @@
                                 <span
                                     class="material-symbols-outlined text-outline group-focus-within:text-primary transition-colors">mail</span>
                             </div>
-                            <input type="email" id="email" name="email" value="{{ old('email') }}" required autofocus
+                            <input type="text" id="email" name="email" value="{{ old('email') }}" required autofocus
                                 class="block w-full pl-12 pr-4 py-4 bg-surface-container-low border-none rounded-xl text-on-surface placeholder-outline focus:ring-2 focus:ring-primary/20 transition-all font-medium"
-                                placeholder="admin@smanpintar.sch.id" />
+                                placeholder="Email atau username" />
                         </div>
                     </div>
 

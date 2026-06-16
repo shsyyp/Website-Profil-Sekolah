@@ -140,6 +140,7 @@ $components = [
 
 <form action="{{ url('admin/homepage') }}" method="POST" enctype="multipart/form-data" class="px-8 pb-8 pt-0 space-y-10">
     @csrf
+    <input type="hidden" name="active_panel" id="activePanelInput" value="">
 
     @if(session('success'))
     <div
@@ -746,11 +747,15 @@ $components = [
 const overview = document.getElementById('component-overview');
 const editors = document.getElementById('component-editors');
 const panels = document.querySelectorAll('[data-editor-panel]');
+const activePanelInput = document.getElementById('activePanelInput');
 
 function showOverview() {
     editors.classList.add('hidden');
     overview.classList.remove('hidden');
     editors.removeAttribute('data-active-panel');
+    if (activePanelInput) {
+        activePanelInput.value = '';
+    }
     panels.forEach((panel) => panel.classList.add('hidden'));
     window.scrollTo({
         top: 0,
@@ -768,6 +773,9 @@ function showEditor(panelId) {
     overview.classList.add('hidden');
     editors.classList.remove('hidden');
     editors.dataset.activePanel = panelId;
+    if (activePanelInput) {
+        activePanelInput.value = panelId;
+    }
     panels.forEach((panel) => panel.classList.add('hidden'));
     target.classList.remove('hidden');
     target.open = true;
@@ -797,6 +805,10 @@ document.querySelectorAll('[data-save-editor]').forEach((button) => {
         event.stopPropagation();
     });
 });
+
+@if(session('open_homepage_panel'))
+showEditor(@json(session('open_homepage_panel')));
+@endif
 
 </script>
 @endsection

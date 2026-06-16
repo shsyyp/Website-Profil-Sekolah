@@ -100,7 +100,7 @@ if ($profileVideoUrl && preg_match('~(?:youtube\.com/(?:watch\?v=|embed/|shorts/
             <h1 class="text-5xl md:text-7xl font-black font-headline text-primary tracking-tight leading-[1.1]">
                 {{ $homepage?->hero_title ?? 'Mencetak Generasi Unggul dan Berprestasi' }}
             </h1>
-            <p class="text-lg text-secondary max-w-lg leading-relaxed">
+            <p class="text-lg text-on-surface-variant max-w-lg leading-relaxed">
                 {{ $homepage?->hero_subtitle ?? 'Sekolah Unggulan Berbasis Asrama di Riau yang mengintegrasikan kecerdasan akademik, karakter mulia, dan inovasi teknologi.' }}
             </p>
             <div class="flex flex-wrap gap-4">
@@ -190,7 +190,7 @@ document.addEventListener('keydown', (event) => {
             <div class="lg:col-span-1">
                 <p class="text-tertiary font-bold text-sm tracking-[0.2em] uppercase mb-4">{{ $homepage?->about_label ?? 'About SMAN Pintar' }}</p>
                 <h2 class="text-4xl font-black font-headline text-primary mb-6 leading-tight">{{ $homepage?->about_title ?? 'Tradisi Keunggulan, Masa Depan Gemilang' }}</h2>
-                <p class="text-secondary leading-relaxed mb-8">
+                <p class="text-on-surface-variant leading-relaxed mb-8">
                     {{ $homepage?->about_desc ?? 'Didirikan sebagai pusat inkubasi talenta terbaik di Provinsi Riau, SMAN Pintar menerapkan sistem asrama terintegrasi yang fokus pada pembentukan karakter dan penguasaan sains teknologi.' }}
                 </p>
                 <div class="flex items-center gap-4 p-4 bg-surface-container rounded-md">
@@ -200,7 +200,7 @@ document.addEventListener('keydown', (event) => {
                     </div>
                     <div>
                         <p class="font-bold text-primary">{{ $homepage?->accreditation_title ?? 'Akreditasi A' }}</p>
-                        <p class="text-xs text-secondary">{{ $homepage?->accreditation_desc ?? 'Sertifikasi Nasional & Internasional' }}</p>
+                        <p class="text-xs text-on-surface-variant">{{ $homepage?->accreditation_desc ?? 'Sertifikasi Nasional & Internasional' }}</p>
                     </div>
                 </div>
             </div>
@@ -224,7 +224,7 @@ document.addEventListener('keydown', (event) => {
     <div class="max-w-7xl mx-auto px-6">
         <div class="text-center max-w-2xl mx-auto mb-16">
             <h2 class="text-4xl font-black font-headline text-primary mb-4">{{ $homepage?->facilities_title ?? 'Fasilitas' }}</h2>
-            <p class="text-secondary">{{ $homepage?->facilities_subtitle ?? 'Kami menyediakan infrastruktur terbaik untuk mendukung setiap langkah eksplorasi siswa.' }}</p>
+            <p class="text-on-surface-variant">{{ $homepage?->facilities_subtitle ?? 'Kami menyediakan infrastruktur terbaik untuk mendukung setiap langkah eksplorasi siswa.' }}</p>
         </div>
         <div class="grid grid-cols-12 gap-6 h-auto md:h-[600px]">
             <div
@@ -293,7 +293,7 @@ document.addEventListener('keydown', (event) => {
         <div class="flex justify-between items-end mb-12">
             <div>
                 <h2 class="text-4xl font-black font-headline text-primary leading-tight">{{ str_replace('Warta', 'Berita', $homepage?->news_title ?? 'Berita SMAN Pintar') }}</h2>
-                <p class="text-secondary mt-2">{{ $homepage?->news_subtitle ?? 'Update terbaru seputar kegiatan dan prestasi sekolah.' }}</p>
+                <p class="text-on-surface-variant mt-2">{{ $homepage?->news_subtitle ?? 'Update terbaru seputar kegiatan dan prestasi sekolah.' }}</p>
             </div>
             <a href="{{ route('berita') }}"
                 class="flex items-center gap-2 text-primary font-bold hover:gap-4 transition-all">
@@ -433,7 +433,7 @@ document.querySelectorAll('[data-countdown-deadline]').forEach((countdown) => {
                         src="{{ $item->foto ? asset('storage/' . $item->foto) : 'https://lh3.googleusercontent.com/aida-public/AB6AXuA3kk9jqHFB1bwe8T3UOsjV_sL3xqb9csJjS7ZD042fBVAd2C1XKZenZBSonVAEJQXtXFX6FPYkhv92fLkf3eqw7AaNz8GNPmtR2-0doASR5iHvDVsWGACZ5nWxtWJYwrtdkY5KSU9Fep_xYRvUYHdY3VKWQYaeQK8KPqjTMdUEFfLQsYOxTZ43UAzhLiSN3UVZ-ggTeMHgzGk7766ySmdXXbBjNuP6slDcPj4zsZS8EwjyvcBA3qhVsN3P0r8IjwZ9XheX4N25zYYQ' }}" />
                     <div>
                         <h4 class="font-bold text-primary">{{ $item->nama }}</h4>
-                        <p class="text-xs text-secondary">Alumni {{ $item->tahun_lulus }} |
+                        <p class="text-xs text-on-surface-variant">Alumni {{ $item->tahun_lulus }} |
                             {{ $item->profesi }}{{ $item->instansi ? ', ' . $item->instansi : '' }}</p>
                     </div>
                 </div>

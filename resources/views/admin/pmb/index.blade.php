@@ -124,6 +124,7 @@
 
     <form method="POST" action="{{ route('admin.pmb.update') }}" enctype="multipart/form-data" class="space-y-10">
         @csrf
+        <input type="hidden" name="active_panel" id="activePmbPanelInput" value="">
 
         <div id="pmb-overview" class="space-y-10">
             <section>
@@ -330,10 +331,14 @@
 const pmbOverview = document.getElementById('pmb-overview');
 const pmbEditors = document.getElementById('pmb-editors');
 const pmbPanels = document.querySelectorAll('[data-pmb-panel]');
+const activePmbPanelInput = document.getElementById('activePmbPanelInput');
 
 function showPmbOverview() {
     pmbEditors.classList.add('hidden');
     pmbOverview.classList.remove('hidden');
+    if (activePmbPanelInput) {
+        activePmbPanelInput.value = '';
+    }
     pmbPanels.forEach((panel) => panel.classList.add('hidden'));
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -347,6 +352,9 @@ function showPmbEditor(panelId) {
 
     pmbOverview.classList.add('hidden');
     pmbEditors.classList.remove('hidden');
+    if (activePmbPanelInput) {
+        activePmbPanelInput.value = panelId;
+    }
     pmbPanels.forEach((panel) => panel.classList.add('hidden'));
     target.classList.remove('hidden');
     target.open = true;
@@ -367,5 +375,9 @@ document.querySelectorAll('[data-pmb-back]').forEach((button) => {
         showPmbOverview();
     });
 });
+
+@if(session('open_pmb_panel'))
+showPmbEditor(@json(session('open_pmb_panel')));
+@endif
 </script>
 @endsection

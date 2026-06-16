@@ -13,7 +13,7 @@
 
 <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-8">
     <h2 class="text-4xl font-extrabold text-primary tracking-tight font-headline">Tambah Alumni</h2>
-    <a href="{{ route('alumni.index') }}"
+    <a href="{{ route('alumni.index', ['panel' => 'alumni-management-section']) }}"
         class="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-100 px-6 py-3 font-bold text-slate-600 hover:bg-slate-200 transition-colors">
         <span class="material-symbols-outlined text-[18px]">arrow_back</span>
         Kembali
@@ -103,7 +103,7 @@
 
     <div class="bg-surface-container-lowest rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-8 py-6">
         <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end sm:items-center">
-            <a href="{{ route('alumni.index') }}" class="btn-cancel">Batal</a>
+            <a href="{{ route('alumni.index', ['panel' => 'alumni-management-section']) }}" class="btn-cancel">Batal</a>
             <button type="submit" class="bg-primary text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:scale-105 transition-all">
                 Simpan
             </button>

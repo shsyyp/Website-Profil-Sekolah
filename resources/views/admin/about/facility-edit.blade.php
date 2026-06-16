@@ -44,7 +44,7 @@
             </div>
 
             <div class="pt-6 flex gap-3 border-t border-surface-container">
-                <a href="{{ route('admin.about.index') }}" class="btn-cancel">
+                <a href="{{ route('admin.about.index', ['panel' => 'facility-management-section']) }}" class="btn-cancel">
                     Batal
                 </a>
                 <button type="submit"

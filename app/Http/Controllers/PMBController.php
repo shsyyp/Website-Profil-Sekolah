@@ -53,9 +53,12 @@ class PMBController extends Controller
             'cta_primary_text' => 'nullable|string|max:255',
             'cta_secondary_text' => 'nullable|string|max:255',
             'cta_secondary_link' => 'nullable|string|max:255',
+            'active_panel' => 'nullable|string|max:255',
         ], [
             'link_pendaftaran.url' => 'Format link harus berupa URL valid (contoh: https://...)',
         ]);
+        $activePanel = $data['active_panel'] ?? null;
+        unset($data['active_panel']);
 
         $pmb = PMB::first();
 
@@ -83,6 +86,8 @@ class PMBController extends Controller
             PMB::create($data); // Create jika database masih kosong
         }
 
-        return back()->with('success', 'Data informasi PMB berhasil diperbarui!');
+        return back()
+            ->with('success', 'Data informasi PMB berhasil diperbarui!')
+            ->with('open_pmb_panel', $activePanel);
     }
 }

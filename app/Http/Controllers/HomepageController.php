@@ -20,7 +20,7 @@ class HomepageController extends Controller
 
     public function update(Request $request)
     {
-        $data = $request->except(['_token']);
+        $data = $request->except(['_token', 'active_panel']);
         $data['fasilitas'] = collect($request->input('fasilitas', []))
             ->filter(fn ($index) => $index !== null && $index !== '')
             ->map(fn ($index) => (int) $index)
@@ -64,6 +64,8 @@ class HomepageController extends Controller
             Homepage::create($data);
         }
 
-        return back()->with('success', 'Beranda berhasil diupdate!');
+        return back()
+            ->with('success', 'Beranda berhasil diupdate!')
+            ->with('open_homepage_panel', $request->input('active_panel'));
     }
 }

@@ -141,6 +141,7 @@ $components = [
 
 <form action="{{ route('admin.about.update') }}" method="POST" enctype="multipart/form-data" class="px-8 pb-8 pt-0 space-y-10">
     @csrf
+    <input type="hidden" name="active_panel" id="activeAboutPanelInput" value="">
 
     @if(session('success'))
     <div class="bg-emerald-50 text-emerald-600 p-4 rounded-xl font-bold flex items-center gap-2 shadow-sm border border-emerald-100">
@@ -589,11 +590,15 @@ $components = [
 const aboutOverview = document.getElementById('about-overview');
 const aboutEditors = document.getElementById('about-editors');
 const aboutPanels = document.querySelectorAll('[data-about-panel]');
+const activeAboutPanelInput = document.getElementById('activeAboutPanelInput');
 
 function showAboutOverview() {
     aboutEditors.classList.add('hidden');
     aboutOverview.classList.remove('hidden');
     aboutPanels.forEach((panel) => panel.classList.add('hidden'));
+    if (activeAboutPanelInput) {
+        activeAboutPanelInput.value = '';
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -609,6 +614,9 @@ function showAboutEditor(panelId) {
     aboutPanels.forEach((panel) => panel.classList.add('hidden'));
     target.classList.remove('hidden');
     target.open = true;
+    if (activeAboutPanelInput) {
+        activeAboutPanelInput.value = panelId;
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -633,6 +641,14 @@ showAboutEditor('facility-management-section');
 
 @if(session('open_extracurricular_management'))
 showAboutEditor('extracurricular-management-section');
+@endif
+
+@if(session('open_about_panel'))
+showAboutEditor(@json(session('open_about_panel')));
+@endif
+
+@if(in_array(request('panel'), ['facility-management-section', 'extracurricular-management-section'], true))
+showAboutEditor(@json(request('panel')));
 @endif
 </script>
 @endsection

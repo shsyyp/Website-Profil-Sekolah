@@ -52,7 +52,10 @@ class AlumniController extends Controller
             'cta_primary_link' => 'nullable|string|max:255',
             'cta_secondary_text' => 'nullable|string|max:255',
             'cta_secondary_link' => 'nullable|string|max:255',
+            'active_panel' => 'nullable|string|max:255',
         ]);
+        $activePanel = $data['active_panel'] ?? null;
+        unset($data['active_panel']);
         $data['testimonial_alumni_ids'] = collect($request->input('testimonial_alumni_ids', []))
             ->map(fn ($id) => (int) $id)
             ->filter()
@@ -83,7 +86,9 @@ class AlumniController extends Controller
             AlumniPageSetting::create($data);
         }
 
-        return back()->with('success', 'Tampilan halaman alumni berhasil diupdate!');
+        return back()
+            ->with('success', 'Tampilan halaman alumni berhasil diupdate!')
+            ->with('open_alumni_panel', $activePanel);
     }
 
     public function create()
@@ -111,7 +116,10 @@ class AlumniController extends Controller
 
         Alumni::create($data);
 
-        return redirect()->route('alumni.index')->with('success', 'Data alumni berhasil ditambahkan');
+        return redirect()
+            ->route('alumni.index')
+            ->with('success', 'Data alumni berhasil ditambahkan')
+            ->with('open_alumni_management', true);
     }
 
     public function edit($id)
@@ -145,7 +153,10 @@ class AlumniController extends Controller
 
         $alumnus->update($data);
 
-        return redirect()->route('alumni.index')->with('success', 'Data alumni berhasil diupdate');
+        return redirect()
+            ->route('alumni.index')
+            ->with('success', 'Data alumni berhasil diupdate')
+            ->with('open_alumni_management', true);
     }
 
     public function destroy($id)
@@ -158,7 +169,9 @@ class AlumniController extends Controller
         
         $alumnus->delete();
         
-        return back()->with('success', 'Data alumni berhasil dihapus');
+        return back()
+            ->with('success', 'Data alumni berhasil dihapus')
+            ->with('open_alumni_management', true);
     }
 
     private function locationOptions(?string $currentLocation = null): array

@@ -260,7 +260,7 @@ $pmbTestimonials = $pmb->testimonials ?: [
 </div>
 
 <style>
-.cms-input { width: 100%; border: 0; border-radius: 0.75rem; background: #f3f3fc; padding: 0.75rem 1rem; }
-.cms-save { border-radius: 0.75rem; background: linear-gradient(135deg, #00357f, #004aad); color: white; font-weight: 700; padding: 0.75rem 2.5rem; box-shadow: 0 16px 32px rgba(0,53,127,.15); }
+.cms-input { width: 100%; border: 0; border-radius: 0.75rem; background: #f6f6f6; padding: 0.75rem 1rem; }
+.cms-save { border-radius: 0.75rem; background: linear-gradient(135deg, #285092, #3264b7); color: #fefefe; font-weight: 700; padding: 0.75rem 2.5rem; box-shadow: 0 16px 32px rgba(40,80,146,.15); }
 </style>
 @endsection

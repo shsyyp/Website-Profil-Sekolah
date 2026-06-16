@@ -126,6 +126,7 @@
 {{-- Pengaturan Tampilan Halaman Alumni --}}
 <form action="{{ route('admin.alumni.page-setting.update') }}" method="POST" enctype="multipart/form-data" class="mb-12 space-y-8">
     @csrf
+    <input type="hidden" name="active_panel" id="activeAlumniPanelInput" value="">
 
     <div id="alumni-page-overview" class="space-y-8">
         <section>
@@ -282,7 +283,7 @@
         <div class="p-8 border-b border-surface-container-high/30">
             <h3 class="font-headline text-2xl font-extrabold text-primary">Peta Persebaran Alumni</h3>
         </div>
-        <div class="relative bg-[#f0f4f9] p-8 flex flex-col gap-5">
+        <div class="relative bg-[#f6f6f6] p-8 flex flex-col gap-5">
             <div>
                 <p class="text-xs text-outline mb-2">Lokasi terdaftar saat ini:</p>
                 <div class="flex flex-wrap gap-2">
@@ -375,6 +376,7 @@ const alumniPageOverview = document.getElementById('alumni-page-overview');
 const alumniPageEditors = document.getElementById('alumni-page-editors');
 const alumniManagementSection = document.getElementById('alumni-management-section');
 const alumniPagePanels = document.querySelectorAll('[data-alumni-page-panel]');
+const activeAlumniPanelInput = document.getElementById('activeAlumniPanelInput');
 let alumniMap = null;
 
 function showAlumniPageOverview() {
@@ -382,6 +384,9 @@ function showAlumniPageOverview() {
     alumniManagementSection.classList.add('hidden');
     alumniPageOverview.classList.remove('hidden');
     alumniPagePanels.forEach((panel) => panel.classList.add('hidden'));
+    if (activeAlumniPanelInput) {
+        activeAlumniPanelInput.value = '';
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -398,6 +403,9 @@ function showAlumniPageEditor(panelId) {
     alumniPagePanels.forEach((panel) => panel.classList.add('hidden'));
     target.classList.remove('hidden');
     target.open = true;
+    if (activeAlumniPanelInput) {
+        activeAlumniPanelInput.value = panelId;
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -443,6 +451,14 @@ document.querySelectorAll('[data-alumni-management-back]').forEach((button) => {
         showAlumniPageOverview();
     });
 });
+
+@if(session('open_alumni_management') || request('panel') === 'alumni-management-section')
+showAlumniManagement();
+@endif
+
+@if(session('open_alumni_panel'))
+showAlumniPageEditor(@json(session('open_alumni_panel')));
+@endif
 
 document.addEventListener("DOMContentLoaded", function() {
     // Set view awal ke tengah Indonesia

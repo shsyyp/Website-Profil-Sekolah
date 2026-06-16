@@ -65,7 +65,7 @@ class AboutPageController extends Controller
 
     public function update(Request $request)
     {
-        $data = $request->except(['_token', 'facility_images', 'missions_text']);
+        $data = $request->except(['_token', 'facility_images', 'missions_text', 'active_panel']);
         $about = AboutPage::first();
         $data['missions'] = collect(preg_split('/\r\n|\r|\n/', (string) $request->input('missions_text', '')))
             ->map(fn ($mission) => trim(preg_replace('/^\s*\d+[\.\)]\s*/', '', $mission)))
@@ -98,7 +98,9 @@ class AboutPageController extends Controller
             AboutPage::create($data);
         }
 
-        return back()->with('success', 'Halaman Tentang Kami berhasil diupdate!');
+        return back()
+            ->with('success', 'Halaman Tentang Kami berhasil diupdate!')
+            ->with('open_about_panel', $request->input('active_panel'));
     }
 
     public function createFacility()

@@ -77,7 +77,7 @@
             </div>
 
             <div class="pt-6 flex gap-3 border-t border-surface-container">
-                <a href="{{ route('berita.index') }}" class="btn-cancel">
+                <a href="{{ route('berita.index', ['panel' => 'news-management-section']) }}" class="btn-cancel">
                     Batal
                 </a>
                 <button type="submit"

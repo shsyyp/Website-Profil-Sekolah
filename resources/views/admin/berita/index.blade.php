@@ -34,6 +34,7 @@
 {{-- Pengaturan Tampilan Halaman Berita --}}
 <form action="{{ route('admin.berita.page-setting.update') }}" method="POST" class="mb-12 space-y-8">
     @csrf
+    <input type="hidden" name="active_panel" id="activeNewsPanelInput" value="">
 
     <div id="news-page-overview" class="space-y-8">
         <section>
@@ -282,12 +283,16 @@ const newsPageOverview = document.getElementById('news-page-overview');
 const newsPageEditors = document.getElementById('news-page-editors');
 const newsManagementSection = document.getElementById('news-management-section');
 const newsPagePanels = document.querySelectorAll('[data-news-panel]');
+const activeNewsPanelInput = document.getElementById('activeNewsPanelInput');
 
 function showNewsPageOverview() {
     newsPageEditors.classList.add('hidden');
     newsManagementSection.classList.add('hidden');
     newsPageOverview.classList.remove('hidden');
     newsPagePanels.forEach((panel) => panel.classList.add('hidden'));
+    if (activeNewsPanelInput) {
+        activeNewsPanelInput.value = '';
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -304,6 +309,9 @@ function showNewsPageEditor(panelId) {
     newsPagePanels.forEach((panel) => panel.classList.add('hidden'));
     target.classList.remove('hidden');
     target.open = true;
+    if (activeNewsPanelInput) {
+        activeNewsPanelInput.value = panelId;
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -345,6 +353,14 @@ document.querySelectorAll('[data-news-management-back]').forEach((button) => {
 });
 
 @if(session('open_news_management'))
+showNewsManagement();
+@endif
+
+@if(session('open_news_panel'))
+showNewsPageEditor(@json(session('open_news_panel')));
+@endif
+
+@if(request('panel') === 'news-management-section')
 showNewsManagement();
 @endif
 

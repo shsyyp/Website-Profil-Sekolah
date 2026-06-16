@@ -35,7 +35,10 @@ class BeritaController extends Controller
             'newsletter_description' => 'nullable|string',
             'newsletter_placeholder' => 'nullable|string|max:255',
             'newsletter_button_text' => 'nullable|string|max:255',
+            'active_panel' => 'nullable|string|max:255',
         ]);
+        $activePanel = $data['active_panel'] ?? null;
+        unset($data['active_panel']);
 
         $settings = NewsPageSetting::first();
 
@@ -45,7 +48,9 @@ class BeritaController extends Controller
             NewsPageSetting::create($data);
         }
 
-        return back()->with('success', 'Tampilan halaman berita berhasil diupdate!');
+        return back()
+            ->with('success', 'Tampilan halaman berita berhasil diupdate!')
+            ->with('open_news_panel', $activePanel);
     }
 
     // Menampilkan form tambah berita

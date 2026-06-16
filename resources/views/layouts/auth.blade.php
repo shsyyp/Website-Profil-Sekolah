@@ -19,19 +19,20 @@
         theme: {
             extend: {
                 "colors": {
-                    "primary": "#00357f",
-                    "primary-container": "#004aad",
-                    "primary-fixed": "#d9e2ff",
-                    "tertiary": "#705d00",
+                    "primary": "#285092",
+                    "primary-container": "#3264b7",
+                    "primary-fixed": "#ecf3fe",
+                    "on-primary-container": "#ecf3fe",
+                    "tertiary": "#594f26",
                     "tertiary-fixed": "#ffe16d",
-                    "surface": "#faf8ff",
-                    "surface-container": "#ededf6",
-                    "surface-container-low": "#f3f3fc",
-                    "surface-container-lowest": "#ffffff",
-                    "on-surface": "#191b22",
-                    "on-surface-variant": "#434653",
-                    "outline": "#737784",
-                    "outline-variant": "#c3c6d5",
+                    "surface": "#fefefe",
+                    "surface-container": "#f6f6f6",
+                    "surface-container-low": "#fcfcfc",
+                    "surface-container-lowest": "#fefefe",
+                    "on-surface": "#172f55",
+                    "on-surface-variant": "#565656",
+                    "outline": "#949494",
+                    "outline-variant": "#c5c5c5",
                     // Warna lainnya disederhanakan untuk contoh
                 },
                 "fontFamily": {

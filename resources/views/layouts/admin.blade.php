@@ -19,22 +19,23 @@
         theme: {
             extend: {
                 colors: {
-                    "primary": "#00357f",
-                    "primary-container": "#004aad",
-                    "tertiary": "#705d00",
-                    "tertiary-container": "#c9a900",
-                    "surface": "#faf8ff",
-                    "surface-container-lowest": "#ffffff",
-                    "surface-container-low": "#f3f3fc",
-                    "surface-container": "#ededf6",
-                    "surface-container-high": "#e7e7f0",
-                    "on-surface": "#191b22",
-                    "on-surface-variant": "#434653",
-                    "outline": "#737784",
-                    "outline-variant": "#c3c6d5",
+                    "primary": "#285092",
+                    "primary-container": "#3264b7",
+                    "tertiary": "#594f26",
+                    "tertiary-container": "#ccb457",
+                    "tertiary-fixed": "#ffe16d",
+                    "surface": "#fefefe",
+                    "surface-container-lowest": "#fefefe",
+                    "surface-container-low": "#fcfcfc",
+                    "surface-container": "#f6f6f6",
+                    "surface-container-high": "#dddddd",
+                    "on-surface": "#172f55",
+                    "on-surface-variant": "#565656",
+                    "outline": "#949494",
+                    "outline-variant": "#c5c5c5",
                     "error": "#ba1a1a",
-                    "on-error": "#ffffff",
-                    "on-secondary-container": "#495980",
+                    "on-error": "#fefefe",
+                    "on-secondary-container": "#285092",
                     // Warna lainnya disederhanakan untuk template
                 },
                 fontFamily: {
@@ -114,7 +115,7 @@
     #news-page-editors summary h3,
     #pmb-editors summary h3,
     #alumni-page-editors summary h3 {
-        color: #00357f;
+        color: #285092;
         font-family: 'Plus Jakarta Sans', sans-serif;
         font-size: 2.25rem;
         font-weight: 800;
@@ -137,7 +138,7 @@
     #alumni-page-editors [data-alumni-page-panel] > div {
         border-top: 0;
         border-radius: 1rem;
-        background: #ffffff;
+        background: #fefefe;
         box-shadow: 0 8px 30px rgb(0 0 0 / 0.04);
         padding: 2rem;
     }
@@ -149,7 +150,7 @@
     #alumni-page-editors label {
         display: block;
         margin-bottom: .5rem;
-        color: #705d00;
+        color: #594f26;
         font-size: .75rem;
         font-weight: 700;
         letter-spacing: 0;
@@ -174,9 +175,9 @@
         width: 100%;
         border: 0;
         border-radius: .75rem;
-        background: #ededf6;
+        background: #f6f6f6;
         padding: .75rem 1rem;
-        color: #191b22;
+        color: #172f55;
         font-size: .875rem;
         font-weight: 500;
     }
@@ -197,14 +198,14 @@
     #pmb-editors select:focus,
     #alumni-page-editors select:focus {
         outline: 0;
-        box-shadow: 0 0 0 2px rgb(0 74 173 / 0.2);
+        box-shadow: 0 0 0 2px rgb(40 80 146 / 0.2);
     }
 
     button.bg-primary,
     a.bg-primary,
     button[class*="from-primary"],
     a[class*="from-primary"] {
-        color: #ffffff;
+        color: #fefefe;
     }
 
     .btn-cancel {
@@ -214,7 +215,7 @@
         border: 2px solid rgb(195 198 213 / 0.3);
         border-radius: .75rem;
         background: transparent;
-        color: #191b22;
+        color: #172f55;
         font-size: .875rem;
         font-weight: 700;
         padding: .75rem 2rem;
@@ -222,9 +223,9 @@
     }
 
     .btn-cancel:hover {
-        border-color: #ededf6;
-        background: #ededf6;
-        color: #191b22;
+        border-color: #f6f6f6;
+        background: #f6f6f6;
+        color: #172f55;
     }
 
     .btn-cancel:active {

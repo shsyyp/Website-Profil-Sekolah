@@ -20,27 +20,27 @@
         theme: {
             extend: {
                 "colors": {
-                    "primary": "#00357f",
-                    "tertiary-fixed-dim": "#e9c400",
-                    "on-primary-container": "#a9c1ff",
-                    "surface-variant": "#e2e2eb",
-                    "on-background": "#191b22",
-                    "tertiary-container": "#c9a900",
-                    "primary-container": "#004aad",
-                    "secondary": "#4e5e85",
-                    "surface": "#faf8ff",
-                    "on-secondary-container": "#495980",
-                    "tertiary": "#705d00",
-                    "background": "#faf8ff",
-                    "on-primary": "#ffffff",
-                    "outline": "#737784",
+                    "primary": "#285092",
+                    "tertiary-fixed-dim": "#e6cb62",
+                    "on-primary-container": "#ecf3fe",
+                    "surface-variant": "#dddddd",
+                    "on-background": "#172f55",
+                    "tertiary-container": "#ccb457",
+                    "primary-container": "#3264b7",
+                    "secondary": "#285092",
+                    "surface": "#fefefe",
+                    "on-secondary-container": "#285092",
+                    "tertiary": "#594f26",
+                    "background": "#fefefe",
+                    "on-primary": "#fefefe",
+                    "outline": "#949494",
                     "tertiary-fixed": "#ffe16d",
-                    "on-surface": "#191b22",
-                    "surface-container": "#ededf6",
-                    "surface-container-lowest": "#ffffff",
-                    "surface-container-low": "#f3f3fc",
-                    "outline-variant": "#c3c6d5",
-                    "on-surface-variant": "#434653"
+                    "on-surface": "#172f55",
+                    "surface-container": "#f6f6f6",
+                    "surface-container-lowest": "#fefefe",
+                    "surface-container-low": "#fcfcfc",
+                    "outline-variant": "#c5c5c5",
+                    "on-surface-variant": "#565656"
                     // Warna lainnya disesuaikan untuk mempersingkat config
                 },
                 "fontFamily": {
@@ -64,7 +64,7 @@
     }
 
     .primary-gradient {
-        background: linear-gradient(135deg, #00357f 0%, #004aad 100%);
+        background: linear-gradient(135deg, #285092 0%, #3264b7 100%);
     }
     </style>
     @stack('styles')

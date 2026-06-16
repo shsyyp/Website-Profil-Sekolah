@@ -14,20 +14,6 @@
             @method('PUT')
 
             <div>
-                <label class="text-xs font-bold uppercase text-tertiary block mb-2">Kategori</label>
-                <select name="kategori"
-                    class="w-full bg-surface-container border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary"
-                    required>
-                    @foreach (['Profil', 'Fasilitas', 'PMB', 'Alumni', 'Umum'] as $kategori)
-                    <option value="{{ $kategori }}" @selected(old('kategori', $chatbot->kategori) === $kategori)>
-                        {{ $kategori }}
-                    </option>
-                    @endforeach
-                </select>
-                @error('kategori') <span class="text-error text-xs">{{ $message }}</span> @enderror
-            </div>
-
-            <div>
                 <label class="text-xs font-bold uppercase text-tertiary block mb-2">Pertanyaan</label>
                 <input name="pertanyaan" type="text" value="{{ old('pertanyaan', $chatbot->pertanyaan) }}"
                     class="w-full bg-surface-container border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary"

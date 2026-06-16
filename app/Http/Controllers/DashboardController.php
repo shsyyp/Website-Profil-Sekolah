@@ -14,7 +14,7 @@ class DashboardController extends Controller
     {
         $totalBerita = Berita::count();
         $totalPublishedBerita = Berita::where('status', 'publish')->count();
-        $berita_terbaru = Berita::latest()->take(5)->get();
+        $berita_terbaru = Berita::latest('tanggal')->latest('created_at')->take(5)->get();
         $bulanLabels = [
             1 => 'Jan',
             2 => 'Feb',
@@ -51,7 +51,7 @@ class DashboardController extends Controller
             ->count();
 
         $totalAlumni = Alumni::count();
-        $alumni_terbaru = Alumni::latest()->take(5)->get();
+        $alumni_terbaru = Alumni::latest()->take(3)->get();
         $alumniPerAngkatan = Alumni::selectRaw('tahun_lulus, COUNT(*) as total')
             ->groupBy('tahun_lulus')
             ->orderBy('tahun_lulus')

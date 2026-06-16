@@ -23,7 +23,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         View::composer('partials.chatbot', function ($view) {
-            $view->with('chatbotItems', Chatbot::latest()->get());
+            $view->with([
+                'chatbotItems' => Chatbot::latest()->get(),
+                'homepage' => Homepage::first(),
+            ]);
         });
 
         View::composer(['partials.footer', 'partials.navbar'], function ($view) {

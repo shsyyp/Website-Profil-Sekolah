@@ -57,7 +57,7 @@
 </head>
 
 <body
-    class="bg-surface font-body text-on-surface selection:bg-primary-container selection:text-on-primary-container overflow-hidden">
+    class="bg-surface font-body text-on-surface selection:bg-primary-container selection:text-on-primary-container overflow-x-hidden">
 
     @yield('content')
 

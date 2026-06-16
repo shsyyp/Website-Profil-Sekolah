@@ -17,7 +17,8 @@ class HomeController extends Controller
         $newsLimit = max(1, min(6, (int) ($homepage?->news_limit ?? 3)));
 
         $berita = Berita::where('status', 'publish')
-            ->latest()
+            ->latest('tanggal')
+            ->latest('created_at')
             ->take($newsLimit)
             ->get();
 

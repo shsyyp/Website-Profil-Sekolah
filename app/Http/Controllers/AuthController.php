@@ -32,6 +32,7 @@ class AuthController extends Controller
         $login = trim((string) $request->input('email'));
         $user = User::query()
             ->where('email', $login)
+            ->orWhere('username', $login)
             ->orWhere('name', $login)
             ->when(! str_contains($login, '@'), function ($query) use ($login) {
                 $query->orWhere('email', 'like', $login . '@%');

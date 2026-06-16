@@ -17,4 +17,8 @@ class Berita extends Model
         'tanggal', 
         'status'
     ];
+
+    protected $casts = [
+        'tanggal' => 'date',
+    ];
 }

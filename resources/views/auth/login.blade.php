@@ -1,16 +1,16 @@
 @extends('layouts.auth')
 
 @section('content')
-<main class="flex min-h-screen">
+<main class="flex min-h-dvh">
     {{-- Kiri: Branding Section --}}
     <section
-        class="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-primary to-primary-container p-16 flex-col justify-between">
+        class="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-primary to-primary-container p-10 xl:p-14 flex-col justify-between">
         <div class="absolute inset-0 bg-pattern opacity-30"></div>
         <div class="absolute -top-24 -left-24 w-96 h-96 bg-tertiary-fixed/10 rounded-full blur-3xl"></div>
         <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-primary-fixed/20 rounded-full blur-3xl"></div>
 
         <div class="relative z-10">
-            <div class="flex items-center gap-3 mb-12">
+            <div class="flex items-center gap-3 mb-8">
                 <div
                     class="w-12 h-12 bg-surface-container-lowest rounded-xl flex items-center justify-center shadow-lg">
                     <span class="material-symbols-outlined text-primary text-3xl"
@@ -19,53 +19,46 @@
                 <span class="font-headline font-extrabold text-2xl tracking-tighter text-white">SMAN Pintar</span>
             </div>
             <div class="max-w-md">
-                <h1 class="font-headline text-5xl font-bold text-white leading-tight mb-6 tracking-tight">
+                <h1 class="font-headline text-4xl xl:text-5xl font-bold text-white leading-tight mb-5 tracking-tight">
                     Admin Panel<br />SMAN Pintar
                 </h1>
-                <p class="text-primary-fixed text-xl leading-relaxed opacity-90">
+                <p class="text-primary-fixed text-lg xl:text-xl leading-relaxed opacity-90">
                     Kelola website sekolah dengan mudah dan efisien melalui sistem manajemen akademik terpadu.
                 </p>
             </div>
         </div>
 
         <div class="relative z-10 flex justify-center items-center">
-            <div class="w-full max-w-lg aspect-square relative">
+            <div class="w-full max-w-md xl:max-w-lg aspect-square relative">
                 <div
-                    class="absolute inset-0 bg-white/5 backdrop-blur-md rounded-3xl border border-white/10 shadow-2xl overflow-hidden transform rotate-3">
-                    <img class="w-full h-full object-cover opacity-80 mix-blend-overlay"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZHof-9vs_WRmx5wYbrp22xTF7dhy0TAVzPbFIM-MCUMy4PZX2NAmdcwjHhoCUpvBBj7HhS85zRieNukaZVe-3wObrcsfXfuyfaFWwm8-xCE4J5WEQ20GXxtl_G05X8NCsvyOi9ZMhCMeENPQ7qwuE1x4lUYE6EiV_W2dwH3yiwYGIuGquhBD4eJ-adBpHnzIlg0MRihS3J9b09A4kXFN0_KNoK6VvJVNbjEMj55ohDfAW9a8DBQ0STc4rD_fBxYGJxFyaya7q49-2"
-                        alt="Dashboard" />
+                    class="absolute inset-0 bg-white/10 backdrop-blur-md rounded-3xl border border-white/10 shadow-2xl overflow-hidden transform rotate-3">
                 </div>
                 <div
-                    class="absolute inset-4 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl transform -rotate-2 flex items-center justify-center">
-                    <div class="p-8 text-center">
-                        <span class="material-symbols-outlined text-tertiary-fixed text-6xl mb-4"
-                            style="font-variation-settings: 'FILL' 1;">space_dashboard</span>
-                        <div class="h-2 w-32 bg-white/20 rounded-full mx-auto mb-4"></div>
-                        <div class="h-2 w-24 bg-white/10 rounded-full mx-auto"></div>
-                    </div>
+                    class="absolute inset-4 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl transform -rotate-2 overflow-hidden">
+                    <img class="h-full w-full object-cover" src="{{ asset('images/login-hero.png') }}"
+                        alt="Siswa SMAN Pintar">
                 </div>
             </div>
         </div>
         <div class="relative z-10 text-white/50 text-xs tracking-widest uppercase font-medium">
-            © {{ date('Y') }} SMAN Pintar Riau • The Academic Architect
+            &copy; {{ date('Y') }} SMAN Pintar Riau
         </div>
     </section>
 
     {{-- Kanan: Login Form Section --}}
     <section
-        class="w-full lg:w-1/2 bg-surface-container-lowest flex items-start justify-center p-6 pt-20 md:p-12 md:pt-28 relative z-10">
-        <div class="w-full max-w-md">
+        class="w-full lg:w-1/2 bg-surface-container-lowest flex items-center justify-center px-6 py-10 md:px-10 md:py-12 relative z-10">
+        <div class="w-full max-w-[420px]">
 
-            <div class="lg:hidden flex flex-col items-center mb-10">
+            <div class="lg:hidden flex flex-col items-center mb-8">
                 <span class="material-symbols-outlined text-primary text-5xl mb-2"
                     style="font-variation-settings: 'FILL' 1;">school</span>
                 <h2 class="font-headline font-bold text-2xl text-primary">SMAN Pintar Riau</h2>
             </div>
 
             <div
-                class="bg-surface-container-lowest rounded-3xl p-8 md:p-10 shadow-[0_32px_64px_-16px_rgba(25,27,34,0.06)] border border-outline-variant/10">
-                <div class="mb-10">
+                class="bg-surface-container-lowest rounded-3xl p-6 md:p-8 shadow-[0_32px_64px_-16px_rgba(25,27,34,0.06)] border border-outline-variant/10">
+                <div class="mb-8">
                     <h3 class="font-headline text-3xl font-bold text-on-surface mb-2">Selamat Datang</h3>
                     <p class="text-on-surface-variant font-body">Silakan login untuk mengakses dashboard admin.</p>
                 </div>
@@ -83,7 +76,7 @@
                 @endif
 
                 {{-- Form Login Laravel --}}
-                <form action="{{ route('login.post') }}" method="POST" class="space-y-6">
+                <form action="{{ route('login.post') }}" method="POST" class="space-y-5">
                     @csrf
 
                     <div class="space-y-2">
@@ -95,7 +88,7 @@
                                     class="material-symbols-outlined text-outline group-focus-within:text-primary transition-colors">mail</span>
                             </div>
                             <input type="text" id="email" name="email" value="{{ old('email') }}" required autofocus
-                                class="block w-full pl-12 pr-4 py-4 bg-surface-container-low border-none rounded-xl text-on-surface placeholder-outline focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                                class="block w-full pl-12 pr-4 py-3.5 bg-surface-container-low border-none rounded-xl text-on-surface placeholder-outline focus:ring-2 focus:ring-primary/20 transition-all font-medium"
                                 placeholder="Email atau username" />
                         </div>
                     </div>
@@ -111,8 +104,8 @@
                                     class="material-symbols-outlined text-outline group-focus-within:text-primary transition-colors">lock</span>
                             </div>
                             <input type="password" id="password" name="password" required
-                                class="block w-full pl-12 pr-12 py-4 bg-surface-container-low border-none rounded-xl text-on-surface placeholder-outline focus:ring-2 focus:ring-primary/20 transition-all font-medium"
-                                placeholder="••••••••••••" />
+                                class="block w-full pl-12 pr-12 py-3.5 bg-surface-container-low border-none rounded-xl text-on-surface placeholder-outline focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                                placeholder="Password" />
 
                             <div class="absolute inset-y-0 right-0 pr-4 flex items-center cursor-pointer text-outline hover:text-on-surface transition-colors"
                                 onclick="togglePassword()">
@@ -122,7 +115,7 @@
                     </div>
 
                     <button type="submit"
-                        class="w-full bg-gradient-to-r from-primary to-primary-container text-white font-headline font-bold py-4 rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                        class="w-full bg-gradient-to-r from-primary to-primary-container text-white font-headline font-bold py-3.5 rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2">
                         Login ke Dashboard
                         <span class="material-symbols-outlined text-xl">arrow_forward</span>
                     </button>

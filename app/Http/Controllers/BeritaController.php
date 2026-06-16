@@ -13,7 +13,7 @@ class BeritaController extends Controller
     // Menampilkan daftar berita
     public function index()
     {
-        $berita = Berita::latest()->paginate(10);
+        $berita = Berita::latest('tanggal')->latest('created_at')->paginate(10);
         $totalBerita = Berita::count();
         $totalPublished = Berita::where('status', 'publish')->count();
         $totalDraft = Berita::where('status', 'draft')->count();

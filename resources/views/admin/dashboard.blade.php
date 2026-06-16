@@ -142,7 +142,7 @@
                 </div>
                 <div class="min-w-0 flex-1">
                     <p class="truncate font-bold text-on-surface">{{ $item->judul }}</p>
-                    <p class="text-xs font-semibold text-outline">{{ ucfirst($item->kategori ?? 'Berita') }} - {{ optional($item->tanggal)->format('d M Y') ?? $item->created_at?->format('d M Y') }}</p>
+                    <p class="text-xs font-semibold text-outline">{{ ucfirst($item->kategori ?? 'Berita') }} - {{ $item->tanggal?->format('d M Y') ?? $item->created_at?->format('d M Y') }}</p>
                 </div>
                 <span class="material-symbols-outlined text-outline">chevron_right</span>
             </a>
@@ -156,7 +156,7 @@
     <section class="bg-surface-container-lowest rounded-xl p-8 shadow-[24px_24px_48px_rgba(25,27,34,0.02)] flex flex-col">
         <div class="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center mb-8">
             <div>
-                <h2 class="text-2xl font-extrabold text-on-surface tracking-tight">Alumni</h2>
+                <h2 class="text-2xl font-extrabold text-on-surface tracking-tight">Alumni Terbaru</h2>
             </div>
             <a href="{{ route('alumni.create') }}"
                 class="bg-primary hover:bg-primary-container text-on-primary px-5 py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-primary/20">
@@ -166,18 +166,19 @@
         </div>
 
         <div class="space-y-4">
-            <div class="flex items-center justify-between">
-                <h3 class="font-bold text-primary">Alumni Terbaru</h3>
-                <a href="{{ route('alumni.index') }}" class="text-sm font-bold text-primary">Kelola</a>
-            </div>
             @forelse($alumni_terbaru as $item)
             <a href="{{ route('alumni.edit', $item->id) }}"
-                class="flex items-center justify-between gap-4 rounded-xl bg-surface-container-low p-4 hover:bg-surface-container transition-colors">
-                <div class="min-w-0">
+                class="flex items-center gap-4 rounded-xl bg-surface-container-low p-4 hover:bg-surface-container transition-colors">
+                <div class="h-14 w-14 flex-shrink-0 overflow-hidden rounded-xl bg-surface-container">
+                    <img class="h-full w-full object-cover"
+                        src="{{ $item->foto ? asset('storage/' . $item->foto) : 'https://ui-avatars.com/api/?name=' . urlencode($item->nama) . '&background=e9eef8&color=0b3f8a&bold=true' }}"
+                        alt="{{ $item->nama }}">
+                </div>
+                <div class="min-w-0 flex-1">
                     <p class="truncate font-bold text-on-surface">{{ $item->nama }}</p>
                     <p class="truncate text-xs font-semibold text-outline">{{ $item->lokasi }} - Angkatan {{ $item->tahun_lulus }}</p>
                 </div>
-                <span class="material-symbols-outlined text-outline">edit</span>
+                <span class="material-symbols-outlined text-outline">chevron_right</span>
             </a>
             @empty
             <p class="rounded-xl bg-surface-container-low px-4 py-8 text-center text-slate-400 italic">Belum ada data alumni.</p>

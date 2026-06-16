@@ -21,10 +21,10 @@ class ChatbotController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'kategori'   => 'required',
             'pertanyaan' => 'required',
             'jawaban'    => 'required'
         ]);
+        $data['kategori'] = 'Umum';
 
         Chatbot::create($data);
         return redirect()->route('chatbot.index')->with('success', 'Pertanyaan berhasil ditambahkan');
@@ -38,10 +38,10 @@ class ChatbotController extends Controller
     public function update(Request $request, Chatbot $chatbot)
     {
         $data = $request->validate([
-            'kategori'   => 'required',
             'pertanyaan' => 'required',
             'jawaban'    => 'required'
         ]);
+        $data['kategori'] = $chatbot->kategori ?: 'Umum';
 
         $chatbot->update($data);
         return redirect()->route('chatbot.index')->with('success', 'Pertanyaan berhasil diupdate');

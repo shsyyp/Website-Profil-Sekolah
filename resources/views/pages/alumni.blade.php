@@ -20,8 +20,8 @@
 @endpush
 
 {{-- Map Persebaran --}}
-<section class="pb-24 pt-24 max-w-7xl mx-auto px-8">
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12 py-12">
+<section class="pb-24 pt-10 max-w-7xl mx-auto px-8">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12 pt-8 pb-10">
         <div class="max-w-2xl">
             <h1 class="text-5xl font-extrabold font-headline tracking-tight text-primary">{{ $settings->map_title ?? 'Sebaran Alumni Global' }}</h1>
             <p class="text-on-surface-variant max-w-2xl mt-4 leading-relaxed">{{ $settings->map_description ?? 'Dari Riau untuk Dunia. Lihat bagaimana komunitas alumni kami berkembang di berbagai pusat ekonomi dan pendidikan global.' }}</p>

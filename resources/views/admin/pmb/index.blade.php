@@ -4,6 +4,10 @@
 
 @section('content')
 @php
+    $heroImage = $pmb?->hero_image
+        ? asset('storage/' . $pmb->hero_image)
+        : 'https://lh3.googleusercontent.com/aida-public/AB6AXuCzki_EPBNVyg-ldrcUWYC_cc07-B11lum4k6V5O6cNZPyNyNQ1xfh6ZNwxUxGCyiC-x1bMl09IvHCNP3Sbxy4qk_DhR9ljXdMhUikF3im0IHd5_9EkaNk1xWQvCKbOD7QyYy935iH-3C66VCiGB-seTE8fgTJdxxyHnHlMpyYAfe28tlRZ7NpipXSBVWLasgsafK2C1uEWsdorypBCAYEioFJffpS6MgyrNBgnkQfyRFBqg751RMs5T8I0VCNKS_WespzJ_IalC9b4';
+
     $components = [
         ['id' => 'pmb-hero-section', 'icon' => 'rocket_launch', 'title' => 'Hero Halaman', 'meta' => trim(str_replace('2025/2026', '', $pmb?->hero_badge ?? 'Penerimaan Siswa Baru')), 'content' => $pmb?->hero_title ?? 'Mulai Masa Depan Gemilang di SMAN Pintar'],
         ['id' => 'pmb-steps-section', 'icon' => 'route', 'title' => 'Alur Pendaftaran', 'meta' => $pmb?->steps_label ?? 'Langkah Mudah', 'content' => $pmb?->steps_title ?? 'Alur Pendaftaran'],
@@ -182,25 +186,36 @@
                         Kembali
                     </button>
                 </summary>
-                <div class="border-t border-slate-100 p-6 lg:p-8 bg-surface-container-low/40 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="border-t border-slate-100 p-6 lg:p-8 bg-surface-container-low/40">
                     <input name="hero_badge" type="hidden" value="{{ old('hero_badge', trim(str_replace('2025/2026', '', $pmb?->hero_badge ?? 'Penerimaan Siswa Baru'))) }}">
-                    <div class="md:col-span-2">
-                        <label class="block">Judul Utama</label>
-                        <input name="hero_title" value="{{ old('hero_title', $pmb?->hero_title ?? 'Mulai Masa Depan Gemilang di SMAN Pintar') }}" placeholder="Contoh: Mulai Masa Depan Gemilang di SMAN Pintar">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block">Deskripsi Singkat</label>
-                        <textarea name="hero_description" rows="4" placeholder="Tulis kalimat pembuka PMB yang singkat dan jelas.">{{ old('hero_description', str_replace('2025/2026', '', $pmb?->hero_description ?? 'Pendaftaran Peserta Didik Baru telah dibuka. Bergabunglah dengan institusi pendidikan unggulan di Riau.')) }}</textarea>
-                    </div>
                     <input name="link_pendaftaran" type="hidden" value="{{ old('link_pendaftaran', $pmb?->link_pendaftaran ?? '') }}">
                     <input name="primary_button_text" type="hidden" value="{{ old('primary_button_text', $pmb?->primary_button_text ?? 'Informasi PMB') }}">
                     <input name="secondary_button_text" type="hidden" value="{{ old('secondary_button_text', $pmb?->secondary_button_text ?? 'Panduan PMB') }}">
                     <input name="hero_card_title" type="hidden" value="">
                     <input name="hero_card_subtitle" type="hidden" value="">
-                    <div class="md:col-span-2">
-                        <label class="block">Gambar Hero</label>
-                        <input name="hero_image" type="file" accept="image/*">
-                        <p class="mt-2 text-sm font-medium text-slate-500">Biarkan kosong jika gambar tidak ingin diganti.</p>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block">Judul Utama</label>
+                                <input name="hero_title" value="{{ old('hero_title', $pmb?->hero_title ?? 'Mulai Masa Depan Gemilang di SMAN Pintar') }}" placeholder="Contoh: Mulai Masa Depan Gemilang di SMAN Pintar">
+                            </div>
+                            <div>
+                                <label class="block">Deskripsi Singkat</label>
+                                <textarea name="hero_description" rows="4" placeholder="Tulis kalimat pembuka PMB yang singkat dan jelas.">{{ old('hero_description', str_replace('2025/2026', '', $pmb?->hero_description ?? 'Pendaftaran Peserta Didik Baru telah dibuka. Bergabunglah dengan institusi pendidikan unggulan di Riau.')) }}</textarea>
+                            </div>
+                            <div>
+                                <label class="block">Gambar Hero</label>
+                                <input name="hero_image" type="file" accept="image/*">
+                                <p class="mt-2 text-sm font-medium text-slate-500">Biarkan kosong jika gambar tidak ingin diganti.</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="overflow-hidden rounded-2xl bg-slate-100 shadow-sm">
+                                <img class="h-80 w-full object-cover" src="{{ $heroImage }}" alt="Preview gambar hero PMB">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </details>

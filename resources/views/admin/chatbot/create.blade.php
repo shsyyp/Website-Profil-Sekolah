@@ -13,20 +13,6 @@
             @csrf
 
             <div>
-                <label class="text-xs font-bold uppercase text-tertiary block mb-2">Kategori</label>
-                <select name="kategori"
-                    class="w-full bg-surface-container border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary"
-                    required>
-                    <option value="Profil">Profil</option>
-                    <option value="Fasilitas">Fasilitas</option>
-                    <option value="PMB">PMB</option>
-                    <option value="Alumni">Alumni</option>
-                    <option value="Umum">Umum</option>
-                </select>
-                @error('kategori') <span class="text-error text-xs">{{ $message }}</span> @enderror
-            </div>
-
-            <div>
                 <label class="text-xs font-bold uppercase text-tertiary block mb-2">Pertanyaan (Keywords)</label>
                 <input name="pertanyaan" type="text" value="{{ old('pertanyaan') }}"
                     class="w-full bg-surface-container border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary"

@@ -11,10 +11,10 @@
     $searchPlaceholder = $settings->search_placeholder ?? 'Ketik kata kunci...';
 @endphp
 
-<div class="pt-24 pb-20">
+<div class="pt-10 pb-20">
 
     {{-- Header Section & Breadcrumb --}}
-    <header class="max-w-7xl mx-auto px-8 py-12">
+    <header class="max-w-7xl mx-auto px-8 pt-8 pb-10">
         <div class="flex flex-col gap-2">
             <nav class="flex items-center gap-2 text-sm font-medium text-outline">
                 <a class="hover:text-primary transition-colors" href="{{ url('/') }}">Beranda</a>

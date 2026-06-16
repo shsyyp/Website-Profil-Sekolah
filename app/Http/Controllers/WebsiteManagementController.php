@@ -27,7 +27,7 @@ class WebsiteManagementController extends Controller
         $newsSetting = NewsPageSetting::first() ?? NewsPageSetting::create();
         $alumniSetting = AlumniPageSetting::first() ?? AlumniPageSetting::create();
         $alumniOptions = Alumni::latest()->get();
-        $berita = Berita::latest()->take(8)->get();
+        $berita = Berita::latest('tanggal')->latest('created_at')->take(8)->get();
         $alumni = Alumni::latest()->take(8)->get();
 
         $stats = [

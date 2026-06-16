@@ -14,17 +14,6 @@
             <div class="bg-white p-3 rounded-md rounded-tl-none shadow-sm text-xs text-slate-600 max-w-[80%]">
                 Halo! Ada yang bisa saya bantu terkait pendaftaran atau informasi sekolah?
             </div>
-            @forelse ($chatbotItems as $item)
-            <button type="button" data-chatbot-question="{{ $item->pertanyaan }}"
-                data-chatbot-answer="{{ $item->jawaban }}"
-                class="text-left bg-primary/5 hover:bg-primary/10 p-3 rounded-md text-xs text-primary font-semibold transition-colors">
-                {{ $item->pertanyaan }}
-            </button>
-            @empty
-            <div class="bg-white p-3 rounded-md shadow-sm text-xs text-slate-600 max-w-[80%]">
-                Data chatbot belum tersedia.
-            </div>
-            @endforelse
         </div>
         <div class="p-4 bg-white border-t border-slate-100 flex items-center gap-2">
             <input id="chatbotInput"
@@ -47,6 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const messages = document.getElementById('chatbotMessages');
     const input = document.getElementById('chatbotInput');
     const send = document.getElementById('chatbotSend');
+    const humasWhatsappUrl = @json($homepage?->footer_whatsapp_url);
     const knowledge = @json($chatbotItems->map(fn ($item) => [
         'pertanyaan' => $item->pertanyaan,
         'jawaban' => $item->jawaban,
@@ -62,18 +52,40 @@ document.addEventListener('DOMContentLoaded', function() {
         messages.scrollTop = messages.scrollHeight;
     }
 
+    function addHumasContact() {
+        const bubble = document.createElement('div');
+        bubble.className = 'bg-white p-3 rounded-md rounded-tl-none shadow-sm text-xs text-slate-600 max-w-[80%]';
+
+        const text = document.createElement('p');
+        text.textContent = 'Maaf, saya belum menemukan jawaban yang sesuai. Silakan hubungi Humas melalui WhatsApp untuk bantuan lebih lanjut.';
+        bubble.appendChild(text);
+
+        if (humasWhatsappUrl) {
+            const link = document.createElement('a');
+            link.href = humasWhatsappUrl;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            link.className = 'mt-3 inline-flex rounded-full bg-primary px-4 py-2 text-xs font-bold text-white';
+            link.textContent = 'Chat WA Humas';
+            bubble.appendChild(link);
+        }
+
+        messages.appendChild(bubble);
+        messages.scrollTop = messages.scrollHeight;
+    }
+
     function answer(question) {
         const normalized = question.toLowerCase();
         const match = knowledge.find((item) => item.pertanyaan.toLowerCase().includes(normalized) || normalized.includes(item.pertanyaan.toLowerCase()));
 
         addMessage(question, true);
-        addMessage(match ? match.jawaban : 'Maaf, jawaban untuk pertanyaan tersebut belum tersedia di database chatbot.');
+        if (match) {
+            addMessage(match.jawaban);
+        } else {
+            addHumasContact();
+        }
         input.value = '';
     }
-
-    document.querySelectorAll('[data-chatbot-question]').forEach((button) => {
-        button.addEventListener('click', () => answer(button.dataset.chatbotQuestion));
-    });
 
     send.addEventListener('click', () => {
         const question = input.value.trim();

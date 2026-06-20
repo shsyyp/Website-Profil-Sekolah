@@ -33,6 +33,7 @@ Route::get('/berita', [BeritaController::class, 'index'])->name('berita');
 Route::get('/berita/{berita}', [BeritaController::class, 'show'])->name('berita.detail');
 Route::get('/pmb', [PMBController::class, 'index'])->name('pmb');
 Route::get('/alumni', [AlumniController::class, 'index'])->name('alumni');
+Route::post('/chatbot/ask', [ChatbotController::class, 'ask'])->name('chatbot.ask');
 
 // ==========================================
 // GUEST ROUTES (Belum Login)

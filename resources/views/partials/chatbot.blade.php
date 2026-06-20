@@ -37,10 +37,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const input = document.getElementById('chatbotInput');
     const send = document.getElementById('chatbotSend');
     const humasWhatsappUrl = @json($homepage?->footer_whatsapp_url);
-    const knowledge = @json($chatbotItems->map(fn ($item) => [
-        'pertanyaan' => $item->pertanyaan,
-        'jawaban' => $item->jawaban,
-    ])->values());
+    const chatbotEndpoint = @json(route('chatbot.ask'));
+    const csrfToken = @json(csrf_token());
 
     function addMessage(text, alignRight = false) {
         const bubble = document.createElement('div');
@@ -74,17 +72,46 @@ document.addEventListener('DOMContentLoaded', function() {
         messages.scrollTop = messages.scrollHeight;
     }
 
-    function answer(question) {
-        const normalized = question.toLowerCase();
-        const match = knowledge.find((item) => item.pertanyaan.toLowerCase().includes(normalized) || normalized.includes(item.pertanyaan.toLowerCase()));
+    function setLoading(isLoading) {
+        send.disabled = isLoading;
+        input.disabled = isLoading;
+        send.classList.toggle('opacity-50', isLoading);
+    }
 
+    async function answer(question) {
         addMessage(question, true);
-        if (match) {
-            addMessage(match.jawaban);
-        } else {
-            addHumasContact();
-        }
         input.value = '';
+        setLoading(true);
+
+        try {
+            const response = await fetch(chatbotEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                },
+                body: JSON.stringify({ question }),
+            });
+
+            if (!response.ok) {
+                addHumasContact();
+                return;
+            }
+
+            const data = await response.json();
+
+            if (data.answer) {
+                addMessage(data.answer);
+            } else {
+                addHumasContact();
+            }
+        } catch (error) {
+            addHumasContact();
+        } finally {
+            setLoading(false);
+            input.focus();
+        }
     }
 
     send.addEventListener('click', () => {

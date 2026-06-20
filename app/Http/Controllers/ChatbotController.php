@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Chatbot;
+use App\Services\GeminiChatbotService;
 use Illuminate\Http\Request;
 
 class ChatbotController extends Controller
@@ -51,5 +52,19 @@ class ChatbotController extends Controller
     {
         $chatbot->delete();
         return back()->with('success', 'Pertanyaan berhasil dihapus');
+    }
+
+    public function ask(Request $request, GeminiChatbotService $chatbot)
+    {
+        $data = $request->validate([
+            'question' => ['required', 'string', 'max:500'],
+        ]);
+
+        $answer = $chatbot->answer($data['question']);
+
+        return response()->json([
+            'answer' => $answer,
+            'fallback' => $answer === null,
+        ]);
     }
 }

@@ -23,39 +23,28 @@ $fasilitasItems = $defaultFasilitasItems;
 $allSharedFacilities = collect($about?->facilities ?? [])
     ->filter(fn ($facility) => filled($facility['title'] ?? null))
     ->values()
-    ->map(fn ($facility) => [
+    ->map(fn ($facility, $index) => [
+        'id' => (string) ($facility['id'] ?? 'legacy-' . $index),
         'title' => $facility['title'] ?? 'Fasilitas',
         'desc' => $facility['desc'] ?? ($facility['description'] ?? 'Deskripsi fasilitas akan diperbarui.'),
         'icon' => $facility['icon'] ?? 'domain',
         'image' => $facility['image'] ?? null,
     ]);
 
-$selectedFacilityIndexes = collect($homepage?->fasilitas ?? [0, 1, 2, 3])
-    ->map(fn ($index) => (int) $index)
-    ->filter(fn ($index) => $allSharedFacilities->has($index))
+$storedFacilitySelection = $homepage?->fasilitas;
+$selectedFacilityIds = collect($storedFacilitySelection ?? $allSharedFacilities->take(4)->pluck('id')->all())
+    ->map(fn ($value) => is_numeric($value) ? data_get($allSharedFacilities->get((int) $value), 'id') : (string) $value)
+    ->filter(fn ($id) => $allSharedFacilities->contains(fn ($facility) => $facility['id'] === $id))
     ->unique()
     ->take(4)
     ->values();
 
-$selectedSharedFacilities = $selectedFacilityIndexes->isNotEmpty()
-    ? $selectedFacilityIndexes->map(fn ($index) => $allSharedFacilities->get($index))->values()->all()
-    : $allSharedFacilities->take(4)->values()->all();
-
-if (count($selectedSharedFacilities) > 0) {
-    $fasilitasItems = collect($selectedSharedFacilities)
-        ->merge($allSharedFacilities->reject(fn ($facility) => collect($selectedSharedFacilities)->contains($facility))->values())
-        ->take(4)
+$fasilitasItems = $allSharedFacilities->isNotEmpty()
+    ? $allSharedFacilities
+        ->filter(fn ($facility) => $selectedFacilityIds->contains($facility['id']))
         ->values()
-        ->all();
-}
-
-if (count($fasilitasItems) < 4) {
-    $fasilitasItems = collect($fasilitasItems)
-        ->merge($defaultFasilitasItems)
-        ->take(4)
-        ->values()
-        ->all();
-}
+        ->all()
+    : $defaultFasilitasItems;
 
 $facilityMainImage = $homepage?->facility_main_image
     ? asset('storage/' . $homepage->facility_main_image)
@@ -220,12 +209,14 @@ document.addEventListener('keydown', (event) => {
     </div>
 </section>
 
+@if(count($fasilitasItems) > 0)
 <section class="py-24 bg-surface-container-low">
     <div class="max-w-7xl mx-auto px-6">
         <div class="text-center max-w-2xl mx-auto mb-16">
             <h2 class="text-4xl font-black font-headline text-primary mb-4">{{ $homepage?->facilities_title ?? 'Fasilitas' }}</h2>
             <p class="text-on-surface-variant">{{ $homepage?->facilities_subtitle ?? 'Kami menyediakan infrastruktur terbaik untuk mendukung setiap langkah eksplorasi siswa.' }}</p>
         </div>
+        @if(count($fasilitasItems) === 4)
         <div class="grid grid-cols-12 gap-6 h-auto md:h-[600px]">
             <div
                 class="col-span-12 md:col-span-6 bg-surface-container-lowest rounded-md overflow-hidden relative group">
@@ -285,8 +276,25 @@ document.addEventListener('keydown', (event) => {
                 </div>
             </div>
         </div>
+        @elseif(count($fasilitasItems) > 0)
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            @foreach($fasilitasItems as $index => $facility)
+            <article class="{{ count($fasilitasItems) === 1 || (count($fasilitasItems) === 3 && $index === 0) ? 'md:col-span-2' : '' }} group relative h-80 overflow-hidden rounded-md shadow-sm">
+                <img alt="{{ $facility['title'] }}"
+                    class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    src="{{ data_get($facility, 'image') ? asset('storage/' . data_get($facility, 'image')) : ($facilityCardImages[$index] ?? $facilityMainImage) }}">
+                <div class="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/30 to-transparent"></div>
+                <div class="relative z-10 flex h-full flex-col justify-end p-8 text-white">
+                    <h3 class="mb-2 text-2xl font-bold">{{ $facility['title'] }}</h3>
+                    <p class="max-w-xl text-white/80">{{ $facility['desc'] }}</p>
+                </div>
+            </article>
+            @endforeach
+        </div>
+        @endif
     </div>
 </section>
+@endif
 
 <section class="py-24">
     <div class="max-w-7xl mx-auto px-6">
@@ -333,7 +341,6 @@ document.addEventListener('keydown', (event) => {
     </div>
 </section>
 
-@if((bool) ($homepage?->cta_is_active ?? true))
 <section class="py-24 px-6">
     <div class="max-w-7xl mx-auto primary-gradient rounded-md overflow-hidden shadow-2xl relative">
         <div class="absolute top-0 right-0 w-1/3 h-full opacity-10 pointer-events-none">
@@ -361,10 +368,12 @@ document.addEventListener('keydown', (event) => {
                 <div class="text-sm font-bold uppercase tracking-widest opacity-80">Penerimaan Murid Baru</div>
                 @php
                     $ctaDeadlineIso = $homepage?->cta_deadline_at?->toIso8601String();
+                    $ctaExpired = $homepage?->cta_deadline_at?->isPast() ?? false;
+                    $ctaClosedMessage = $homepage?->cta_closed_message ?? 'Pendaftaran Telah Ditutup';
                 @endphp
                 <div class="mt-6 pt-6 border-t border-white/20" data-countdown-deadline="{{ $ctaDeadlineIso }}">
-                    <p class="text-xs opacity-60">{{ $homepage?->cta_deadline_label ?? 'Pendaftaran Berakhir Dalam' }}</p>
-                    <div class="flex flex-wrap gap-4 mt-2 justify-center font-headline font-bold text-2xl">
+                    <p data-countdown-label class="text-xs opacity-60 {{ $ctaExpired ? 'hidden' : '' }}">{{ $homepage?->cta_deadline_label ?? 'Pendaftaran Berakhir Dalam' }}</p>
+                    <div data-countdown-values class="flex flex-wrap gap-4 mt-2 justify-center font-headline font-bold text-2xl {{ $ctaExpired ? 'hidden' : '' }}">
                         <div><span data-countdown-value="days">{{ $homepage?->cta_countdown_days ?? '14' }}</span><span class="block text-[10px] opacity-60">HARI</span></div>
                         <div>:</div>
                         <div><span data-countdown-value="hours">{{ $homepage?->cta_countdown_hours ?? '08' }}</span><span class="block text-[10px] opacity-60">JAM</span></div>
@@ -373,12 +382,12 @@ document.addEventListener('keydown', (event) => {
                         <div>:</div>
                         <div><span data-countdown-value="seconds">00</span><span class="block text-[10px] opacity-60">DETIK</span></div>
                     </div>
+                    <p data-countdown-closed class="font-headline text-lg font-bold {{ $ctaExpired ? '' : 'hidden' }}">{{ $ctaClosedMessage }}</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
-@endif
 
 <script>
 document.querySelectorAll('[data-countdown-deadline]').forEach((countdown) => {
@@ -395,11 +404,24 @@ document.querySelectorAll('[data-countdown-deadline]').forEach((countdown) => {
         minutes: countdown.querySelector('[data-countdown-value="minutes"]'),
         seconds: countdown.querySelector('[data-countdown-value="seconds"]'),
     };
+    const countdownLabel = countdown.querySelector('[data-countdown-label]');
+    const countdownValues = countdown.querySelector('[data-countdown-values]');
+    const closedMessage = countdown.querySelector('[data-countdown-closed]');
+    let timer = null;
 
     const format = (number) => String(number).padStart(2, '0');
 
     const renderCountdown = () => {
-        const remaining = Math.max(0, deadline - Date.now());
+        const remaining = deadline - Date.now();
+
+        if (remaining <= 0) {
+            countdownLabel?.classList.add('hidden');
+            countdownValues?.classList.add('hidden');
+            closedMessage?.classList.remove('hidden');
+            if (timer) window.clearInterval(timer);
+            return;
+        }
+
         const totalSeconds = Math.floor(remaining / 1000);
         const days = Math.floor(totalSeconds / 86400);
         const hours = Math.floor((totalSeconds % 86400) / 3600);
@@ -413,7 +435,9 @@ document.querySelectorAll('[data-countdown-deadline]').forEach((countdown) => {
     };
 
     renderCountdown();
-    setInterval(renderCountdown, 1000);
+    if (deadline > Date.now()) {
+        timer = window.setInterval(renderCountdown, 1000);
+    }
 });
 </script>
 

@@ -4,15 +4,6 @@
 
 @section('content')
 @php
-$defaultFasilitas = [
-['icon' => 'local_library', 'title' => 'Perpustakaan Digital', 'desc' => 'Akses ke ribuan jurnal internasional dan
-koleksi buku fisik terlengkap di Riau.'],
-['icon' => 'science', 'title' => 'Lab Terpadu', 'desc' => 'Fisika, Kimia, Biologi, dan Lab Komputer terbaru.'],
-['icon' => 'apartment', 'title' => 'Asrama Modern', 'desc' => 'Kamar yang nyaman dengan pengawasan 24 jam.'],
-['icon' => 'sports_basketball', 'title' => 'Sport Center', 'desc' => 'Lapangan basket indoor, futsal, dan area atletik
-standar nasional.'],
-];
-
 $heroImage = $homepage->hero_image
 ? asset('storage/' . $homepage->hero_image)
 :
@@ -29,27 +20,15 @@ $facilityImage = $homepage->facility_main_image
 
 $allFacilities = collect($about->facilities ?? [])
 ->filter(fn ($facility) => filled($facility['title'] ?? null))
+->map(fn ($facility, $index) => array_merge($facility, ['id' => (string) ($facility['id'] ?? 'legacy-' . $index)]))
 ->values();
 
-$selectedFacilityIndexes = collect($homepage->fasilitas ?? [0, 1, 2, 3])
-->map(fn ($index) => (int) $index)
-->filter(fn ($index) => $allFacilities->has($index))
+$selectedFacilityIds = collect($homepage->fasilitas ?? $allFacilities->take(4)->pluck('id')->all())
+->map(fn ($value) => is_numeric($value) ? data_get($allFacilities->get((int) $value), 'id') : (string) $value)
+->filter(fn ($id) => $allFacilities->contains(fn ($facility) => data_get($facility, 'id') === $id))
 ->unique()
 ->take(4)
 ->values();
-
-$sharedFacilities = $selectedFacilityIndexes->isNotEmpty()
-? $selectedFacilityIndexes->map(fn ($index) => $allFacilities->get($index))->values()
-: $allFacilities->take(4)->values();
-
-$tradisiTitles = collect(range(0, 3))
-->map(fn ($i) => data_get($homepage->tradisi, $i . '.title') ?? ($i == 0 ? 'Kurikulum' : ($i == 1 ? 'Boarding' : ($i ==
-2 ? 'Pembinaan' : 'Alumni'))))
-->implode(', ');
-
-$facilityTitles = collect(range(0, 3))
-->map(fn ($i) => data_get($sharedFacilities, $i . '.title') ?? $defaultFasilitas[$i]['title'])
-->implode(', ');
 
 $selectedAlumniIds = collect($homepage->selected_alumni_ids ?? ($homepage->featured_alumni_id ? [$homepage->featured_alumni_id] : []))
 ->map(fn ($id) => (int) $id)
@@ -58,26 +37,20 @@ $selectedAlumniIds = collect($homepage->selected_alumni_ids ?? ($homepage->featu
 ->take(3)
 ->values();
 
-$selectedAlumniNames = $selectedAlumniIds->isNotEmpty()
-? $selectedAlumniIds->map(fn ($id) => optional($alumni->firstWhere('id', $id))->nama)->filter()->implode(', ')
-: 'Belum dipilih';
-
 $components = [
 [
 'id' => 'hero-section',
 'preview' => 'image',
 'image' => $heroImage,
-'title' => 'Hero Section',
-'content' => $homepage->hero_title ?? 'Membentuk Generasi Unggul Berkarakter & Berdaya Saing Global',
-'meta' => $homepage->hero_label ?? 'Provinsi Riau',
+'title' => 'Hero Beranda',
+'content' => 'Mengatur banner utama website',
 ],
 [
 'id' => 'tradisi-section',
 'preview' => 'icon',
 'icon' => 'military_tech',
-'title' => 'Keunggulan',
-'content' => $homepage->about_title ?? 'Keunggulan, Masa Depan Gemilang',
-'meta' => $tradisiTitles,
+'title' => 'Keunggulan Sekolah',
+'content' => 'Mengatur informasi keunggulan sekolah',
 ],
 [
 'id' => 'fasilitas-section',
@@ -85,40 +58,35 @@ $components = [
 'image' => $facilityImage,
 'icon' => 'domain',
 'title' => 'Fasilitas',
-'content' => $homepage->facilities_title ?? 'Fasilitas',
-'meta' => $facilityTitles,
+'content' => 'Mengatur fasilitas yang ditampilkan',
 ],
 [
 'id' => 'berita-section',
 'preview' => 'icon',
 'icon' => 'newspaper',
-'title' => 'Berita',
-'content' => str_replace('Warta', 'Berita', $homepage->news_title ?? 'Berita SMAN Pintar'),
-'meta' => 'Limit berita: ' . ($homepage->news_limit ?? 3) . ' item',
+'title' => 'Berita Beranda',
+'content' => 'Mengatur berita pada halaman beranda',
 ],
 [
 'id' => 'alumni-section',
 'preview' => 'icon',
 'icon' => 'groups',
-'title' => 'Alumni',
-'content' => $homepage->alumni_title ?? 'Jejak Langkah Kesuksesan',
-'meta' => $selectedAlumniNames,
+'title' => 'Alumni Beranda',
+'content' => 'Mengatur testimoni alumni',
 ],
 [
 'id' => 'cta-section',
 'preview' => 'icon',
 'icon' => 'campaign',
-'title' => 'PMB',
-'content' => $homepage->cta_title ?? 'Jadilah Bagian dari SMAN Pintar',
-'meta' => 'Tahun ' . ($homepage->cta_year ?? '2025'),
+'title' => 'PMB Beranda',
+'content' => 'Mengatur informasi PMB dan hitung mundur pendaftaran',
 ],
 [
 'id' => 'footer-section',
 'preview' => 'icon',
 'icon' => 'notes',
 'title' => 'Footer Website',
-'content' => $homepage->footer_address ?? 'Jl. Pendidikan No. 01, Pekanbaru, Provinsi Riau',
-'meta' => $homepage->footer_phone ?? '(0761) 1234567',
+'content' => 'Mengatur kontak, media sosial, dan informasi footer',
 ],
 ];
 @endphp
@@ -401,30 +369,28 @@ $components = [
                         <h4 class="text-lg font-bold text-primary font-headline">Fasilitas</h4>
                     </div>
                     @if($allFacilities->isNotEmpty())
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        @for ($slot = 0; $slot < 4; $slot++)
-                        @php
-                            $selectedIndex = $selectedFacilityIndexes->get($slot, $slot);
-                        @endphp
-                        <div>
-                            <label>Fasilitas {{ $slot + 1 }}</label>
-                            <div class="relative">
-                                <select name="fasilitas[]"
-                                    class="appearance-none pr-12">
-                                    <option value="">Tidak ditampilkan</option>
-                                    @foreach ($allFacilities as $i => $facility)
-                                    <option value="{{ $i }}" {{ $selectedIndex === $i ? 'selected' : '' }}>
-                                        {{ data_get($facility, 'title') }}
-                                    </option>
-                                    @endforeach
-                                </select>
-                                <span
-                                    class="pointer-events-none material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-500">
-                                    expand_more
-                                </span>
-                            </div>
+                    <div data-facility-picker class="space-y-4">
+                        <div class="flex items-center justify-between gap-4">
+                            <p class="text-sm text-on-surface-variant">Pilih maksimal empat fasilitas untuk ditampilkan di beranda.</p>
+                            <span data-facility-count class="shrink-0 rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">{{ $selectedFacilityIds->count() }}/4 dipilih</span>
                         </div>
-                        @endfor
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            @foreach ($allFacilities as $facility)
+                            @php
+                                $facilityId = data_get($facility, 'id');
+                                $isSelected = $selectedFacilityIds->contains($facilityId);
+                            @endphp
+                            <div class="flex items-center gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4 transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+                                <input type="checkbox" name="facility_selection[]" value="{{ $facilityId }}"
+                                    data-facility-checkbox class="h-5 w-5 shrink-0 rounded border-slate-300 text-primary focus:ring-primary"
+                                    {{ $isSelected ? 'checked' : '' }}>
+                                <div class="min-w-0 flex-1">
+                                    <p class="truncate font-bold text-primary">{{ data_get($facility, 'title') }}</p>
+                                    <p class="truncate text-xs text-on-surface-variant">{{ data_get($facility, 'desc', 'Tanpa deskripsi') }}</p>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
                     </div>
                     @else
                     <div class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-6 text-sm text-on-surface-variant">
@@ -434,6 +400,31 @@ $components = [
                 </div>
             </div>
         </details>
+
+        <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const picker = document.querySelector('[data-facility-picker]');
+            if (!picker) return;
+
+            const checkboxes = Array.from(picker.querySelectorAll('[data-facility-checkbox]'));
+            const counter = picker.querySelector('[data-facility-count]');
+
+            const updateFacilityPicker = (changedCheckbox = null) => {
+                let selected = checkboxes.filter((checkbox) => checkbox.checked);
+                if (selected.length > 4 && changedCheckbox) {
+                    changedCheckbox.checked = false;
+                    selected = checkboxes.filter((checkbox) => checkbox.checked);
+                }
+
+                counter.textContent = `${selected.length}/4 dipilih`;
+            };
+
+            checkboxes.forEach((checkbox) => {
+                checkbox.addEventListener('change', () => updateFacilityPicker(checkbox));
+            });
+            updateFacilityPicker();
+        });
+        </script>
 
         <details id="berita-section" data-editor-panel
             class="hidden group bg-surface-container-lowest rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
@@ -539,12 +530,13 @@ $components = [
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         @for ($slot = 0; $slot < 3; $slot++)
                         @php
-                            $selectedAlumniId = $selectedAlumniIds->get($slot);
+                            $selectedAlumniId = old('selected_alumni_ids.' . $slot, $selectedAlumniIds->get($slot));
+                            $selectedAlumniId = filled($selectedAlumniId) ? (int) $selectedAlumniId : null;
                         @endphp
                         <div>
                             <label>Alumni {{ $slot + 1 }}</label>
                             <div class="relative">
-                                <select name="selected_alumni_ids[]" class="appearance-none pr-12">
+                                <select name="selected_alumni_ids[]" data-alumni-choice class="appearance-none pr-12">
                                     <option value="">Tidak ditampilkan</option>
                                     @foreach ($alumni as $item)
                                     <option value="{{ $item->id }}"
@@ -558,6 +550,9 @@ $components = [
                         </div>
                         @endfor
                     </div>
+                    @if($errors->has('selected_alumni_ids.*'))
+                    <p class="mt-3 text-sm font-medium text-red-600">{{ $errors->first('selected_alumni_ids.*') }}</p>
+                    @endif
                     @else
                     <div class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-6 text-sm text-on-surface-variant">
                         Belum ada data alumni aktif. Tambahkan alumni terlebih dahulu di menu Alumni.
@@ -566,6 +561,28 @@ $components = [
                 </div>
             </div>
         </details>
+
+        <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const alumniChoices = Array.from(document.querySelectorAll('[data-alumni-choice]'));
+
+            const updateAlumniChoices = () => {
+                alumniChoices.forEach((select) => {
+                    const valuesUsedElsewhere = alumniChoices
+                        .filter((otherSelect) => otherSelect !== select)
+                        .map((otherSelect) => otherSelect.value)
+                        .filter(Boolean);
+
+                    Array.from(select.options).forEach((option) => {
+                        option.disabled = option.value !== '' && valuesUsedElsewhere.includes(option.value);
+                    });
+                });
+            };
+
+            alumniChoices.forEach((select) => select.addEventListener('change', updateAlumniChoices));
+            updateAlumniChoices();
+        });
+        </script>
 
         <details id="cta-section" data-editor-panel
             class="hidden group bg-surface-container-lowest rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
@@ -592,6 +609,31 @@ $components = [
             </summary>
             <div class="border-t border-slate-100 p-6 lg:p-8 bg-surface-container-low/40">
                 <div class="bg-surface-container-lowest p-8 rounded-2xl shadow-sm space-y-6">
+                    <div>
+                        <label>Judul PMB</label>
+                        <input name="cta_title" type="text"
+                            placeholder="Contoh: Mulai Perjalanan Akademik Anda"
+                            value="{{ old('cta_title', $homepage->cta_title ?? 'Siap Menjadi Bagian dari SMAN Pintar?') }}">
+                    </div>
+                    <div>
+                        <label>Deskripsi PMB</label>
+                        <textarea name="cta_desc" rows="4"
+                            placeholder="Tuliskan ajakan singkat untuk calon murid.">{{ old('cta_desc', $homepage->cta_desc ?? 'Dapatkan informasi lengkap seputar Penerimaan Murid Baru, mulai dari jadwal, persyaratan, alur seleksi, hingga panduan pendaftaran offline.') }}</textarea>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label>Teks Tombol</label>
+                            <input name="cta_secondary_button" type="text"
+                                placeholder="Contoh: Panduan Pendaftaran"
+                                value="{{ old('cta_secondary_button', $homepage->cta_secondary_button ?? 'Panduan Pendaftaran') }}">
+                        </div>
+                        <div>
+                            <label>Link Tombol</label>
+                            <input name="cta_secondary_link" type="text"
+                                placeholder="Contoh: /pmb atau https://..."
+                                value="{{ old('cta_secondary_link', $homepage->cta_secondary_link ?? route('pmb')) }}">
+                        </div>
+                    </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label>Tahun PMB</label>
@@ -605,13 +647,11 @@ $components = [
                         </div>
                     </div>
                     <div>
-                        <input type="hidden" name="cta_is_active" value="0">
-                        <label class="inline-flex items-center gap-3 normal-case tracking-normal text-on-surface">
-                            <input type="checkbox" name="cta_is_active" value="1"
-                                class="h-5 w-5 rounded border-outline-variant bg-surface-container-low text-primary focus:ring-primary"
-                                @checked((bool) ($homepage->cta_is_active ?? true))>
-                            <span class="text-sm font-medium text-on-surface-variant">Aktif di Website</span>
-                        </label>
+                        <label>Pesan Setelah Pendaftaran Ditutup</label>
+                        <input name="cta_closed_message" type="text"
+                            placeholder="Contoh: Pendaftaran Telah Ditutup"
+                            value="{{ old('cta_closed_message', $homepage->cta_closed_message ?? 'Pendaftaran Telah Ditutup') }}">
+                        <p class="mt-2 text-xs text-on-surface-variant">Pesan ini otomatis menggantikan countdown ketika batas waktu telah berakhir.</p>
                     </div>
                 </div>
             </div>

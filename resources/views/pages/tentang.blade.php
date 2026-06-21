@@ -224,7 +224,7 @@ $femalePercentage = $femaleBar . '%';
 <section class="py-24 max-w-7xl mx-auto px-8">
     <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
         <div>
-            <span class="text-primary font-bold text-sm tracking-[0.2em] uppercase mb-4 block">{{ $about?->facilities_label ?? 'Infrastruktur Modern' }}</span>
+            <span class="text-tertiary font-bold text-sm tracking-[0.2em] uppercase mb-4 block">{{ $about?->facilities_label ?? 'Infrastruktur Modern' }}</span>
             <h2 class="text-3xl md:text-4xl font-extrabold font-headline">{{ $about?->facilities_title ?? 'Fasilitas Unggulan' }}</h2>
         </div>
         <div class="flex items-center gap-3">

@@ -4,20 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\AboutPage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class AboutPageController extends Controller
 {
     private function defaultFacilities(): array
     {
         return [
-            ['icon' => 'biotech', 'title' => 'Lab Riset & Sains', 'desc' => 'Dilengkapi peralatan standar olimpiade internasional.'],
-            ['icon' => 'auto_stories', 'title' => 'Perpustakaan Digital', 'desc' => 'Akses ke ribuan jurnal dan e-book global 24/7.'],
-            ['icon' => 'sports_basketball', 'title' => 'Sport Center', 'desc' => 'Gedung olahraga indoor untuk basket, futsal, dan badminton.'],
-            ['icon' => 'theater_comedy', 'title' => 'Teater Seni', 'desc' => 'Ruang pertunjukan dengan sistem tata suara mutakhir.'],
-            ['icon' => 'apartment', 'title' => 'Asrama Siswa', 'desc' => 'Hunian nyaman dengan pembinaan karakter dan pengawasan terarah.'],
-            ['icon' => 'restaurant', 'title' => 'Kantin Sehat', 'desc' => 'Area makan bersih dengan pilihan menu harian yang mendukung aktivitas siswa.'],
-            ['icon' => 'computer', 'title' => 'Lab Komputer', 'desc' => 'Perangkat pembelajaran digital untuk coding, desain, dan riset teknologi.'],
-            ['icon' => 'local_hospital', 'title' => 'UKS', 'desc' => 'Layanan kesehatan sekolah untuk kebutuhan pertolongan pertama siswa.'],
+            ['id' => 'default-lab-riset-sains', 'icon' => 'biotech', 'title' => 'Lab Riset & Sains', 'desc' => 'Dilengkapi peralatan standar olimpiade internasional.'],
+            ['id' => 'default-perpustakaan-digital', 'icon' => 'auto_stories', 'title' => 'Perpustakaan Digital', 'desc' => 'Akses ke ribuan jurnal dan e-book global 24/7.'],
+            ['id' => 'default-sport-center', 'icon' => 'sports_basketball', 'title' => 'Sport Center', 'desc' => 'Gedung olahraga indoor untuk basket, futsal, dan badminton.'],
+            ['id' => 'default-teater-seni', 'icon' => 'theater_comedy', 'title' => 'Teater Seni', 'desc' => 'Ruang pertunjukan dengan sistem tata suara mutakhir.'],
+            ['id' => 'default-asrama-siswa', 'icon' => 'apartment', 'title' => 'Asrama Siswa', 'desc' => 'Hunian nyaman dengan pembinaan karakter dan pengawasan terarah.'],
+            ['id' => 'default-kantin-sehat', 'icon' => 'restaurant', 'title' => 'Kantin Sehat', 'desc' => 'Area makan bersih dengan pilihan menu harian yang mendukung aktivitas siswa.'],
+            ['id' => 'default-lab-komputer', 'icon' => 'computer', 'title' => 'Lab Komputer', 'desc' => 'Perangkat pembelajaran digital untuk coding, desain, dan riset teknologi.'],
+            ['id' => 'default-uks', 'icon' => 'local_hospital', 'title' => 'UKS', 'desc' => 'Layanan kesehatan sekolah untuk kebutuhan pertolongan pertama siswa.'],
         ];
     }
 
@@ -88,6 +89,11 @@ class AboutPageController extends Controller
             }
             $data['facilities'] = collect($facilities)
                 ->filter(fn ($facility) => ($facility['title'] ?? null) || ($facility['desc'] ?? null) || ($facility['icon'] ?? null) || ($facility['image'] ?? null))
+                ->map(function ($facility) {
+                    $facility['id'] = $facility['id'] ?? (string) Str::uuid();
+
+                    return $facility;
+                })
                 ->values()
                 ->all();
         }
@@ -120,6 +126,7 @@ class AboutPageController extends Controller
         $facilities = $this->facilityItems($about);
 
         $facility = [
+            'id' => (string) Str::uuid(),
             'icon' => 'domain',
             'title' => $data['title'],
             'desc' => $data['desc'] ?? '',

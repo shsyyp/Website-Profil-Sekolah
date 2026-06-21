@@ -20,11 +20,29 @@ class HomepageController extends Controller
 
     public function update(Request $request)
     {
-        $data = $request->except(['_token', 'active_panel']);
-        $data['fasilitas'] = collect($request->input('fasilitas', []))
-            ->filter(fn ($index) => $index !== null && $index !== '')
-            ->map(fn ($index) => (int) $index)
-            ->unique()
+        $request->validate([
+            'selected_alumni_ids' => ['nullable', 'array', 'max:3'],
+            'selected_alumni_ids.*' => ['nullable', 'integer', 'distinct', 'exists:alumni,id'],
+            'cta_title' => ['nullable', 'string', 'max:255'],
+            'cta_desc' => ['nullable', 'string'],
+            'cta_secondary_button' => ['nullable', 'string', 'max:255'],
+            'cta_secondary_link' => ['nullable', 'string', 'max:2048'],
+            'cta_closed_message' => ['nullable', 'string', 'max:255'],
+        ], [
+            'selected_alumni_ids.*.distinct' => 'Alumni yang sama tidak boleh dipilih lebih dari satu kali.',
+            'selected_alumni_ids.*.exists' => 'Data alumni yang dipilih tidak ditemukan.',
+        ]);
+
+        $data = $request->except(['_token', 'active_panel', 'facility_selection']);
+        $availableFacilityIds = collect(AboutPage::first()?->facilities ?? [])
+            ->pluck('id')
+            ->filter()
+            ->map(fn ($id) => (string) $id);
+        $selectedFacilityIds = collect($request->input('facility_selection', []))
+            ->map(fn ($id) => (string) $id)
+            ->unique();
+        $data['fasilitas'] = $availableFacilityIds
+            ->filter(fn ($id) => $selectedFacilityIds->contains($id))
             ->take(4)
             ->values()
             ->all();
@@ -39,7 +57,6 @@ class HomepageController extends Controller
         $data['cta_deadline_at'] = $request->filled('cta_deadline_at')
             ? $request->input('cta_deadline_at')
             : null;
-        $data['cta_is_active'] = $request->boolean('cta_is_active');
         $homepage = Homepage::first();
 
         if ($request->hasFile('hero_image')) {

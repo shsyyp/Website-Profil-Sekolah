@@ -4,11 +4,12 @@
 
 @section('content')
 @php
-    $heroBreadcrumbLabel = $settings->hero_breadcrumb_label ?? 'Berita';
-    $heroTitle = str_replace('Warta', 'Berita', $settings->hero_title ?? 'Berita SMAN Pintar');
-    $heroDescription = $settings->hero_description ?? 'Menyajikan informasi terbaru seputar prestasi, kegiatan kesiswaan, dan pengumuman resmi dari lingkungan sekolah.';
-    $filterAllLabel = $settings->filter_all_label ?? 'Semua';
-    $searchPlaceholder = $settings->search_placeholder ?? 'Ketik kata kunci...';
+$heroBreadcrumbLabel = $settings->hero_breadcrumb_label ?? 'Berita';
+$heroTitle = str_replace('Warta', 'Berita', $settings->hero_title ?? 'Berita SMAN Pintar');
+$heroDescription = $settings->hero_description ?? 'Menyajikan informasi terbaru seputar prestasi, kegiatan kesiswaan,
+dan pengumuman resmi dari lingkungan sekolah.';
+$filterAllLabel = $settings->filter_all_label ?? 'Semua';
+$searchPlaceholder = $settings->search_placeholder ?? 'Cari berita...';
 @endphp
 
 <div class="pt-10 pb-20">
@@ -63,7 +64,8 @@
                     class="group bg-surface-container-lowest rounded-xl overflow-hidden hover:shadow-[0_20px_50px_rgba(0,53,127,0.1)] transition-all duration-500 flex flex-col h-full">
                     <a href="{{ route('berita.detail', $item) }}" class="relative overflow-hidden aspect-[16/10] block">
                         <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                            src="{{ $item->gambar ? asset('storage/' . $item->gambar) : 'https://lh3.googleusercontent.com/aida-public/AB6AXuAUSqq79Uw_F-kdwXiJyOEP54AMX5t94IDTF9iVSXlu5ZE84GXdTQL5-bp-VqtOqm-W51p5Se_xxjWGRbu9UJLxwk6d11z3HF2_py9UKO5L_0vt78jQXJz_lMAcS78Lkvjba-_lCrL5eZLY_lvjMZIaBjnDLZKrZdn3GmwNBWpfeQzR-gPu5mSkTuatXeW5SBJ4tAVFRAZCWIdnBjdFLEDMxuT1zg5wQG_AnkMtNVZFQclNLVPjCWvKoJk36vMmagZzbWSiDSAMjPnU' }}" alt="{{ $item->judul }}" />
+                            src="{{ $item->gambar ? asset('storage/' . $item->gambar) : 'https://lh3.googleusercontent.com/aida-public/AB6AXuAUSqq79Uw_F-kdwXiJyOEP54AMX5t94IDTF9iVSXlu5ZE84GXdTQL5-bp-VqtOqm-W51p5Se_xxjWGRbu9UJLxwk6d11z3HF2_py9UKO5L_0vt78jQXJz_lMAcS78Lkvjba-_lCrL5eZLY_lvjMZIaBjnDLZKrZdn3GmwNBWpfeQzR-gPu5mSkTuatXeW5SBJ4tAVFRAZCWIdnBjdFLEDMxuT1zg5wQG_AnkMtNVZFQclNLVPjCWvKoJk36vMmagZzbWSiDSAMjPnU' }}"
+                            alt="{{ $item->judul }}" />
                         <span
                             class="absolute top-4 left-4 bg-primary-container text-on-primary px-3 py-1 rounded-md text-xs font-bold tracking-wider uppercase">{{ $item->kategori }}</span>
                     </a>
@@ -86,7 +88,8 @@
                     </div>
                 </article>
                 @empty
-                <div class="md:col-span-2 bg-surface-container-lowest rounded-xl p-10 text-center text-on-surface-variant">
+                <div
+                    class="md:col-span-2 bg-surface-container-lowest rounded-xl p-10 text-center text-on-surface-variant">
                     Belum ada berita publish yang tersedia.
                 </div>
                 @endforelse

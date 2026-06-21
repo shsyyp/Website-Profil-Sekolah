@@ -15,7 +15,7 @@ $heroImage = $pmb?->hero_image
     <div class="max-w-7xl mx-auto px-8 grid md:grid-cols-2 gap-12 items-center">
         <div class="relative z-10">
             <span
-                class="inline-block px-4 py-1.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-semibold text-xs tracking-widest uppercase mb-6">{{ trim(str_replace('2025/2026', '', $pmb?->hero_badge ?? 'Penerimaan Siswa Baru')) }}</span>
+                class="inline-block px-4 py-1.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-semibold text-xs tracking-widest uppercase mb-6">{{ trim(str_ireplace(['2025/2026', 'Penerimaan Siswa Baru', 'PPDB'], ['', 'Penerimaan Murid Baru', 'PMB'], $pmb?->hero_badge ?? 'Penerimaan Murid Baru')) }}</span>
             <h1
                 class="font-headline text-5xl md:text-7xl font-extrabold text-primary leading-tight tracking-tighter mb-6">
                 {{ $pmb?->hero_title ?? 'Mulai Masa Depan Gemilang di SMAN Pintar' }}
@@ -150,8 +150,6 @@ $heroImage = $pmb?->hero_image
         <div class="text-center mb-16">
             <h2 class="font-headline text-4xl font-extrabold text-primary mb-4">
                 {{ $pmb?->timeline_title ?? 'Timeline Pendaftaran' }}</h2>
-            <p class="text-on-surface-variant">
-                {{ $pmb?->timeline_description ?? 'Pantau tanggal penting agar tidak terlewatkan.' }}</p>
         </div>
         <div class="overflow-x-auto">
             <table class="w-full text-left border-separate border-spacing-y-4">
@@ -189,20 +187,15 @@ $heroImage = $pmb?->hero_image
         <div class="text-center mb-16">
             <h2 class="font-headline text-4xl font-extrabold text-primary mb-4">
                 {{ $pmb?->faq_title ?? 'Pertanyaan Umum (FAQ)' }}</h2>
-            <p class="text-on-surface-variant">
-                {{ $pmb?->faq_description ?? 'Temukan jawaban cepat atas pertanyaan Anda.' }}</p>
         </div>
         <div class="space-y-4">
             @forelse ($faq as $item)
             <div class="bg-surface-container-low rounded-2xl overflow-hidden group" data-faq-item>
-                <button
-                    type="button"
+                <button type="button"
                     class="w-full px-8 py-6 text-left flex justify-between items-center hover:bg-surface-container transition-all"
-                    data-faq-toggle
-                    aria-expanded="false">
+                    data-faq-toggle aria-expanded="false">
                     <span class="font-bold text-lg text-primary">{{ $item->pertanyaan }}</span>
-                    <span
-                        class="material-symbols-outlined transition-transform" data-faq-icon>expand_more</span>
+                    <span class="material-symbols-outlined transition-transform" data-faq-icon>expand_more</span>
                 </button>
                 <div class="hidden px-8 pb-6 text-on-surface-variant leading-relaxed" data-faq-answer>
                     {{ $item->jawaban }}
@@ -220,18 +213,18 @@ $heroImage = $pmb?->hero_image
 </section>
 
 <script>
-    document.querySelectorAll('[data-faq-toggle]').forEach((button) => {
-        button.addEventListener('click', () => {
-            const item = button.closest('[data-faq-item]');
-            const answer = item?.querySelector('[data-faq-answer]');
-            const icon = item?.querySelector('[data-faq-icon]');
-            const isOpen = button.getAttribute('aria-expanded') === 'true';
+document.querySelectorAll('[data-faq-toggle]').forEach((button) => {
+    button.addEventListener('click', () => {
+        const item = button.closest('[data-faq-item]');
+        const answer = item?.querySelector('[data-faq-answer]');
+        const icon = item?.querySelector('[data-faq-icon]');
+        const isOpen = button.getAttribute('aria-expanded') === 'true';
 
-            button.setAttribute('aria-expanded', String(!isOpen));
-            answer?.classList.toggle('hidden', isOpen);
-            icon?.classList.toggle('rotate-180', !isOpen);
-        });
+        button.setAttribute('aria-expanded', String(!isOpen));
+        answer?.classList.toggle('hidden', isOpen);
+        icon?.classList.toggle('rotate-180', !isOpen);
     });
+});
 </script>
 
 {{-- CTA Akhir --}}
@@ -255,8 +248,7 @@ $heroImage = $pmb?->hero_image
                     {{ $pmb?->cta_description ?? 'Jangan lewatkan kesempatan untuk bergabung dengan komunitas pelajar terbaik. Pendaftaran akan ditutup dalam beberapa hari ke depan.' }}
                 </p>
                 <div class="flex flex-col sm:flex-row justify-center gap-6">
-                    <a href="{{ $pmb?->cta_secondary_link ?: route('pmb') }}"
-                        target="_blank"
+                    <a href="{{ $pmb?->cta_secondary_link ?: route('pmb') }}" target="_blank"
                         class="bg-white/10 backdrop-blur-md border border-white/20 text-white px-10 py-5 rounded-xl font-bold text-xl hover:bg-white/20 transition-all">
                         {{ $pmb?->cta_secondary_text ?? 'Hubungi Panitia' }}
                     </a>

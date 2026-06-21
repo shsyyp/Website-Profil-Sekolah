@@ -358,7 +358,7 @@ document.addEventListener('keydown', (event) => {
             </div>
             <div class="bg-white/10 backdrop-blur-md p-10 rounded-md border border-white/20 text-white text-center">
                 <div class="text-5xl font-black mb-2">{{ $homepage?->cta_year ?? '2025' }}</div>
-                <div class="text-sm font-bold uppercase tracking-widest opacity-80">{{ $homepage?->cta_badge ?? 'Batch Admission' }}</div>
+                <div class="text-sm font-bold uppercase tracking-widest opacity-80">Penerimaan Murid Baru</div>
                 @php
                     $ctaDeadlineIso = $homepage?->cta_deadline_at?->toIso8601String();
                 @endphp

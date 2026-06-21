@@ -73,15 +73,15 @@ $femalePercentage = $femaleBar . '%';
 </section>
 
 {{-- Highlights (Status, Metode, Layanan) --}}
-<section class="py-12 -mt-12 relative z-20 max-w-7xl mx-auto px-8">
+<section class="py-8 -mt-12 relative z-20 max-w-7xl mx-auto px-8">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         @foreach ($highlights as $index => $item)
         <div
-            class="bg-surface-container-lowest p-8 rounded-xl shadow-[0_24px_40px_rgba(25,27,34,0.04)] flex items-start gap-6 group hover:translate-y-[-4px] transition-all min-h-[150px]">
-            <div class="w-16 h-16 rounded-lg {{ $index === 0 ? 'bg-tertiary-container/20 text-tertiary' : ($index === 1 ? 'bg-primary-container/10 text-primary' : 'bg-secondary-container/30 text-secondary') }} flex shrink-0 items-center justify-center">
-                <span class="material-symbols-outlined text-3xl">{{ $item['icon'] ?? 'verified' }}</span>
+            class="bg-surface-container-lowest p-6 rounded-xl shadow-[0_24px_40px_rgba(25,27,34,0.04)] flex items-center gap-5 group hover:translate-y-[-4px] transition-all min-h-[112px]">
+            <div class="w-14 h-14 rounded-lg {{ $index === 0 ? 'bg-tertiary-container/20 text-tertiary' : ($index === 1 ? 'bg-primary-container/10 text-primary' : 'bg-secondary-container/30 text-secondary') }} flex shrink-0 items-center justify-center">
+                <span class="material-symbols-outlined text-2xl">{{ $item['icon'] ?? 'verified' }}</span>
             </div>
-            <div class="pt-2 text-left">
+            <div class="text-left">
                 <p class="{{ $index === 0 ? 'text-tertiary' : ($index === 1 ? 'text-primary' : 'text-secondary') }} text-xs font-bold uppercase tracking-widest mb-1">{{ $item['label'] ?? 'Status' }}</p>
                 <h3 class="text-xl font-bold font-headline">{{ $item['title'] ?? 'Akreditasi A' }}</h3>
             </div>

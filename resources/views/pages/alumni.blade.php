@@ -16,12 +16,20 @@
     #alumniPublicMap .leaflet-bottom {
         z-index: 10;
     }
+
+    .alumni-testimonial-scrollbar {
+        scrollbar-width: none;
+    }
+
+    .alumni-testimonial-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
 </style>
 @endpush
 
 {{-- Map Persebaran --}}
 <section class="pb-24 pt-10 max-w-7xl mx-auto px-8">
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12 pt-8 pb-10">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-6 pt-8">
         <div class="max-w-2xl">
             <h1 class="text-5xl font-extrabold font-headline tracking-tight text-primary">{{ $settings->map_title ?? 'Sebaran Alumni Global' }}</h1>
             <p class="text-on-surface-variant max-w-2xl mt-4 leading-relaxed">{{ $settings->map_description ?? 'Dari Riau untuk Dunia. Lihat bagaimana komunitas alumni kami berkembang di berbagai pusat ekonomi dan pendidikan global.' }}</p>
@@ -149,65 +157,63 @@
 @endpush
 
 {{-- Testimoni --}}
-<section class="py-24 overflow-hidden bg-primary relative">
-    <div class="absolute inset-0 opacity-10">
-        <div class="absolute top-0 left-0 w-full h-full"
-            style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 40px 40px;">
-        </div>
-    </div>
-    <div class="max-w-7xl mx-auto px-6 relative z-10">
-        <div class="flex flex-col items-center text-center">
-            <div class="w-full" data-alumni-testimonials>
-                @forelse($testimonialAlumni as $alumnus)
-                    @php
-                        $meta = collect([
-                            trim(collect([$alumnus->profesi, $alumnus->instansi])->filter()->join(', ')),
-                            $alumnus->tahun_lulus ? 'Class of ' . $alumnus->tahun_lulus : null,
-                        ])->filter()->join(' | ');
-                    @endphp
-                    <article class="{{ $loop->first ? '' : 'hidden' }}" data-alumni-testimonial>
-                        <img
-                            class="mx-auto mb-8 h-20 w-20 rounded-full border-4 border-white/20 object-cover shadow-2xl"
-                            src="{{ $alumnus->foto ? asset('storage/' . $alumnus->foto) : 'https://ui-avatars.com/api/?name=' . urlencode($alumnus->nama) . '&background=e9eef8&color=0b3f8a&bold=true' }}"
-                            alt="{{ $alumnus->nama }}">
-                        <div class="mx-auto max-w-4xl">
-                            <p class="text-2xl md:text-3xl font-medium text-white leading-relaxed mb-12">
-                                "{{ $alumnus->deskripsi ?: 'Bangga menjadi bagian dari keluarga besar SMAN Pintar Provinsi Riau.' }}"
-                            </p>
-                            <div class="flex flex-col items-center">
-                                <h5 class="text-white font-bold text-lg">{{ $alumnus->nama }}</h5>
-                                <p class="text-on-primary-container text-sm">{{ $meta }}</p>
-                            </div>
-                        </div>
-                    </article>
-                @empty
-                    <article data-alumni-testimonial>
-                        <img
-                            class="mx-auto mb-8 h-20 w-20 rounded-full border-4 border-white/20 object-cover shadow-2xl"
-                            src="https://ui-avatars.com/api/?name=Alumni+SMAN+Pintar&background=e9eef8&color=0b3f8a&bold=true"
-                            alt="Alumni SMAN Pintar">
-                        <div class="mx-auto max-w-4xl">
-                            <p class="text-2xl md:text-3xl font-medium text-white leading-relaxed mb-12">
-                                "{{ $settings->testimonial_quote ?? 'Bangga menjadi bagian dari keluarga besar SMAN Pintar Provinsi Riau.' }}"
-                            </p>
-                            <div class="flex flex-col items-center">
-                                <h5 class="text-white font-bold text-lg">{{ $settings->testimonial_name ?? 'Alumni SMAN Pintar' }}</h5>
-                                <p class="text-on-primary-container text-sm">{{ $settings->testimonial_meta ?? 'Komunitas Alumni' }}</p>
-                            </div>
-                        </div>
-                    </article>
-                @endforelse
+<section class="py-24 bg-surface-container">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14">
+            <div>
+                <p class="text-tertiary font-bold text-sm tracking-[0.2em] uppercase mb-4">Alumni</p>
+                <h2 class="text-3xl md:text-4xl font-black font-headline text-primary">Jejak Langkah Kesuksesan</h2>
             </div>
-            <div class="flex gap-4 mt-12">
+            <div class="flex items-center gap-3">
                 <button type="button" data-alumni-testimonial-prev
-                    class="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white/10 transition-colors">
+                    class="w-11 h-11 rounded-xl bg-surface-container-lowest text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors shadow-sm"
+                    aria-label="Testimoni sebelumnya">
                     <span class="material-symbols-outlined">chevron_left</span>
                 </button>
                 <button type="button" data-alumni-testimonial-next
-                    class="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white/10 transition-colors">
+                    class="w-11 h-11 rounded-xl bg-surface-container-lowest text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors shadow-sm"
+                    aria-label="Testimoni berikutnya">
                     <span class="material-symbols-outlined">chevron_right</span>
                 </button>
             </div>
+        </div>
+
+        <div data-alumni-testimonial-slider
+            class="alumni-testimonial-scrollbar flex gap-8 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4">
+            @forelse($testimonialAlumni as $alumnus)
+                <article class="min-w-[calc(100%_-_1rem)] sm:min-w-[420px] lg:min-w-[calc(33.333%_-_1.333rem)] snap-start bg-surface-container-lowest p-8 md:p-10 rounded-xl shadow-sm border-b-4 border-tertiary flex flex-col">
+                    <div class="flex items-center gap-4 mb-7">
+                        <img
+                            class="h-16 w-16 shrink-0 rounded-full border-4 border-surface-container object-cover"
+                            src="{{ $alumnus->foto ? asset('storage/' . $alumnus->foto) : 'https://ui-avatars.com/api/?name=' . urlencode($alumnus->nama) . '&background=e9eef8&color=0b3f8a&bold=true' }}"
+                            alt="{{ $alumnus->nama }}">
+                        <div>
+                            <h3 class="font-bold text-lg text-primary">{{ $alumnus->nama }}</h3>
+                            <p class="text-sm text-on-surface-variant">
+                                Alumni {{ $alumnus->tahun_lulus }}{{ $alumnus->profesi ? ' | ' . $alumnus->profesi : '' }}{{ $alumnus->instansi ? ', ' . $alumnus->instansi : '' }}
+                            </p>
+                        </div>
+                    </div>
+                    <p class="text-on-surface-variant italic text-lg leading-relaxed">
+                        "{{ $alumnus->deskripsi ?: 'Bangga menjadi bagian dari keluarga besar SMAN Pintar Provinsi Riau.' }}"
+                    </p>
+                </article>
+            @empty
+                <article class="min-w-full snap-start bg-surface-container-lowest p-10 rounded-xl shadow-sm border-b-4 border-tertiary">
+                    <div class="flex items-center gap-4 mb-7">
+                        <img class="h-16 w-16 rounded-full border-4 border-surface-container object-cover"
+                            src="https://ui-avatars.com/api/?name=Alumni+SMAN+Pintar&background=e9eef8&color=0b3f8a&bold=true"
+                            alt="Alumni SMAN Pintar">
+                        <div>
+                            <h3 class="font-bold text-lg text-primary">{{ $settings->testimonial_name ?? 'Alumni SMAN Pintar' }}</h3>
+                            <p class="text-sm text-on-surface-variant">{{ $settings->testimonial_meta ?? 'Komunitas Alumni' }}</p>
+                        </div>
+                    </div>
+                    <p class="text-on-surface-variant italic text-lg leading-relaxed">
+                        "{{ $settings->testimonial_quote ?? 'Bangga menjadi bagian dari keluarga besar SMAN Pintar Provinsi Riau.' }}"
+                    </p>
+                </article>
+            @endforelse
         </div>
     </div>
 </section>
@@ -215,44 +221,54 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const slides = Array.from(document.querySelectorAll('[data-alumni-testimonial]'));
+        const slider = document.querySelector('[data-alumni-testimonial-slider]');
         const previousButton = document.querySelector('[data-alumni-testimonial-prev]');
         const nextButton = document.querySelector('[data-alumni-testimonial-next]');
-        let activeIndex = 0;
 
-        if (!slides.length) {
+        if (!slider) {
             return;
         }
 
-        const showSlide = (index) => {
-            activeIndex = (index + slides.length) % slides.length;
-            slides.forEach((slide, slideIndex) => {
-                slide.classList.toggle('hidden', slideIndex !== activeIndex);
-            });
+        const scrollTestimonials = (direction) => {
+            const card = slider.querySelector('.snap-start');
+            const gap = 32;
+            const distance = card ? card.getBoundingClientRect().width + gap : slider.clientWidth;
+            slider.scrollBy({ left: direction * distance, behavior: 'smooth' });
         };
 
-        previousButton?.addEventListener('click', () => showSlide(activeIndex - 1));
-        nextButton?.addEventListener('click', () => showSlide(activeIndex + 1));
+        previousButton?.addEventListener('click', () => scrollTestimonials(-1));
+        nextButton?.addEventListener('click', () => scrollTestimonials(1));
     });
 </script>
 @endpush
 
 {{-- CTA Section --}}
-<section class="py-24 max-w-7xl mx-auto px-6">
-    <div
-        class="relative bg-surface-container-high rounded-[2rem] p-12 md:p-20 overflow-hidden flex flex-col items-center text-center">
-        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-tertiary/10 rounded-full blur-3xl"></div>
-        <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-primary/10 rounded-full blur-3xl"></div>
-
-        <h2 class="text-4xl md:text-5xl font-extrabold text-primary tracking-tight mb-6">{{ $settings->cta_title ?? 'Jadilah Bagian dari Alumni Hebat Kami' }}</h2>
-        <p class="text-lg text-on-surface-variant max-w-2xl mb-12">{{ $settings->cta_description ?? 'Lanjutkan legacy keunggulan ini. Apakah Anda calon siswa yang ambisius atau alumni yang ingin kembali berkontribusi?' }}</p>
-
-        <div class="flex flex-col sm:flex-row gap-6 relative z-10">
-            <a href="{{ $settings->cta_secondary_link ?? '#' }}"
-                class="bg-primary text-on-primary px-10 py-4 rounded-xl font-bold text-lg hover:scale-105 transition-all shadow-lg flex items-center gap-3">
-                {{ $settings->cta_secondary_text ?? 'Gabung Alumni' }}
-                <span class="material-symbols-outlined">person_add</span>
-            </a>
+<section class="py-24">
+    <div class="max-w-7xl mx-auto px-8">
+        <div
+            class="bg-gradient-to-br from-primary via-primary-container to-blue-900 rounded-[3rem] p-12 md:p-24 text-center text-white relative overflow-hidden shadow-2xl">
+            <div class="absolute top-0 left-0 w-full h-full opacity-10">
+                <svg class="w-full h-full" viewBox="0 0 100 100" aria-hidden="true">
+                    <pattern height="10" id="alumni-grid" patternUnits="userSpaceOnUse" width="10">
+                        <path d="M 10 0 L 0 0 0 10" fill="none" stroke="white" stroke-width="0.5"></path>
+                    </pattern>
+                    <rect fill="url(#alumni-grid)" height="100" width="100"></rect>
+                </svg>
+            </div>
+            <div class="relative z-10">
+                <h2 class="font-headline text-4xl md:text-6xl font-extrabold mb-8 tracking-tighter">
+                    {{ $settings->cta_title ?? 'Jadilah Bagian dari Alumni Hebat Kami' }}
+                </h2>
+                <p class="text-xl text-primary-fixed mb-12 max-w-2xl mx-auto opacity-90 leading-relaxed">
+                    {{ $settings->cta_description ?? 'Lanjutkan legacy keunggulan ini. Apakah Anda calon siswa yang ambisius atau alumni yang ingin kembali berkontribusi?' }}
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center gap-6">
+                    <a href="{{ $settings->cta_secondary_link ?? '#' }}"
+                        class="bg-white/10 backdrop-blur-md border border-white/20 text-white px-10 py-5 rounded-xl font-bold text-xl hover:bg-white/20 transition-all">
+                        {{ $settings->cta_secondary_text ?? 'Gabung Alumni' }}
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </section>

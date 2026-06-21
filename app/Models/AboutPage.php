@@ -24,6 +24,7 @@ class AboutPage extends Model
         'class_count',
         'educator_count',
         'staff_count',
+        'staff_profile_description',
         'dedication_number',
         'dedication_label',
         'vision_mission_title',

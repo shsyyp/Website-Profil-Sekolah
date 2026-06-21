@@ -126,7 +126,7 @@ $femalePercentage = $femaleBar . '%';
                 <p class="mt-5 text-4xl font-extrabold font-headline text-on-surface">{{ $classCount }}</p>
             </div>
             <div class="sm:col-span-2 bg-surface-container-lowest rounded-xl border border-slate-100 p-6 shadow-[0_24px_40px_rgba(25,27,34,0.04)]">
-                <p class="mb-6 text-sm font-bold uppercase tracking-widest text-secondary">Perbandingan Siswa</p>
+                <p class="mb-6 text-sm font-bold uppercase tracking-widest text-secondary">Komposisi Peserta Didik</p>
                 <div class="space-y-5">
                     <div>
                         <div class="mb-2 flex items-center justify-between text-sm font-bold">
@@ -151,8 +151,8 @@ $femalePercentage = $femaleBar . '%';
         </div>
         <div class="bg-primary text-on-primary rounded-xl p-8 shadow-[0_24px_40px_rgba(25,27,34,0.08)]">
             <p class="text-tertiary-fixed font-bold text-sm tracking-[0.2em] uppercase mb-4">Profil SDM</p>
-            <h3 class="text-2xl font-extrabold font-headline leading-tight mb-5">Tenaga pendidik dan kependidikan profesional</h3>
-            <p class="text-on-primary/75 leading-relaxed">Kegiatan belajar didampingi guru, tenaga kependidikan, dan tim layanan sekolah yang bekerja terpadu untuk mendukung perkembangan akademik, karakter, dan keseharian siswa.</p>
+            <h3 class="text-2xl font-extrabold font-headline leading-tight mb-5">Tenaga Pendidik dan Tenaga Kependidikan Profesional</h3>
+            <p class="text-on-primary/75 leading-relaxed">{{ $about?->staff_profile_description ?? 'Kegiatan belajar didampingi guru, tenaga kependidikan, dan tim layanan sekolah yang bekerja terpadu untuk mendukung perkembangan akademik, karakter, dan keseharian siswa.' }}</p>
             <div class="mt-8 grid grid-cols-2 gap-4">
                 <div class="rounded-lg bg-white/10 p-4">
                     <p class="text-3xl font-extrabold font-headline">{{ $educatorCount }}</p>
@@ -177,26 +177,23 @@ $femalePercentage = $femaleBar . '%';
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <div
                 class="bg-surface-container-lowest p-10 rounded-2xl shadow-[0_24px_40px_rgba(25,27,34,0.04)] border-l-8 border-primary">
-                <div class="flex items-center gap-4 mb-6">
-                    <span class="material-symbols-outlined text-4xl text-primary">visibility</span>
+                <div class="mb-6">
                     <h3 class="text-2xl font-extrabold font-headline uppercase tracking-tight">Visi</h3>
                 </div>
-                <p class="text-xl font-medium leading-relaxed italic text-primary/80">"{{ $about?->vision ?? 'Menjadi institusi pendidikan model yang unggul dalam prestasi akademik, berwawasan teknologi global, serta berakar kuat pada nilai-nilai karakter bangsa.' }}"</p>
+                <p class="text-xl font-medium leading-relaxed text-primary/80">{{ $about?->vision ?? 'Menjadi institusi pendidikan model yang unggul dalam prestasi akademik, berwawasan teknologi global, serta berakar kuat pada nilai-nilai karakter bangsa.' }}</p>
             </div>
             <div
                 class="bg-surface-container-lowest p-10 rounded-2xl shadow-[0_24px_40px_rgba(25,27,34,0.04)] border-l-8 border-tertiary">
-                <div class="flex items-center gap-4 mb-6">
-                    <span class="material-symbols-outlined text-4xl text-tertiary">flag</span>
+                <div class="mb-6">
                     <h3 class="text-2xl font-extrabold font-headline uppercase tracking-tight">Misi</h3>
                 </div>
-                <ul class="space-y-4">
+                <ol class="list-decimal space-y-4 pl-6 marker:font-bold marker:text-tertiary">
                     @foreach ($missions as $mission)
-                    <li class="flex items-start gap-4">
-                        <span class="material-symbols-outlined text-tertiary shrink-0 mt-1">check_circle</span>
-                        <p class="text-on-surface-variant font-medium">{{ $mission }}</p>
+                    <li class="pl-2 text-on-surface-variant font-medium leading-relaxed">
+                        {{ $mission }}
                     </li>
                     @endforeach
-                </ul>
+                </ol>
             </div>
         </div>
     </div>

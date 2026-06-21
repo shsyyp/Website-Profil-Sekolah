@@ -25,7 +25,7 @@
             <div>
                 <label class="text-xs font-bold uppercase text-tertiary block mb-2">Deskripsi</label>
                 <textarea name="desc" rows="7"
-                    class="w-full bg-surface-container border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary">{{ old('desc', data_get($extracurricular, 'desc')) }}</textarea>
+                    class="w-full bg-surface-container border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary" required>{{ old('desc', data_get($extracurricular, 'desc')) }}</textarea>
                 @error('desc') <span class="text-error text-xs">{{ $message }}</span> @enderror
             </div>
 

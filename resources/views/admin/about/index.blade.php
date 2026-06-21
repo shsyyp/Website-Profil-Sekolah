@@ -56,8 +56,6 @@ if ($facilityItems->isEmpty()) {
     $facilityItems = collect($defaultFacilities);
 }
 
-$facilitySlots = $facilityItems->count();
-
 $extracurricularItems = collect($about->extracurriculars ?? [])
     ->filter(fn ($item) => ($item['title'] ?? null) || ($item['desc'] ?? null) || ($item['icon'] ?? null))
     ->values();
@@ -66,64 +64,54 @@ if ($extracurricularItems->isEmpty()) {
     $extracurricularItems = collect($defaultExtracurriculars);
 }
 
-$extracurricularSlots = $extracurricularItems->count();
-
 $components = [
     [
         'id' => 'hero-profile-section',
         'icon' => 'account_balance',
         'title' => 'Hero & Profil',
-        'meta' => $about->profile_label ?? 'Ekselerasi Pendidikan',
-        'content' => $about->profile_title ?? 'Mencetak Generasi Unggul Riau',
+        'content' => 'Mengatur banner dan profil sekolah',
     ],
     [
         'id' => 'school-profile-section',
         'icon' => 'groups',
         'title' => 'Data Sekolah & SDM',
-        'meta' => (($about->male_student_count ?? 168) + ($about->female_student_count ?? 182)) . ' siswa',
-        'content' => ($about->class_count ?? 12) . ' kelas, ' . ($about->educator_count ?? 42) . ' pendidik, ' . ($about->staff_count ?? 18) . ' tenaga kependidikan',
+        'content' => 'Mengatur statistik siswa, kelas, dan tenaga pendidik',
     ],
     [
         'id' => 'highlight-section',
         'icon' => 'verified',
-        'title' => 'Highlight Atas',
-        'meta' => '3 highlight utama',
-        'content' => collect(range(0, 2))->map(fn ($i) => data_get($about->highlights, $i . '.title') ?? $defaultHighlights[$i]['title'])->implode(', '),
+        'title' => 'Highlight Profil',
+        'content' => 'Mengatur informasi singkat yang ditampilkan di bagian atas',
     ],
     [
         'id' => 'vision-section',
         'icon' => 'flag',
         'title' => 'Visi & Misi',
-        'meta' => count($about->missions ?? $defaultMissions) . ' misi',
-        'content' => $about->vision_mission_title ?? 'Visi & Misi Kami',
+        'content' => 'Mengatur visi dan misi sekolah',
     ],
     [
         'id' => 'facilities-section',
         'icon' => 'domain',
-        'title' => 'Fasilitas',
-        'meta' => 'Pengaturan section',
-        'content' => $about->facilities_title ?? 'Fasilitas Unggulan',
+        'title' => 'Section Fasilitas',
+        'content' => 'Mengatur judul dan label fasilitas unggulan',
     ],
     [
         'id' => 'facility-management-section',
         'icon' => 'inventory_2',
-        'title' => 'Manajemen Fasilitas',
-        'meta' => $facilitySlots . ' data fasilitas',
-        'content' => 'Kelola daftar fasilitas yang ditampilkan di halaman Tentang Kami dan Beranda.',
+        'title' => 'Daftar Fasilitas',
+        'content' => 'Mengelola fasilitas yang ditampilkan pada website',
     ],
     [
         'id' => 'extracurricular-section',
         'icon' => 'groups',
-        'title' => 'Ekstrakurikuler',
-        'meta' => 'Pengaturan section',
-        'content' => $about->extracurricular_title ?? 'Ekstrakurikuler Pilihan',
+        'title' => 'Section Ekstrakurikuler',
+        'content' => 'Mengatur judul dan deskripsi ekstrakurikuler',
     ],
     [
         'id' => 'extracurricular-management-section',
         'icon' => 'list_alt',
-        'title' => 'Manajemen Ekstrakurikuler',
-        'meta' => $extracurricularSlots . ' data ekstrakurikuler',
-        'content' => 'Kelola daftar ekstrakurikuler yang ditampilkan di halaman Tentang Kami.',
+        'title' => 'Daftar Ekstrakurikuler',
+        'content' => 'Mengelola daftar ekstrakurikuler yang ditampilkan',
     ],
 ];
 @endphp
@@ -147,6 +135,17 @@ $components = [
     <div class="bg-emerald-50 text-emerald-600 p-4 rounded-xl font-bold flex items-center gap-2 shadow-sm border border-emerald-100">
         <span class="material-symbols-outlined">check_circle</span>
         {{ session('success') }}
+    </div>
+    @endif
+
+    @if($errors->any())
+    <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-red-700">
+        <p class="font-bold">Form belum dapat disimpan. Periksa kembali kolom berikut:</p>
+        <ul class="mt-2 list-disc space-y-1 pl-5 text-sm">
+            @foreach($errors->all() as $error)
+            <li>{{ $error }}</li>
+            @endforeach
+        </ul>
     </div>
     @endif
 
@@ -263,31 +262,31 @@ $components = [
                 </button>
             </summary>
             <div class="space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                        <div>
+                            <label>Deskripsi Profil SDM</label>
+                            <textarea name="staff_profile_description" rows="3"
+                                placeholder="Tuliskan deskripsi singkat tentang tenaga pendidik dan kependidikan.">{{ old('staff_profile_description', $about->staff_profile_description ?? 'Kegiatan belajar didampingi guru, tenaga kependidikan, dan tim layanan sekolah yang bekerja terpadu untuk mendukung perkembangan akademik, karakter, dan keseharian siswa.') }}</textarea>
+                        </div>
                     <div>
                         <label>Jumlah Siswa Laki-laki</label>
-                        <input name="male_student_count" type="number" min="0" placeholder="Contoh: 168" value="{{ $about->male_student_count ?? 168 }}">
+                        <input name="male_student_count" type="number" min="0" placeholder="Contoh: 168" value="{{ old('male_student_count', $about->male_student_count ?? 168) }}">
                     </div>
                     <div>
                         <label>Jumlah Siswa Perempuan</label>
-                        <input name="female_student_count" type="number" min="0" placeholder="Contoh: 182" value="{{ $about->female_student_count ?? 182 }}">
+                        <input name="female_student_count" type="number" min="0" placeholder="Contoh: 182" value="{{ old('female_student_count', $about->female_student_count ?? 182) }}">
                     </div>
                     <div>
                         <label>Total Kelas</label>
-                        <input name="class_count" type="number" min="0" placeholder="Contoh: 12" value="{{ $about->class_count ?? 12 }}">
+                        <input name="class_count" type="number" min="0" placeholder="Contoh: 12" value="{{ old('class_count', $about->class_count ?? 12) }}">
                     </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label>Jumlah Tenaga Pendidik</label>
-                        <input name="educator_count" type="number" min="0" placeholder="Contoh: 42" value="{{ $about->educator_count ?? 42 }}">
+                        <input name="educator_count" type="number" min="0" placeholder="Contoh: 42" value="{{ old('educator_count', $about->educator_count ?? 42) }}">
                     </div>
                     <div>
                         <label>Jumlah Tenaga Kependidikan</label>
-                        <input name="staff_count" type="number" min="0" placeholder="Contoh: 18" value="{{ $about->staff_count ?? 18 }}">
+                        <input name="staff_count" type="number" min="0" placeholder="Contoh: 18" value="{{ old('staff_count', $about->staff_count ?? 18) }}">
                     </div>
-                </div>
             </div>
         </details>
 
@@ -295,7 +294,7 @@ $components = [
             <summary class="list-none flex items-center justify-between gap-4">
                 <div>
                     <span>Component 03</span>
-                    <h3 class="font-headline text-primary">Highlight Atas</h3>
+                    <h3 class="font-headline text-primary">Highlight Profil</h3>
                 </div>
                 <button type="button" data-about-back class="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors">
                     <span class="material-symbols-outlined text-[18px]">arrow_back</span>
@@ -354,7 +353,7 @@ $components = [
             <summary class="list-none flex items-center justify-between gap-4">
                 <div>
                     <span>Component 05</span>
-                    <h3 class="font-headline text-primary">Fasilitas</h3>
+                    <h3 class="font-headline text-primary">Section Fasilitas</h3>
                 </div>
                 <button type="button" data-about-back class="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors">
                     <span class="material-symbols-outlined text-[18px]">arrow_back</span>
@@ -381,7 +380,7 @@ $components = [
             <summary class="list-none flex items-center justify-between gap-4">
                 <div>
                     <span>Component 06</span>
-                    <h3 class="font-headline text-primary">Manajemen Fasilitas</h3>
+                    <h3 class="font-headline text-primary">Daftar Fasilitas</h3>
                 </div>
                 <div class="flex items-center gap-3">
                     <button type="button" data-about-back class="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors">
@@ -404,7 +403,6 @@ $components = [
                                     <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">No</th>
                                     <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Fasilitas</th>
                                     <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Ringkasan</th>
-                                    <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Status</th>
                                     <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">Aksi</th>
                                 </tr>
                             </thead>
@@ -425,11 +423,6 @@ $components = [
                                         <p class="max-w-xl text-sm text-on-surface-variant font-medium leading-relaxed line-clamp-2">
                                             {{ data_get($facility, 'desc') }}
                                         </p>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span class="flex items-center gap-1.5 text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full w-fit">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Aktif
-                                        </span>
                                     </td>
                                     <td class="px-8 py-4">
                                         <div class="flex items-center justify-end gap-2">
@@ -458,7 +451,7 @@ $components = [
             <summary class="list-none flex items-center justify-between gap-4">
                 <div>
                     <span>Component 07</span>
-                    <h3 class="font-headline text-primary">Ekstrakurikuler</h3>
+                    <h3 class="font-headline text-primary">Section Ekstrakurikuler</h3>
                 </div>
                 <button type="button" data-about-back class="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors">
                     <span class="material-symbols-outlined text-[18px]">arrow_back</span>
@@ -486,7 +479,7 @@ $components = [
             <summary class="list-none flex items-center justify-between gap-4">
                 <div>
                     <span>Component 08</span>
-                    <h3 class="font-headline text-primary">Manajemen Ekstrakurikuler</h3>
+                    <h3 class="font-headline text-primary">Daftar Ekstrakurikuler</h3>
                 </div>
                 <div class="flex items-center gap-3">
                     <button type="button" data-about-back class="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors">
@@ -509,7 +502,6 @@ $components = [
                                     <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">No</th>
                                     <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Ekstrakurikuler</th>
                                     <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Ringkasan</th>
-                                    <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Status</th>
                                     <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">Aksi</th>
                                 </tr>
                             </thead>
@@ -530,11 +522,6 @@ $components = [
                                         <p class="max-w-xl text-sm text-on-surface-variant font-medium leading-relaxed line-clamp-2">
                                             {{ data_get($item, 'desc') }}
                                         </p>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span class="flex items-center gap-1.5 text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full w-fit">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Aktif
-                                        </span>
                                     </td>
                                     <td class="px-8 py-4">
                                         <div class="flex items-center justify-end gap-2">
@@ -587,12 +574,33 @@ $components = [
 @endforeach
 
 <script>
+const aboutRequiredFields = [
+    'profile_title', 'profile_paragraph_1', 'profile_paragraph_2',
+    'staff_profile_description', 'male_student_count', 'female_student_count',
+    'class_count', 'educator_count', 'staff_count', 'vision_mission_title',
+    'vision', 'missions_text', 'facilities_label', 'facilities_title',
+    'extracurricular_title', 'extracurricular_desc'
+];
+
+const aboutRequiredElements = aboutRequiredFields
+    .flatMap((name) => Array.from(document.getElementsByName(name)))
+    .concat(Array.from(document.querySelectorAll('input:not([type="hidden"])[name^="highlights["]')));
+
+function updateAboutRequiredFields(activePanel = null) {
+    aboutRequiredElements.forEach((field) => {
+        field.required = Boolean(activePanel?.contains(field));
+    });
+}
+
+updateAboutRequiredFields();
+
 const aboutOverview = document.getElementById('about-overview');
 const aboutEditors = document.getElementById('about-editors');
 const aboutPanels = document.querySelectorAll('[data-about-panel]');
 const activeAboutPanelInput = document.getElementById('activeAboutPanelInput');
 
 function showAboutOverview() {
+    updateAboutRequiredFields();
     aboutEditors.classList.add('hidden');
     aboutOverview.classList.remove('hidden');
     aboutPanels.forEach((panel) => panel.classList.add('hidden'));
@@ -608,6 +616,8 @@ function showAboutEditor(panelId) {
     if (!target) {
         return;
     }
+
+    updateAboutRequiredFields(target);
 
     aboutOverview.classList.add('hidden');
     aboutEditors.classList.remove('hidden');
@@ -645,6 +655,10 @@ showAboutEditor('extracurricular-management-section');
 
 @if(session('open_about_panel'))
 showAboutEditor(@json(session('open_about_panel')));
+@endif
+
+@if($errors->any() && old('active_panel'))
+showAboutEditor(@json(old('active_panel')));
 @endif
 
 @if(in_array(request('panel'), ['facility-management-section', 'extracurricular-management-section'], true))

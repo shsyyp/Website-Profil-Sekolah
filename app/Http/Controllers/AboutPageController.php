@@ -66,6 +66,43 @@ class AboutPageController extends Controller
 
     public function update(Request $request)
     {
+        $rules = [
+            'profile_title' => ['required', 'string', 'max:255'],
+            'profile_paragraph_1' => ['required', 'string'],
+            'profile_paragraph_2' => ['required', 'string'],
+            'hero_image' => ['nullable', 'image', 'max:4096'],
+            'profile_image' => ['nullable', 'image', 'max:4096'],
+            'staff_profile_description' => ['required', 'string'],
+            'male_student_count' => ['required', 'integer', 'min:0'],
+            'female_student_count' => ['required', 'integer', 'min:0'],
+            'class_count' => ['required', 'integer', 'min:0'],
+            'educator_count' => ['required', 'integer', 'min:0'],
+            'staff_count' => ['required', 'integer', 'min:0'],
+            'highlights' => ['required', 'array', 'size:3'],
+            'highlights.*.label' => ['required', 'string', 'max:255'],
+            'highlights.*.title' => ['required', 'string', 'max:255'],
+            'vision_mission_title' => ['required', 'string', 'max:255'],
+            'vision' => ['required', 'string'],
+            'missions_text' => ['required', 'string'],
+            'facilities_label' => ['required', 'string', 'max:255'],
+            'facilities_title' => ['required', 'string', 'max:255'],
+            'extracurricular_title' => ['required', 'string', 'max:255'],
+            'extracurricular_desc' => ['required', 'string'],
+        ];
+        $fieldsByPanel = [
+            'hero-profile-section' => ['profile_title', 'profile_paragraph_1', 'profile_paragraph_2', 'hero_image', 'profile_image'],
+            'school-profile-section' => ['staff_profile_description', 'male_student_count', 'female_student_count', 'class_count', 'educator_count', 'staff_count'],
+            'highlight-section' => ['highlights', 'highlights.*.label', 'highlights.*.title'],
+            'vision-section' => ['vision_mission_title', 'vision', 'missions_text'],
+            'facilities-section' => ['facilities_label', 'facilities_title'],
+            'extracurricular-section' => ['extracurricular_title', 'extracurricular_desc'],
+        ];
+        $rules = array_intersect_key($rules, array_flip($fieldsByPanel[$request->input('active_panel')] ?? []));
+
+        $request->validate($rules, [
+            'required' => 'Kolom :attribute wajib diisi.',
+        ]);
+
         $data = $request->except(['_token', 'facility_images', 'missions_text', 'active_panel']);
         $about = AboutPage::first();
         $data['missions'] = collect(preg_split('/\r\n|\r|\n/', (string) $request->input('missions_text', '')))
@@ -118,7 +155,7 @@ class AboutPageController extends Controller
     {
         $data = $request->validate([
             'title' => ['required', 'string', 'max:255'],
-            'desc' => ['nullable', 'string'],
+            'desc' => ['required', 'string'],
             'image' => ['nullable', 'image', 'max:2048'],
         ]);
 
@@ -162,7 +199,7 @@ class AboutPageController extends Controller
     {
         $data = $request->validate([
             'title' => ['required', 'string', 'max:255'],
-            'desc' => ['nullable', 'string'],
+            'desc' => ['required', 'string'],
             'image' => ['nullable', 'image', 'max:2048'],
         ]);
 
@@ -211,7 +248,7 @@ class AboutPageController extends Controller
         $data = $request->validate([
             'icon' => ['nullable', 'string', 'max:100'],
             'title' => ['required', 'string', 'max:255'],
-            'desc' => ['nullable', 'string'],
+            'desc' => ['required', 'string'],
         ]);
 
         $about = $this->aboutPage();
@@ -248,7 +285,7 @@ class AboutPageController extends Controller
         $data = $request->validate([
             'icon' => ['nullable', 'string', 'max:100'],
             'title' => ['required', 'string', 'max:255'],
-            'desc' => ['nullable', 'string'],
+            'desc' => ['required', 'string'],
         ]);
 
         $about = $this->aboutPage();

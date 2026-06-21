@@ -20,15 +20,62 @@ class HomepageController extends Controller
 
     public function update(Request $request)
     {
-        $request->validate([
+        $rules = [
+            'hero_title' => ['required', 'string', 'max:255'],
+            'hero_subtitle' => ['required', 'string'],
+            'hero_image' => ['nullable', 'image', 'max:4096'],
+            'success_title' => ['required', 'string', 'max:255'],
+            'success_desc' => ['required', 'string'],
+            'success_image' => ['nullable', 'image', 'max:4096'],
+            'about_title' => ['required', 'string', 'max:255'],
+            'about_desc' => ['required', 'string'],
+            'accreditation_title' => ['required', 'string', 'max:255'],
+            'accreditation_desc' => ['required', 'string', 'max:255'],
+            'tradisi' => ['required', 'array', 'size:4'],
+            'tradisi.*.title' => ['required', 'string', 'max:255'],
+            'tradisi.*.desc' => ['required', 'string'],
+            'facilities_title' => ['required', 'string', 'max:255'],
+            'facilities_subtitle' => ['required', 'string'],
+            'news_title' => ['required', 'string', 'max:255'],
+            'news_subtitle' => ['required', 'string'],
+            'news_limit' => ['required', 'integer', 'in:3,4,6'],
+            'alumni_label' => ['required', 'string', 'max:255'],
+            'alumni_title' => ['required', 'string', 'max:255'],
             'selected_alumni_ids' => ['nullable', 'array', 'max:3'],
             'selected_alumni_ids.*' => ['nullable', 'integer', 'distinct', 'exists:alumni,id'],
-            'cta_title' => ['nullable', 'string', 'max:255'],
-            'cta_desc' => ['nullable', 'string'],
-            'cta_secondary_button' => ['nullable', 'string', 'max:255'],
-            'cta_secondary_link' => ['nullable', 'string', 'max:2048'],
-            'cta_closed_message' => ['nullable', 'string', 'max:255'],
-        ], [
+            'cta_title' => ['required', 'string', 'max:255'],
+            'cta_desc' => ['required', 'string'],
+            'cta_secondary_button' => ['required', 'string', 'max:255'],
+            'cta_secondary_link' => ['required', 'string', 'max:2048'],
+            'cta_year' => ['required', 'string', 'max:20'],
+            'cta_deadline_at' => ['required', 'date'],
+            'cta_closed_message' => ['required', 'string', 'max:255'],
+            'site_name' => ['required', 'string', 'max:255'],
+            'footer_desc' => ['required', 'string'],
+            'footer_whatsapp_url' => ['nullable', 'url:http,https', 'max:2048'],
+            'footer_instagram_url' => ['nullable', 'url:http,https', 'max:2048'],
+            'footer_facebook_url' => ['nullable', 'url:http,https', 'max:2048'],
+            'footer_youtube_url' => ['nullable', 'url:http,https', 'max:2048'],
+            'footer_address' => ['required', 'string', 'max:500'],
+            'footer_email' => ['required', 'email', 'max:255'],
+            'footer_phone' => ['required', 'string', 'max:50'],
+            'footer_operational_hours' => ['required', 'string'],
+            'footer_copyright' => ['required', 'string', 'max:255'],
+            'footer_note' => ['required', 'string', 'max:255'],
+        ];
+        $fieldsByPanel = [
+            'hero-section' => ['hero_title', 'hero_subtitle', 'hero_image', 'success_title', 'success_desc', 'success_image'],
+            'tradisi-section' => ['about_title', 'about_desc', 'accreditation_title', 'accreditation_desc', 'tradisi', 'tradisi.*.title', 'tradisi.*.desc'],
+            'fasilitas-section' => ['facilities_title', 'facilities_subtitle'],
+            'berita-section' => ['news_title', 'news_subtitle', 'news_limit'],
+            'alumni-section' => ['alumni_label', 'alumni_title', 'selected_alumni_ids', 'selected_alumni_ids.*'],
+            'cta-section' => ['cta_title', 'cta_desc', 'cta_secondary_button', 'cta_secondary_link', 'cta_year', 'cta_deadline_at', 'cta_closed_message'],
+            'footer-section' => ['site_name', 'footer_desc', 'footer_whatsapp_url', 'footer_instagram_url', 'footer_facebook_url', 'footer_youtube_url', 'footer_address', 'footer_email', 'footer_phone', 'footer_operational_hours', 'footer_copyright', 'footer_note'],
+        ];
+        $rules = array_intersect_key($rules, array_flip($fieldsByPanel[$request->input('active_panel')] ?? []));
+
+        $request->validate($rules, [
+            'required' => 'Kolom :attribute wajib diisi.',
             'selected_alumni_ids.*.distinct' => 'Alumni yang sama tidak boleh dipilih lebih dari satu kali.',
             'selected_alumni_ids.*.exists' => 'Data alumni yang dipilih tidak ditemukan.',
         ]);

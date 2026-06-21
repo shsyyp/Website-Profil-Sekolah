@@ -118,6 +118,17 @@ $components = [
     </div>
     @endif
 
+    @if($errors->any())
+    <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-red-700">
+        <p class="font-bold">Form belum dapat disimpan. Periksa kembali kolom berikut:</p>
+        <ul class="mt-2 list-disc space-y-1 pl-5 text-sm">
+            @foreach($errors->all() as $error)
+            <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
+
     <div id="component-overview" class="space-y-10">
         <section>
             <h2 class="text-4xl font-extrabold text-primary tracking-tight font-headline">Beranda</h2>
@@ -178,7 +189,7 @@ $components = [
                 <div>
                     <span class="text-xs font-bold text-tertiary uppercase tracking-widest mb-1 block">Component
                         01</span>
-                    <h3 class="text-2xl font-headline font-extrabold text-primary">Hero Section</h3>
+                    <h3 class="text-2xl font-headline font-extrabold text-primary">Hero Beranda</h3>
                 </div>
                 <div class="flex items-center gap-3">
                     <button type="submit" data-save-editor
@@ -257,7 +268,7 @@ $components = [
                 <div>
                     <span class="text-xs font-bold text-tertiary uppercase tracking-widest mb-1 block">Component
                         02</span>
-                    <h3 class="text-2xl font-headline font-extrabold text-primary">Keunggulan</h3>
+                    <h3 class="text-2xl font-headline font-extrabold text-primary">Keunggulan Sekolah</h3>
                 </div>
                 <div class="flex items-center gap-3">
                     <button type="submit" data-save-editor
@@ -432,7 +443,7 @@ $components = [
                 <div>
                     <span class="text-xs font-bold text-tertiary uppercase tracking-widest mb-1 block">Component
                         04</span>
-                    <h3 class="text-2xl font-headline font-extrabold text-primary">Berita</h3>
+                    <h3 class="text-2xl font-headline font-extrabold text-primary">Berita Beranda</h3>
                 </div>
                 <div class="flex items-center gap-3">
                     <button type="submit" data-save-editor
@@ -491,7 +502,7 @@ $components = [
                 <div>
                     <span class="text-xs font-bold text-tertiary uppercase tracking-widest mb-1 block">Component
                         05</span>
-                    <h3 class="text-2xl font-headline font-extrabold text-primary">Alumni</h3>
+                    <h3 class="text-2xl font-headline font-extrabold text-primary">Alumni Beranda</h3>
                 </div>
                 <div class="flex items-center gap-3">
                     <button type="submit" data-save-editor
@@ -590,7 +601,7 @@ $components = [
                 <div>
                     <span class="text-xs font-bold text-tertiary uppercase tracking-widest mb-1 block">Component
                         06</span>
-                    <h3 class="text-2xl font-headline font-extrabold text-primary">PMB</h3>
+                    <h3 class="text-2xl font-headline font-extrabold text-primary">PMB Beranda</h3>
                 </div>
                 <div class="flex items-center gap-3">
                     <button type="submit" data-save-editor
@@ -784,12 +795,35 @@ $components = [
 </form>
 
 <script>
+const homepageRequiredFields = [
+    'hero_title', 'hero_subtitle', 'success_title', 'success_desc',
+    'about_title', 'accreditation_title', 'about_desc', 'accreditation_desc',
+    'facilities_title', 'facilities_subtitle', 'news_title', 'news_subtitle', 'news_limit',
+    'alumni_label', 'alumni_title', 'cta_title', 'cta_desc', 'cta_secondary_button',
+    'cta_secondary_link', 'cta_year', 'cta_deadline_at', 'cta_closed_message',
+    'site_name', 'footer_desc', 'footer_address', 'footer_email', 'footer_phone',
+    'footer_operational_hours', 'footer_copyright', 'footer_note'
+];
+
+const homepageRequiredElements = homepageRequiredFields
+    .flatMap((name) => Array.from(document.getElementsByName(name)))
+    .concat(Array.from(document.querySelectorAll('[name^="tradisi["]')));
+
+function updateHomepageRequiredFields(activePanel = null) {
+    homepageRequiredElements.forEach((field) => {
+        field.required = Boolean(activePanel?.contains(field));
+    });
+}
+
+updateHomepageRequiredFields();
+
 const overview = document.getElementById('component-overview');
 const editors = document.getElementById('component-editors');
 const panels = document.querySelectorAll('[data-editor-panel]');
 const activePanelInput = document.getElementById('activePanelInput');
 
 function showOverview() {
+    updateHomepageRequiredFields();
     editors.classList.add('hidden');
     overview.classList.remove('hidden');
     editors.removeAttribute('data-active-panel');
@@ -809,6 +843,8 @@ function showEditor(panelId) {
     if (!target) {
         return;
     }
+
+    updateHomepageRequiredFields(target);
 
     overview.classList.add('hidden');
     editors.classList.remove('hidden');
@@ -848,6 +884,10 @@ document.querySelectorAll('[data-save-editor]').forEach((button) => {
 
 @if(session('open_homepage_panel'))
 showEditor(@json(session('open_homepage_panel')));
+@endif
+
+@if($errors->any() && old('active_panel'))
+showEditor(@json(old('active_panel')));
 @endif
 
 </script>

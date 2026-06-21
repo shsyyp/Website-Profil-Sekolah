@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Manajemen Berita | Admin SMAN Pintar')
+@section('title', 'Berita | Admin SMAN Pintar')
 
 @section('content')
 @php
@@ -8,16 +8,14 @@
         [
             'id' => 'news-hero-section',
             'icon' => 'newspaper',
-            'title' => 'Hero Halaman',
-            'content' => str_replace('Warta', 'Berita', $settings->hero_title ?? 'Berita SMAN Pintar'),
-            'meta' => $settings->hero_breadcrumb_label ?? 'Berita',
+            'title' => 'Informasi Halaman Berita',
+            'content' => 'Mengatur judul dan deskripsi halaman berita',
         ],
         [
             'id' => 'news-management-section',
             'icon' => 'edit_note',
-            'title' => 'Manajemen Berita',
-            'content' => 'Kelola semua berita sekolah',
-            'meta' => $totalBerita . ' artikel',
+            'title' => 'Daftar Berita',
+            'content' => 'Mengelola berita yang ditampilkan pada website',
             'type' => 'scroll',
         ],
     ];
@@ -28,6 +26,17 @@
 <div class="bg-emerald-50 text-emerald-600 p-4 rounded-xl mb-6 font-bold flex items-center gap-2">
     <span class="material-symbols-outlined">check_circle</span>
     {{ session('success') }}
+</div>
+@endif
+
+@if($errors->any())
+<div class="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-red-700">
+    <p class="font-bold">Form belum dapat disimpan.</p>
+    <ul class="mt-2 list-disc space-y-1 pl-5 text-sm">
+        @foreach($errors->all() as $error)
+        <li>{{ $error }}</li>
+        @endforeach
+    </ul>
 </div>
 @endif
 
@@ -92,7 +101,7 @@
             <summary class="list-none p-6 flex items-center justify-between gap-4">
                 <div>
                     <span class="text-xs font-bold text-tertiary uppercase tracking-widest mb-1 block">Component 01</span>
-                    <h3 class="text-2xl font-headline font-extrabold text-primary">Hero Halaman</h3>
+                    <h3 class="text-2xl font-headline font-extrabold text-primary">Informasi Halaman Berita</h3>
                 </div>
                 <button type="button" data-news-back class="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors">
                     <span class="material-symbols-outlined text-[18px]">arrow_back</span>
@@ -105,12 +114,18 @@
                         <label class="text-sm font-bold text-slate-700">Judul</label>
                         <input name="hero_title" type="text"
                             class="w-full bg-surface-container-lowest border-none focus:ring-2 focus:ring-primary rounded-xl px-4 py-3 font-medium text-on-surface"
-                            value="{{ str_replace('Warta', 'Berita', $settings->hero_title ?? 'Berita SMAN Pintar') }}">
+                            value="{{ old('hero_title', str_replace('Warta', 'Berita', $settings->hero_title ?? 'Berita SMAN Pintar')) }}" required>
+                        @error('hero_title')
+                        <p class="text-sm font-medium text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
                     <div class="space-y-2">
                         <label class="text-sm font-bold text-slate-700">Deskripsi</label>
                         <textarea name="hero_description" rows="4"
-                            class="w-full bg-surface-container-lowest border-none focus:ring-2 focus:ring-primary rounded-xl px-4 py-3 text-on-surface-variant leading-relaxed">{{ $settings->hero_description ?? 'Menyajikan informasi terbaru seputar prestasi, kegiatan kesiswaan, dan pengumuman resmi dari lingkungan sekolah.' }}</textarea>
+                            class="w-full bg-surface-container-lowest border-none focus:ring-2 focus:ring-primary rounded-xl px-4 py-3 text-on-surface-variant leading-relaxed" required>{{ old('hero_description', $settings->hero_description ?? 'Menyajikan informasi terbaru seputar prestasi, kegiatan kesiswaan, dan pengumuman resmi dari lingkungan sekolah.') }}</textarea>
+                        @error('hero_description')
+                        <p class="text-sm font-medium text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
                 </div>
             </div>
@@ -131,7 +146,7 @@
 
 <section id="news-management-section" class="hidden space-y-6">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h2 class="text-4xl font-extrabold text-primary tracking-tight font-headline">Manajemen Berita</h2>
+        <h2 class="text-4xl font-extrabold text-primary tracking-tight font-headline">Daftar Berita</h2>
         <div class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center">
             <button type="button" data-news-management-back
                 class="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-100 px-6 py-3.5 font-bold text-slate-600 hover:bg-slate-200 transition-colors">
@@ -185,7 +200,7 @@
                             @if($item->status == 'publish')
                             <span
                                 class="flex items-center gap-1.5 text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full w-fit">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Published
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Dipublikasikan
                             </span>
                             @else
                             <span
@@ -358,6 +373,10 @@ showNewsManagement();
 
 @if(session('open_news_panel'))
 showNewsPageEditor(@json(session('open_news_panel')));
+@endif
+
+@if($errors->any() && old('active_panel'))
+showNewsPageEditor(@json(old('active_panel')));
 @endif
 
 @if(request('panel') === 'news-management-section')

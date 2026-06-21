@@ -26,8 +26,8 @@ class BeritaController extends Controller
     {
         $data = $request->validate([
             'hero_breadcrumb_label' => 'nullable|string|max:255',
-            'hero_title' => 'nullable|string|max:255',
-            'hero_description' => 'nullable|string',
+            'hero_title' => 'required|string|max:255',
+            'hero_description' => 'required|string',
             'filter_all_label' => 'nullable|string|max:255',
             'search_placeholder' => 'nullable|string|max:255',
             'popular_title' => 'nullable|string|max:255',
@@ -37,6 +37,9 @@ class BeritaController extends Controller
             'newsletter_placeholder' => 'nullable|string|max:255',
             'newsletter_button_text' => 'nullable|string|max:255',
             'active_panel' => 'nullable|string|max:255',
+        ], [
+            'hero_title.required' => 'Judul halaman berita wajib diisi.',
+            'hero_description.required' => 'Deskripsi halaman berita wajib diisi.',
         ]);
         $activePanel = $data['active_panel'] ?? null;
         unset($data['active_panel']);

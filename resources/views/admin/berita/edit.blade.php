@@ -41,7 +41,7 @@
                 </div>
 
                 <div>
-                    <label class="text-xs font-bold uppercase text-tertiary block mb-2">Tanggal Publish</label>
+                    <label class="text-xs font-bold uppercase text-tertiary block mb-2">Tanggal Publikasi</label>
                     <input type="date" name="tanggal" value="{{ old('tanggal', $berita->tanggal?->format('Y-m-d')) }}"
                         class="w-full bg-surface-container border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary"
                         required>
@@ -79,7 +79,7 @@
                         <input type="radio" name="status" value="publish"
                             @checked(old('status', $berita->status) === 'publish')
                             class="text-primary focus:ring-primary">
-                        <span>Publish</span>
+                        <span>Publikasikan</span>
                     </label>
                     <label class="flex items-center gap-2 cursor-pointer">
                         <input type="radio" name="status" value="draft"

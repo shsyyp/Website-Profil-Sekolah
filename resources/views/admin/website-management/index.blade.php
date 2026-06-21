@@ -252,7 +252,7 @@ Tahfidz.'],
                     <table class="w-full text-left text-sm">
                         <tbody class="divide-y divide-surface-container">@forelse($berita as $item)<tr>
                                 <td class="py-3 font-bold text-primary">{{ $item->judul }}</td>
-                                <td>{{ $item->status }}</td>
+                                <td>{{ $item->status === 'publish' ? 'Dipublikasikan' : 'Draft' }}</td>
                                 <td class="text-right"><a href="{{ route('berita.edit', $item->id) }}"
                                         class="text-primary font-bold">Edit</a></td>
                             </tr>@empty<tr>

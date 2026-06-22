@@ -9,15 +9,16 @@ use Illuminate\Support\Facades\Log;
 
 class GeminiChatbotService
 {
-    public function answer(string $question): ?string
+    public const FALLBACK_RESPONSE = 'Maaf, saya belum menemukan informasi yang sesuai dengan pertanyaan Anda. Untuk mendapatkan informasi lebih lanjut, silakan menghubungi Humas SMAN Pintar Provinsi Riau melalui telepon (0760) 561925, email smanpintar@yahoo.co.id, atau media sosial resmi sekolah.';
+
+    public function answer(string $question): string
     {
+        $knowledge = $this->knowledgeBase();
         $apiKey = config('services.gemini.api_key');
 
         if (! $apiKey) {
-            return $this->fallbackAnswer($question);
+            return $this->databaseOrFallback($question, $knowledge);
         }
-
-        $knowledge = $this->knowledgeBase();
 
         try {
             $response = Http::timeout(20)
@@ -43,18 +44,27 @@ class GeminiChatbotService
                     'message' => data_get($response->json(), 'error.message'),
                 ]);
 
-                return $this->fallbackAnswer($question);
+                return $this->databaseOrFallback($question, $knowledge);
             }
 
-            return data_get($response->json(), 'candidates.0.content.parts.0.text')
-                ?: $this->fallbackAnswer($question);
+            $answer = trim((string) data_get($response->json(), 'candidates.0.content.parts.0.text'));
+
+            return $this->isUsableAiAnswer($answer)
+                ? $answer
+                : $this->databaseOrFallback($question, $knowledge);
         } catch (\Throwable $exception) {
             Log::warning('Gemini chatbot exception', [
                 'message' => $this->sanitizeError($exception->getMessage()),
             ]);
 
-            return $this->fallbackAnswer($question);
+            return $this->databaseOrFallback($question, $knowledge);
         }
+    }
+
+    private function databaseOrFallback(string $question, Collection $knowledge): string
+    {
+        return $this->databaseAnswer($question, $knowledge)
+            ?: self::FALLBACK_RESPONSE;
     }
 
     private function endpoint(string $apiKey): string
@@ -81,7 +91,7 @@ Kamu adalah Pintar Assistant, chatbot resmi website SMAN Pintar Provinsi Riau.
 Aturan:
 - Jawab dalam Bahasa Indonesia yang sopan, singkat, dan mudah dipahami.
 - Jawab hanya berdasarkan knowledge base di bawah.
-- Jika informasi tidak ada di knowledge base, katakan bahwa informasi tersebut belum tersedia dan sarankan menghubungi Humas.
+- Jika informasi tidak ada atau tidak cukup jelas di knowledge base, jawab persis dengan: __NO_ANSWER__
 - Jangan mengarang tanggal, biaya, link, syarat, atau kebijakan.
 - Maksimal 3 kalimat.
 
@@ -98,20 +108,21 @@ PROMPT;
         return Chatbot::latest()->limit(30)->get(['pertanyaan', 'jawaban']);
     }
 
-    private function fallbackAnswer(string $question): ?string
+    private function databaseAnswer(string $question, Collection $knowledge): ?string
     {
         $normalized = mb_strtolower($question);
         $questionTokens = $this->tokens($normalized);
 
-        return $this->knowledgeBase()
+        return $knowledge
             ->first(function (Chatbot $item) use ($normalized) {
                 $storedQuestion = mb_strtolower($item->pertanyaan);
 
-                return str_contains($storedQuestion, $normalized)
-                    || str_contains($normalized, $storedQuestion);
+                return $storedQuestion === $normalized
+                    || (mb_strlen($normalized) >= 4 && str_contains($storedQuestion, $normalized))
+                    || (mb_strlen($storedQuestion) >= 4 && str_contains($normalized, $storedQuestion));
             })
             ?->jawaban
-            ?? $this->knowledgeBase()
+            ?? $knowledge
                 ->sortByDesc(function (Chatbot $item) use ($questionTokens) {
                     return $this->tokenScore($questionTokens, $this->tokens($item->pertanyaan));
                 })
@@ -119,6 +130,19 @@ PROMPT;
                     return $this->tokenScore($questionTokens, $this->tokens($item->pertanyaan)) >= 1;
                 })
             ?->jawaban;
+    }
+
+    private function isUsableAiAnswer(string $answer): bool
+    {
+        if ($answer === '' || str_contains($answer, '__NO_ANSWER__')) {
+            return false;
+        }
+
+        $normalized = mb_strtolower($answer);
+
+        return ! str_contains($normalized, 'informasi tersebut belum tersedia')
+            && ! str_contains($normalized, 'informasi belum tersedia')
+            && ! str_contains($normalized, 'tidak menemukan jawaban');
     }
 
     private function tokenScore(array $questionTokens, array $storedTokens): int
@@ -136,7 +160,15 @@ PROMPT;
 
         $tokens = preg_split('/[^\pL\pN]+/u', $normalized, -1, PREG_SPLIT_NO_EMPTY);
 
-        return array_values(array_unique(array_filter($tokens, fn (string $token) => mb_strlen($token) >= 4)));
+        $stopWords = [
+            'adalah', 'apakah', 'bagaimana', 'dengan', 'informasi', 'lainnya',
+            'pintar', 'provinsi', 'sekolah', 'sman', 'tentang', 'untuk', 'yang',
+        ];
+
+        return array_values(array_unique(array_filter(
+            $tokens,
+            fn (string $token) => mb_strlen($token) >= 4 && ! in_array($token, $stopWords, true)
+        )));
     }
 
     private function sanitizeError(string $message): string

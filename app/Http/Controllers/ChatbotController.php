@@ -70,7 +70,7 @@ class ChatbotController extends Controller
 
         return response()->json([
             'answer' => $answer,
-            'fallback' => $answer === null,
+            'fallback' => $answer === GeminiChatbotService::FALLBACK_RESPONSE,
         ]);
     }
 }

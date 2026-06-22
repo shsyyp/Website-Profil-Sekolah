@@ -21,15 +21,21 @@ class AdminProfileController extends Controller
 
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'username' => ['required', 'string', 'max:255', 'alpha_dash', Rule::unique('users')->ignore($user->id)],
             'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
             'avatar' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
-            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+            'password' => ['nullable', 'string', 'min:8'],
+            'password_confirmation' => ['nullable', 'required_with:password', 'same:password'],
         ], [
-            'username.alpha_dash' => 'Username hanya boleh berisi huruf, angka, tanda hubung, dan underscore.',
-            'username.unique' => 'Username sudah digunakan.',
-            'password.confirmed' => 'Konfirmasi password tidak sama.',
-            'password.min' => 'Password minimal 8 karakter.',
+            'name.required' => 'Nama lengkap wajib diisi.',
+            'email.required' => 'Alamat email wajib diisi.',
+            'email.email' => 'Format alamat email tidak valid.',
+            'email.unique' => 'Alamat email sudah digunakan.',
+            'password.min' => 'Kata sandi minimal 8 karakter.',
+            'password_confirmation.required_with' => 'Konfirmasi kata sandi wajib diisi.',
+            'password_confirmation.same' => 'Konfirmasi kata sandi tidak sesuai.',
+            'avatar.image' => 'Foto profil harus berupa gambar.',
+            'avatar.mimes' => 'Foto profil harus berformat JPG, JPEG, atau PNG.',
+            'avatar.max' => 'Ukuran foto profil maksimal 2 MB.',
         ]);
 
         if ($request->hasFile('avatar')) {
@@ -43,6 +49,7 @@ class AdminProfileController extends Controller
         if (blank($data['password'] ?? null)) {
             unset($data['password']);
         }
+        unset($data['password_confirmation']);
 
         $user->update($data);
 

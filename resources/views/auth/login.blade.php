@@ -20,10 +20,10 @@
             </div>
             <div class="max-w-md">
                 <h1 class="font-headline text-4xl xl:text-5xl font-bold text-white leading-tight mb-5 tracking-tight">
-                    Admin Panel<br />SMAN Pintar
+                    Panel Administrasi<br />SMAN Pintar
                 </h1>
                 <p class="text-primary-fixed text-lg xl:text-xl leading-relaxed opacity-90">
-                    Kelola website sekolah dengan mudah dan efisien melalui sistem manajemen akademik terpadu.
+                    Kelola informasi sekolah, berita, PMB, alumni, dan chatbot melalui panel administrasi yang terintegrasi.
                 </p>
             </div>
         </div>
@@ -60,7 +60,7 @@
                 class="bg-surface-container-lowest rounded-3xl p-6 md:p-8 shadow-[0_32px_64px_-16px_rgba(25,27,34,0.06)] border border-outline-variant/10">
                 <div class="mb-8">
                     <h3 class="font-headline text-3xl font-bold text-on-surface mb-2">Selamat Datang</h3>
-                    <p class="text-on-surface-variant font-body">Silakan login untuk mengakses dashboard admin.</p>
+                    <p class="text-on-surface-variant font-body">Silakan masuk untuk mengakses dashboard administrator.</p>
                 </div>
 
                 {{-- Alert Error Handling --}}
@@ -76,12 +76,12 @@
                 @endif
 
                 {{-- Form Login Laravel --}}
-                <form action="{{ route('login.post') }}" method="POST" class="space-y-5">
+                <form action="{{ route('login.post') }}" method="POST" class="space-y-5" data-login-form>
                     @csrf
 
                     <div class="space-y-2">
                         <label class="text-sm font-semibold text-on-surface-variant uppercase tracking-wider px-1"
-                            for="email">Email / Username</label>
+                            for="email">Email atau Nama Pengguna</label>
                         <div class="relative group">
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                 <span
@@ -89,14 +89,14 @@
                             </div>
                             <input type="text" id="email" name="email" value="{{ old('email') }}" required autofocus
                                 class="block w-full pl-12 pr-4 py-3.5 bg-surface-container-low border-none rounded-xl text-on-surface placeholder-outline focus:ring-2 focus:ring-primary/20 transition-all font-medium"
-                                placeholder="Email atau username" />
+                                placeholder="Masukkan email atau nama pengguna" />
                         </div>
                     </div>
 
                     <div class="space-y-2">
                         <div class="flex justify-between items-center px-1">
                             <label class="text-sm font-semibold text-on-surface-variant uppercase tracking-wider"
-                                for="password">Password</label>
+                                for="password">Kata Sandi</label>
                         </div>
                         <div class="relative group">
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -105,7 +105,7 @@
                             </div>
                             <input type="password" id="password" name="password" required
                                 class="block w-full pl-12 pr-12 py-3.5 bg-surface-container-low border-none rounded-xl text-on-surface placeholder-outline focus:ring-2 focus:ring-primary/20 transition-all font-medium"
-                                placeholder="Password" />
+                                placeholder="Masukkan kata sandi" />
 
                             <div class="absolute inset-y-0 right-0 pr-4 flex items-center cursor-pointer text-outline hover:text-on-surface transition-colors"
                                 onclick="togglePassword()">
@@ -114,12 +114,15 @@
                         </div>
                     </div>
 
-                    <button type="submit"
+                    <button type="submit" data-login-submit
                         class="w-full bg-gradient-to-r from-primary to-primary-container text-white font-headline font-bold py-3.5 rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2">
-                        Login ke Dashboard
-                        <span class="material-symbols-outlined text-xl">arrow_forward</span>
+                        <span data-login-submit-text>Masuk ke Dashboard</span>
+                        <span class="material-symbols-outlined text-xl" data-login-submit-icon>arrow_forward</span>
                     </button>
                 </form>
+                <p class="mt-5 text-center text-xs font-medium text-on-surface-variant">
+                    Halaman ini hanya dapat diakses oleh administrator website.
+                </p>
             </div>
 
         </div>
@@ -146,5 +149,17 @@ function togglePassword() {
         eyeIcon.textContent = 'visibility'; // Kembalikan icon
     }
 }
+
+document.querySelector('[data-login-form]')?.addEventListener('submit', function () {
+    const submitButton = this.querySelector('[data-login-submit]');
+    const submitText = this.querySelector('[data-login-submit-text]');
+    const submitIcon = this.querySelector('[data-login-submit-icon]');
+
+    submitButton.disabled = true;
+    submitButton.classList.add('cursor-wait', 'opacity-80');
+    submitText.textContent = 'Memproses...';
+    submitIcon.textContent = 'progress_activity';
+    submitIcon.classList.add('animate-spin');
+});
 </script>
 @endpush

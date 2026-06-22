@@ -17,7 +17,7 @@
                 <span class="material-symbols-outlined">newspaper</span>
             </div>
         </div>
-        <h3 class="text-outline text-xs font-bold uppercase tracking-widest mb-1">Total Berita</h3>
+        <h3 class="text-outline text-xs font-bold uppercase tracking-widest mb-1">Jumlah Berita</h3>
         <p class="text-3xl font-extrabold text-on-surface">{{ $totalBerita ?? 0 }}</p>
     </a>
 
@@ -28,7 +28,7 @@
                 <span class="material-symbols-outlined">domain</span>
             </div>
         </div>
-        <h3 class="text-outline text-xs font-bold uppercase tracking-widest mb-1">Total Fasilitas</h3>
+        <h3 class="text-outline text-xs font-bold uppercase tracking-widest mb-1">Jumlah Fasilitas</h3>
         <p class="text-3xl font-extrabold text-on-surface">{{ $totalFasilitas ?? 0 }}</p>
     </a>
 
@@ -39,7 +39,7 @@
                 <span class="material-symbols-outlined">groups</span>
             </div>
         </div>
-        <h3 class="text-outline text-xs font-bold uppercase tracking-widest mb-1">Total Ekstrakurikuler</h3>
+        <h3 class="text-outline text-xs font-bold uppercase tracking-widest mb-1">Jumlah Ekstrakurikuler</h3>
         <p class="text-3xl font-extrabold text-on-surface">{{ $totalEkstrakurikuler ?? 0 }}</p>
     </a>
 
@@ -50,7 +50,7 @@
                 <span class="material-symbols-outlined">school</span>
             </div>
         </div>
-        <h3 class="text-outline text-xs font-bold uppercase tracking-widest mb-1">Total Alumni</h3>
+        <h3 class="text-outline text-xs font-bold uppercase tracking-widest mb-1">Jumlah Alumni</h3>
         <p class="text-3xl font-extrabold text-on-surface">{{ $totalAlumni ?? 0 }}</p>
     </a>
 </section>
@@ -63,7 +63,7 @@
 <section class="grid grid-cols-1 xl:grid-cols-2 gap-8 mt-8">
     <div class="bg-surface-container-lowest rounded-xl p-8 shadow-[24px_24px_48px_rgba(25,27,34,0.02)]">
         <div class="mb-8 flex items-center justify-between gap-4">
-            <h2 class="text-2xl font-extrabold text-on-surface tracking-tight">Grafik Berita Per Bulan</h2>
+            <h2 class="text-2xl font-extrabold text-on-surface tracking-tight">Jumlah Berita per Bulan</h2>
             <span class="material-symbols-outlined text-primary">bar_chart</span>
         </div>
 
@@ -91,7 +91,7 @@
 
     <div class="bg-surface-container-lowest rounded-xl p-8 shadow-[24px_24px_48px_rgba(25,27,34,0.02)]">
         <div class="mb-8 flex items-center justify-between gap-4">
-            <h2 class="text-2xl font-extrabold text-on-surface tracking-tight">Grafik Alumni Per Angkatan</h2>
+            <h2 class="text-2xl font-extrabold text-on-surface tracking-tight">Jumlah Alumni per Angkatan</h2>
             <span class="material-symbols-outlined text-tertiary">stacked_bar_chart</span>
         </div>
         <div class="space-y-4">
@@ -125,7 +125,7 @@
             <a href="{{ route('berita.create') }}"
                 class="bg-primary hover:bg-primary-container text-on-primary px-5 py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-primary/20">
                 <span class="material-symbols-outlined text-[20px]">add</span>
-                Buat Berita
+                Tambah Berita
             </a>
         </div>
 
@@ -141,7 +141,7 @@
                     @endif
                 </div>
                 <div class="min-w-0 flex-1">
-                    <p class="truncate font-bold text-on-surface">{{ $item->judul }}</p>
+                    <p class="line-clamp-2 font-bold leading-snug text-on-surface">{{ $item->judul }}</p>
                     <p class="text-xs font-semibold text-outline">{{ ucfirst($item->kategori ?? 'Berita') }} - {{ $item->tanggal?->format('d M Y') ?? $item->created_at?->format('d M Y') }}</p>
                 </div>
                 <span class="material-symbols-outlined text-outline">chevron_right</span>
@@ -176,7 +176,7 @@
                 </div>
                 <div class="min-w-0 flex-1">
                     <p class="truncate font-bold text-on-surface">{{ $item->nama }}</p>
-                    <p class="truncate text-xs font-semibold text-outline">{{ $item->lokasi }} - Angkatan {{ $item->tahun_lulus }}</p>
+                    <p class="truncate text-xs font-semibold text-outline">Lulusan {{ $item->tahun_lulus }} • {{ $item->lokasi }}</p>
                 </div>
                 <span class="material-symbols-outlined text-outline">chevron_right</span>
             </a>
@@ -206,7 +206,8 @@
             class="rounded-xl bg-surface-container-low p-5 border-l-4 border-primary hover:bg-surface-container transition-colors">
             <p class="text-xs font-bold text-outline uppercase tracking-wider mb-2">Pertanyaan</p>
             <p class="font-bold text-on-surface line-clamp-2">{{ $item->pertanyaan }}</p>
-            <p class="mt-4 text-sm text-on-surface-variant line-clamp-2">{{ $item->jawaban }}</p>
+            <p class="mt-4 text-xs font-bold text-on-surface-variant">Jawaban:</p>
+            <p class="mt-1 text-sm text-on-surface-variant line-clamp-2">{{ $item->jawaban }}</p>
         </a>
         @empty
         <p class="lg:col-span-3 rounded-xl bg-surface-container-low px-4 py-8 text-center text-slate-400 italic">Belum ada data chatbot.</p>

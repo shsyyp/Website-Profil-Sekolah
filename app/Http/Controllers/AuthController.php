@@ -51,7 +51,9 @@ class AuthController extends Controller
         }
 
         // 4. Jika gagal
-        return back()->with('error', 'Email, username, atau password salah!')->withInput($request->only('email'));
+        return back()
+            ->with('error', 'Email, nama pengguna, atau kata sandi tidak sesuai.')
+            ->withInput($request->only('email'));
     }
 
     // Memproses logout

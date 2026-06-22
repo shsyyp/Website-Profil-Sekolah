@@ -19,7 +19,8 @@
             <input id="chatbotInput"
                 class="flex-grow bg-slate-100 border-none rounded-full px-4 py-2 text-xs focus:ring-1 focus:ring-primary"
                 placeholder="Tanya sesuatu..." type="text" />
-            <button id="chatbotSend" type="button" class="text-tertiary-container hover:text-tertiary transition-colors">
+            <button id="chatbotSend" type="button"
+                class="text-tertiary-container hover:text-tertiary transition-colors">
                 <span class="material-symbols-outlined text-xl">send</span>
             </button>
         </div>
@@ -36,15 +37,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const messages = document.getElementById('chatbotMessages');
     const input = document.getElementById('chatbotInput');
     const send = document.getElementById('chatbotSend');
-    const humasWhatsappUrl = @json($homepage?->footer_whatsapp_url);
+    const humasWhatsappUrl = @json(data_get($homepage, 'footer_whatsapp_url'));
     const chatbotEndpoint = @json(route('chatbot.ask'));
     const csrfToken = @json(csrf_token());
 
     function addMessage(text, alignRight = false) {
         const bubble = document.createElement('div');
-        bubble.className = alignRight
-            ? 'bg-primary text-white p-3 rounded-md rounded-tr-none shadow-sm text-xs max-w-[80%] self-end'
-            : 'bg-white p-3 rounded-md rounded-tl-none shadow-sm text-xs text-slate-600 max-w-[80%]';
+        bubble.className = alignRight ?
+            'bg-primary text-white p-3 rounded-md rounded-tr-none shadow-sm text-xs max-w-[80%] self-end' :
+            'bg-white p-3 rounded-md rounded-tl-none shadow-sm text-xs text-slate-600 max-w-[80%]';
         bubble.textContent = text;
         messages.appendChild(bubble);
         messages.scrollTop = messages.scrollHeight;
@@ -52,10 +53,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function addHumasContact() {
         const bubble = document.createElement('div');
-        bubble.className = 'bg-white p-3 rounded-md rounded-tl-none shadow-sm text-xs text-slate-600 max-w-[80%]';
+        bubble.className =
+            'bg-white p-3 rounded-md rounded-tl-none shadow-sm text-xs text-slate-600 max-w-[80%]';
 
         const text = document.createElement('p');
-        text.textContent = 'Maaf, saya belum menemukan jawaban yang sesuai. Silakan hubungi Humas melalui WhatsApp untuk bantuan lebih lanjut.';
+        text.textContent =
+            'Maaf, saya belum menemukan informasi yang sesuai dengan pertanyaan Anda. Untuk mendapatkan informasi lebih lanjut, silakan menghubungi Humas SMAN Pintar Provinsi Riau melalui telepon (0760) 561925, email smanpintar@yahoo.co.id, atau media sosial resmi sekolah.';
         bubble.appendChild(text);
 
         if (humasWhatsappUrl) {
@@ -91,7 +94,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': csrfToken,
                 },
-                body: JSON.stringify({ question }),
+                body: JSON.stringify({
+                    question
+                }),
             });
 
             if (!response.ok) {

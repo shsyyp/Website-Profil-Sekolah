@@ -19,43 +19,61 @@ class PMBController extends Controller
     // Menyimpan / Memperbarui data PMB
     public function update(Request $request)
     {
-        $data = $request->validate([
-            'hero_badge' => 'nullable|string|max:255',
-            'hero_title' => 'nullable|string|max:255',
-            'hero_description' => 'nullable|string',
-            'hero_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'hero_card_title' => 'nullable|string|max:255',
-            'hero_card_subtitle' => 'nullable|string|max:255',
-            'alur' => 'nullable|string',
-            'persyaratan_umum' => 'nullable|string',
-            'berkas' => 'nullable|string',
-            'jadwal' => 'nullable|string',
-            'faq' => 'nullable|string',
-            'link_pendaftaran' => 'nullable|url',
-            'primary_button_text' => 'nullable|string|max:255',
-            'secondary_button_text' => 'nullable|string|max:255',
-            'steps_label' => 'nullable|string|max:255',
-            'steps_title' => 'nullable|string|max:255',
-            'timeline_title' => 'nullable|string|max:255',
-            'timeline_description' => 'nullable|string',
-            'faq_title' => 'nullable|string|max:255',
-            'faq_description' => 'nullable|string',
-            'testimonials_title' => 'nullable|string|max:255',
-            'testimonials_description' => 'nullable|string',
-            'testimonials' => 'nullable|array',
-            'testimonials.*.name' => 'nullable|string|max:255',
-            'testimonials.*.meta' => 'nullable|string|max:255',
-            'testimonials.*.quote' => 'nullable|string',
-            'testimonials.*.image' => 'nullable|string|max:2048',
-            'testimonials.*.featured' => 'nullable',
-            'cta_title' => 'nullable|string|max:255',
-            'cta_description' => 'nullable|string',
-            'cta_primary_text' => 'nullable|string|max:255',
-            'cta_secondary_text' => 'nullable|string|max:255',
-            'cta_secondary_link' => 'nullable|string|max:255',
-            'active_panel' => 'nullable|string|max:255',
-        ], [
-            'link_pendaftaran.url' => 'Format link harus berupa URL valid (contoh: https://...)',
+        $rulesByPanel = [
+            'pmb-hero-section' => [
+                'hero_badge' => ['nullable', 'string', 'max:255'],
+                'hero_title' => ['required', 'string', 'max:255'],
+                'hero_description' => ['required', 'string'],
+                'hero_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
+                'hero_card_title' => ['nullable', 'string', 'max:255'],
+                'hero_card_subtitle' => ['nullable', 'string', 'max:255'],
+                'link_pendaftaran' => ['nullable', 'url'],
+                'primary_button_text' => ['nullable', 'string', 'max:255'],
+                'secondary_button_text' => ['nullable', 'string', 'max:255'],
+            ],
+            'pmb-steps-section' => [
+                'steps_label' => ['required', 'string', 'max:255'],
+                'steps_title' => ['required', 'string', 'max:255'],
+                'alur' => ['required', 'array', 'min:1'],
+                'alur.*.title' => ['required', 'string', 'max:500'],
+            ],
+            'pmb-requirements-section' => [
+                'persyaratan_umum' => ['required', 'array', 'min:1'],
+                'persyaratan_umum.*.text' => ['required', 'string', 'max:500'],
+                'berkas' => ['required', 'array', 'min:1'],
+                'berkas.*.text' => ['required', 'string', 'max:500'],
+            ],
+            'pmb-timeline-section' => [
+                'timeline_title' => ['required', 'string', 'max:255'],
+                'jadwal' => ['required', 'array', 'min:1'],
+                'jadwal.*.kegiatan' => ['required', 'string', 'max:255'],
+                'jadwal.*.tanggal_mulai' => ['nullable', 'required_without:jadwal.*.tanggal_legacy', 'date'],
+                'jadwal.*.tanggal_selesai' => ['nullable', 'date', 'after_or_equal:jadwal.*.tanggal_mulai'],
+                'jadwal.*.tanggal_legacy' => ['nullable', 'string', 'max:255'],
+            ],
+            'pmb-faq-section' => [
+                'faq_title' => ['required', 'string', 'max:255'],
+                'faq' => ['required', 'array', 'min:1'],
+                'faq.*.pertanyaan' => ['required', 'string', 'max:500'],
+                'faq.*.jawaban' => ['required', 'string'],
+            ],
+            'pmb-cta-section' => [
+                'cta_title' => ['required', 'string', 'max:255'],
+                'cta_description' => ['required', 'string'],
+                'cta_primary_text' => ['nullable', 'string', 'max:255'],
+                'cta_secondary_text' => ['required', 'string', 'max:255'],
+                'cta_secondary_link' => ['required', 'string', 'max:2048'],
+            ],
+        ];
+
+        $activePanel = $request->input('active_panel');
+        $data = $request->validate(array_merge(
+            ['active_panel' => ['required', 'string', 'in:' . implode(',', array_keys($rulesByPanel))]],
+            $rulesByPanel[$activePanel] ?? []
+        ), [
+            'required' => 'Kolom :attribute wajib diisi.',
+            'link_pendaftaran.url' => 'Format link harus berupa URL valid (contoh: https://...).',
+            'jadwal.*.tanggal_mulai.required_without' => 'Tanggal mulai wajib diisi.',
         ]);
         $activePanel = $data['active_panel'] ?? null;
         unset($data['active_panel']);
@@ -70,15 +88,11 @@ class PMBController extends Controller
             $data['hero_image'] = $request->file('hero_image')->store('pmb', 'public');
         }
 
-        $data['testimonials'] = collect($data['testimonials'] ?? [])
-            ->map(function ($item) {
-                $item['featured'] = isset($item['featured']);
-
-                return $item;
-            })
-            ->filter(fn ($item) => ($item['name'] ?? null) || ($item['meta'] ?? null) || ($item['quote'] ?? null))
-            ->values()
-            ->all();
+        foreach (['alur', 'persyaratan_umum', 'berkas', 'jadwal', 'faq'] as $listField) {
+            if (array_key_exists($listField, $data)) {
+                $data[$listField] = collect($data[$listField])->values()->all();
+            }
+        }
 
         if ($pmb) {
             $pmb->update($data); // Update jika data sudah ada

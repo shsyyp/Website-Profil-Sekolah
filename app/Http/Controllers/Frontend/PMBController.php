@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Models\PMB;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
 class PMBController extends Controller
@@ -21,9 +22,9 @@ class PMBController extends Controller
         return view('pages.pmb', compact('pmb', 'alur', 'persyaratan', 'berkas', 'jadwal', 'faq'));
     }
 
-    private function parseList(?string $value): Collection
+    private function parseList(mixed $value): Collection
     {
-        $decoded = $this->decodeJson($value);
+        $decoded = is_array($value) ? $value : $this->decodeJson($value);
 
         if (is_array($decoded)) {
             return collect($decoded)
@@ -38,17 +39,29 @@ class PMBController extends Controller
             ->values();
     }
 
-    private function parseSchedule(?string $value): Collection
+    private function parseSchedule(mixed $value): Collection
     {
-        $decoded = $this->decodeJson($value);
+        $decoded = is_array($value) ? $value : $this->decodeJson($value);
 
         if (is_array($decoded)) {
-            return collect($decoded)->map(fn ($item) => (object) [
-                'kegiatan' => $item['kegiatan'] ?? $item['nama'] ?? $item['title'] ?? '',
-                'tanggal' => $item['tanggal'] ?? $item['date'] ?? '',
-                'keterangan' => $item['keterangan'] ?? $item['description'] ?? '',
-                'is_highlight' => (bool) ($item['is_highlight'] ?? $item['highlight'] ?? false),
-            ])->filter(fn ($item) => $item->kegiatan || $item->tanggal || $item->keterangan)->values();
+            return collect($decoded)->map(function ($item) {
+                $start = $item['tanggal_mulai'] ?? $item['start_date'] ?? null;
+                $end = $item['tanggal_selesai'] ?? $item['end_date'] ?? null;
+                $dateLabel = $item['tanggal_legacy'] ?? $item['tanggal'] ?? $item['date'] ?? '';
+
+                if ($start) {
+                    $startLabel = Carbon::parse($start)->locale('id')->translatedFormat('d F Y');
+                    $endLabel = $end ? Carbon::parse($end)->locale('id')->translatedFormat('d F Y') : null;
+                    $dateLabel = $endLabel && $end !== $start ? $startLabel . ' – ' . $endLabel : $startLabel;
+                }
+
+                return (object) [
+                    'kegiatan' => $item['kegiatan'] ?? $item['nama'] ?? $item['title'] ?? '',
+                    'tanggal' => $dateLabel,
+                    'keterangan' => $item['keterangan'] ?? $item['description'] ?? '',
+                    'is_highlight' => (bool) ($item['is_highlight'] ?? $item['highlight'] ?? false),
+                ];
+            })->filter(fn ($item) => $item->kegiatan || $item->tanggal || $item->keterangan)->values();
         }
 
         return $this->parseList($value)->map(function ($line) {
@@ -63,9 +76,9 @@ class PMBController extends Controller
         });
     }
 
-    private function parseFaq(?string $value): Collection
+    private function parseFaq(mixed $value): Collection
     {
-        $decoded = $this->decodeJson($value);
+        $decoded = is_array($value) ? $value : $this->decodeJson($value);
 
         if (is_array($decoded)) {
             return collect($decoded)->map(fn ($item) => (object) [
@@ -84,9 +97,9 @@ class PMBController extends Controller
         });
     }
 
-    private function decodeJson(?string $value): mixed
+    private function decodeJson(mixed $value): mixed
     {
-        if (! $value) {
+        if (! is_string($value) || ! $value) {
             return null;
         }
 

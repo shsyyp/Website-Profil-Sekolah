@@ -55,11 +55,12 @@ $heroImage = $pmb?->hero_image
                 {{ $pmb?->steps_title ?? 'Alur Pendaftaran' }}</h2>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            @forelse ($alur->take(3) as $index => $item)
+            @forelse ($alur as $index => $item)
             <div
                 class="bg-surface-container-lowest p-8 rounded-2xl shadow-sm border border-outline-variant/10 border-t-4 {{ $index === 0 ? 'border-t-primary' : ($index === 1 ? 'border-t-tertiary' : 'border-t-secondary') }} relative group hover:-translate-y-1 hover:shadow-xl transition-all duration-500">
                 <span
                     class="mb-5 inline-flex h-2 w-14 rounded-full {{ $index === 0 ? 'bg-primary' : ($index === 1 ? 'bg-tertiary' : 'bg-secondary') }}"></span>
+                <p class="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-on-surface-variant">Tahap {{ $index + 1 }}</p>
                 <h3 class="font-bold text-xl leading-snug">{{ $item }}</h3>
                 @if(! $loop->last)
                 <div

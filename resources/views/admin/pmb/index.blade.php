@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Manajemen PMB | Admin SMAN Pintar')
+@section('title', 'PMB | Admin SMAN Pintar')
 
 @section('content')
 @php
@@ -9,21 +9,37 @@ $heroImage = $pmb?->hero_image
 :
 'https://lh3.googleusercontent.com/aida-public/AB6AXuCzki_EPBNVyg-ldrcUWYC_cc07-B11lum4k6V5O6cNZPyNyNQ1xfh6ZNwxUxGCyiC-x1bMl09IvHCNP3Sbxy4qk_DhR9ljXdMhUikF3im0IHd5_9EkaNk1xWQvCKbOD7QyYy935iH-3C66VCiGB-seTE8fgTJdxxyHnHlMpyYAfe28tlRZ7NpipXSBVWLasgsafK2C1uEWsdorypBCAYEioFJffpS6MgyrNBgnkQfyRFBqg751RMs5T8I0VCNKS_WespzJ_IalC9b4';
 
+$alurItems = collect(old('alur', $pmb?->alur ?? [
+    ['title' => 'Seleksi Administrasi & Nilai Rapor'],
+    ['title' => 'Tes Kemampuan Akademik (TPA) & Wawancara Orang Tua'],
+    ['title' => 'Psikotes, Tes Bahasa Inggris, Baca Tulis Al-Qur\'an, Tes Kesehatan, dan Tes Fisik'],
+]))->values();
+$requirementItems = collect(old('persyaratan_umum', $pmb?->persyaratan_umum ?? [['text' => 'Warga Negara Indonesia']]))->values();
+$documentItems = collect(old('berkas', $pmb?->berkas ?? [['text' => 'Persetujuan orang tua']]))->values();
+$scheduleItems = collect(old('jadwal', $pmb?->jadwal ?? [[
+    'kegiatan' => 'Pendaftaran dan Seleksi Administrasi',
+    'tanggal_mulai' => '',
+    'tanggal_selesai' => '',
+    'tanggal_legacy' => '',
+]]))->values();
+$faqItems = collect(old('faq', $pmb?->faq ?? [[
+    'pertanyaan' => 'Kapan pendaftaran dibuka?',
+    'jawaban' => 'Informasi pendaftaran akan diumumkan oleh panitia PMB.',
+]]))->values();
+
+if ($alurItems->isEmpty()) $alurItems = collect([['title' => '']]);
+if ($requirementItems->isEmpty()) $requirementItems = collect([['text' => '']]);
+if ($documentItems->isEmpty()) $documentItems = collect([['text' => '']]);
+if ($scheduleItems->isEmpty()) $scheduleItems = collect([['kegiatan' => '', 'tanggal_mulai' => '', 'tanggal_selesai' => '', 'tanggal_legacy' => '']]);
+if ($faqItems->isEmpty()) $faqItems = collect([['pertanyaan' => '', 'jawaban' => '']]);
+
 $components = [
-['id' => 'pmb-hero-section', 'icon' => 'rocket_launch', 'title' => 'Hero Halaman', 'meta' =>
-trim(str_ireplace(['2025/2026', 'Penerimaan Siswa Baru', 'PPDB'], ['', 'Penerimaan Murid Baru', 'PMB'],
-$pmb?->hero_badge ?? 'Penerimaan Murid Baru')), 'content' => $pmb?->hero_title ?? 'Mulai Masa Depan Gemilang di SMAN
-Pintar'],
-['id' => 'pmb-steps-section', 'icon' => 'route', 'title' => 'Alur Pendaftaran', 'meta' => $pmb?->steps_label ?? 'Langkah
-Mudah', 'content' => $pmb?->steps_title ?? 'Alur Pendaftaran'],
-['id' => 'pmb-requirements-section', 'icon' => 'fact_check', 'title' => 'Persyaratan & Berkas', 'meta' => '2 daftar
-informasi', 'content' => 'Persyaratan Umum, Berkas Administrasi'],
-['id' => 'pmb-timeline-section', 'icon' => 'event_note', 'title' => 'Timeline Pendaftaran', 'meta' => 'Jadwal kegiatan
-PMB', 'content' => $pmb?->timeline_title ?? 'Timeline Pendaftaran'],
-['id' => 'pmb-faq-section', 'icon' => 'quiz', 'title' => 'FAQ PMB', 'meta' => 'Pertanyaan umum', 'content' =>
-$pmb?->faq_title ?? 'Pertanyaan Umum (FAQ)'],
-['id' => 'pmb-cta-section', 'icon' => 'campaign', 'title' => 'CTA Akhir', 'meta' => $pmb?->cta_primary_text ??
-'Informasi PMB', 'content' => $pmb?->cta_title ?? 'Informasi PMB SMAN Pintar Riau'],
+['id' => 'pmb-hero-section', 'icon' => 'rocket_launch', 'title' => 'Hero PMB', 'content' => 'Mengatur banner utama dan informasi PMB'],
+['id' => 'pmb-steps-section', 'icon' => 'route', 'title' => 'Alur Pendaftaran', 'content' => 'Mengatur tahapan seleksi PMB yang ditampilkan pada website'],
+['id' => 'pmb-requirements-section', 'icon' => 'fact_check', 'title' => 'Persyaratan & Berkas', 'content' => 'Mengatur persyaratan dan dokumen pendaftaran calon siswa'],
+['id' => 'pmb-timeline-section', 'icon' => 'event_note', 'title' => 'Timeline Pendaftaran', 'content' => 'Mengatur jadwal pelaksanaan setiap tahapan PMB'],
+['id' => 'pmb-faq-section', 'icon' => 'quiz', 'title' => 'FAQ PMB', 'content' => 'Mengatur daftar pertanyaan dan jawaban seputar PMB'],
+['id' => 'pmb-cta-section', 'icon' => 'campaign', 'title' => 'CTA Pendaftaran', 'content' => 'Mengatur banner ajakan pendaftaran, tombol, dan tautan tindakan'],
 ];
 @endphp
 
@@ -135,6 +151,17 @@ $pmb?->faq_title ?? 'Pertanyaan Umum (FAQ)'],
     </div>
     @endif
 
+    @if($errors->any())
+    <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-red-700">
+        <p class="font-bold">Form belum dapat disimpan. Periksa kembali data berikut:</p>
+        <ul class="mt-2 list-disc space-y-1 pl-5 text-sm">
+            @foreach($errors->all() as $error)
+            <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
+
     <form method="POST" action="{{ route('admin.pmb.update') }}" enctype="multipart/form-data" class="space-y-10">
         @csrf
         <input type="hidden" name="active_panel" id="activePmbPanelInput" value="">
@@ -201,7 +228,7 @@ $pmb?->faq_title ?? 'Pertanyaan Umum (FAQ)'],
                     <div>
                         <span class="text-xs font-bold text-tertiary uppercase tracking-widest mb-1 block">Component
                             01</span>
-                        <h3 class="text-2xl font-headline font-extrabold text-primary">Hero Halaman</h3>
+                        <h3 class="text-2xl font-headline font-extrabold text-primary">Hero PMB</h3>
                     </div>
                     <button type="button" data-pmb-back
                         class="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors">
@@ -224,18 +251,20 @@ $pmb?->faq_title ?? 'Pertanyaan Umum (FAQ)'],
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <div class="space-y-6">
                             <div>
-                                <label class="block">Judul Utama</label>
+                                <label class="block">Judul Hero</label>
                                 <input name="hero_title"
+                                    data-required
                                     value="{{ old('hero_title', $pmb?->hero_title ?? 'Mulai Masa Depan Gemilang di SMAN Pintar') }}"
                                     placeholder="Contoh: Mulai Masa Depan Gemilang di SMAN Pintar">
                             </div>
                             <div>
-                                <label class="block">Deskripsi Singkat</label>
+                                <label class="block">Deskripsi Hero</label>
                                 <textarea name="hero_description" rows="4"
+                                    data-required
                                     placeholder="Tulis kalimat pembuka PMB yang singkat dan jelas.">{{ old('hero_description', str_replace('2025/2026', '', $pmb?->hero_description ?? 'Pendaftaran Peserta Didik Baru telah dibuka. Bergabunglah dengan institusi pendidikan unggulan di Riau.')) }}</textarea>
                             </div>
                             <div>
-                                <label class="block">Gambar Hero</label>
+                                <label class="block">Gambar Banner</label>
                                 <input name="hero_image" type="file" accept="image/*">
                                 <p class="mt-2 text-sm font-medium text-slate-500">Biarkan kosong jika gambar tidak
                                     ingin diganti.</p>
@@ -267,21 +296,55 @@ $pmb?->faq_title ?? 'Pertanyaan Umum (FAQ)'],
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block">Label Kecil</label>
-                            <input name="steps_label"
+                            <input name="steps_label" data-required
                                 value="{{ old('steps_label', $pmb?->steps_label ?? 'Langkah Mudah') }}"
                                 placeholder="Contoh: Langkah Mudah">
                         </div>
                         <div>
                             <label class="block">Judul Bagian</label>
-                            <input name="steps_title"
+                            <input name="steps_title" data-required
                                 value="{{ old('steps_title', $pmb?->steps_title ?? 'Alur Pendaftaran') }}"
                                 placeholder="Contoh: Alur Pendaftaran">
                         </div>
                     </div>
-                    <div>
-                        <label class="block">Daftar Alur</label>
-                        <textarea name="alur" rows="8"
-                            placeholder="Tulis satu tahap per baris. Contoh:&#10;Seleksi Administrasi & Nilai Rapor&#10;Tes Kemampuan Akademik (TPA) & Wawancara Orang Tua&#10;Psikotes, Tes Bahasa Inggris, Baca Tulis Al-Qur'an, Tes Kesehatan, dan Tes Fisik">{{ old('alur', $pmb?->alur ?? '') }}</textarea>
+                    <div data-dynamic-list data-list-name="alur" data-item-label="Tahap" class="space-y-4">
+                        <div class="flex items-center justify-between gap-4">
+                            <label class="block mb-0">Daftar Tahapan</label>
+                            <button type="button" data-add-item class="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-white">
+                                <span class="material-symbols-outlined text-[18px]">add</span> Tambah Tahap
+                            </button>
+                        </div>
+                        <div data-list-items class="space-y-4">
+                            @foreach($alurItems as $index => $item)
+                            <article data-list-item class="rounded-2xl border border-slate-200 bg-white p-5 space-y-4">
+                                <div class="flex items-center justify-between gap-3">
+                                    <h4 data-item-title class="font-bold text-primary">Tahap {{ $index + 1 }}</h4>
+                                    <div class="flex gap-2">
+                                        <button type="button" data-move-up class="h-9 w-9 rounded-lg bg-slate-100 text-slate-600" aria-label="Naikkan tahap"><span class="material-symbols-outlined text-[18px]">arrow_upward</span></button>
+                                        <button type="button" data-move-down class="h-9 w-9 rounded-lg bg-slate-100 text-slate-600" aria-label="Turunkan tahap"><span class="material-symbols-outlined text-[18px]">arrow_downward</span></button>
+                                        <button type="button" data-remove-item class="h-9 w-9 rounded-lg bg-red-50 text-red-600" aria-label="Hapus tahap"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block">Nama Tahap</label>
+                                    <input data-field="title" data-required name="alur[{{ $index }}][title]" value="{{ data_get($item, 'title') }}" placeholder="Contoh: Seleksi Administrasi & Nilai Rapor">
+                                </div>
+                            </article>
+                            @endforeach
+                        </div>
+                        <template data-item-template>
+                            <article data-list-item class="rounded-2xl border border-slate-200 bg-white p-5 space-y-4">
+                                <div class="flex items-center justify-between gap-3">
+                                    <h4 data-item-title class="font-bold text-primary">Tahap</h4>
+                                    <div class="flex gap-2">
+                                        <button type="button" data-move-up class="h-9 w-9 rounded-lg bg-slate-100 text-slate-600" aria-label="Naikkan tahap"><span class="material-symbols-outlined text-[18px]">arrow_upward</span></button>
+                                        <button type="button" data-move-down class="h-9 w-9 rounded-lg bg-slate-100 text-slate-600" aria-label="Turunkan tahap"><span class="material-symbols-outlined text-[18px]">arrow_downward</span></button>
+                                        <button type="button" data-remove-item class="h-9 w-9 rounded-lg bg-red-50 text-red-600" aria-label="Hapus tahap"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+                                    </div>
+                                </div>
+                                <div><label class="block">Nama Tahap</label><input data-field="title" data-required placeholder="Contoh: Seleksi Administrasi & Nilai Rapor"></div>
+                            </article>
+                        </template>
                     </div>
                 </div>
             </details>
@@ -297,18 +360,49 @@ $pmb?->faq_title ?? 'Pertanyaan Umum (FAQ)'],
                         class="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors"><span
                             class="material-symbols-outlined text-[18px]">arrow_back</span>Kembali</button>
                 </summary>
-                <div
-                    class="border-t border-slate-100 p-6 lg:p-8 bg-surface-container-low/40 grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block">Persyaratan Umum</label>
-                        <textarea name="persyaratan_umum" rows="10"
-                            placeholder="Tulis satu persyaratan per baris.">{{ old('persyaratan_umum', $pmb?->persyaratan_umum ?? '') }}</textarea>
+                <div class="border-t border-slate-100 p-6 lg:p-8 bg-surface-container-low/40 grid grid-cols-1 xl:grid-cols-2 gap-8">
+                    @foreach([
+                        ['name' => 'persyaratan_umum', 'label' => 'Persyaratan Umum', 'button' => 'Tambah Persyaratan', 'items' => $requirementItems, 'placeholder' => 'Contoh: Warga Negara Indonesia'],
+                        ['name' => 'berkas', 'label' => 'Berkas Administrasi', 'button' => 'Tambah Berkas', 'items' => $documentItems, 'placeholder' => 'Contoh: Persetujuan orang tua'],
+                    ] as $list)
+                    <div data-dynamic-list data-list-name="{{ $list['name'] }}" data-item-label="Poin" class="space-y-4">
+                        <div class="flex items-center justify-between gap-3">
+                            <label class="block mb-0">{{ $list['label'] }}</label>
+                            <button type="button" data-add-item class="inline-flex items-center gap-2 rounded-xl bg-primary px-3 py-2 text-sm font-bold text-white">
+                                <span class="material-symbols-outlined text-[18px]">add</span> {{ $list['button'] }}
+                            </button>
+                        </div>
+                        <div data-list-items class="space-y-3">
+                            @foreach($list['items'] as $index => $item)
+                            <article data-list-item class="rounded-xl border border-slate-200 bg-white p-4">
+                                <div class="flex items-end gap-3">
+                                    <div class="min-w-0 flex-1">
+                                        <label data-item-title class="block">Poin {{ $index + 1 }}</label>
+                                        <input data-field="text" data-required name="{{ $list['name'] }}[{{ $index }}][text]" value="{{ data_get($item, 'text') }}" placeholder="{{ $list['placeholder'] }}">
+                                    </div>
+                                    <div class="flex gap-1 pb-2">
+                                        <button type="button" data-move-up class="h-9 w-9 rounded-lg bg-slate-100 text-slate-600"><span class="material-symbols-outlined text-[18px]">arrow_upward</span></button>
+                                        <button type="button" data-move-down class="h-9 w-9 rounded-lg bg-slate-100 text-slate-600"><span class="material-symbols-outlined text-[18px]">arrow_downward</span></button>
+                                        <button type="button" data-remove-item class="h-9 w-9 rounded-lg bg-red-50 text-red-600"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+                                    </div>
+                                </div>
+                            </article>
+                            @endforeach
+                        </div>
+                        <template data-item-template>
+                            <article data-list-item class="rounded-xl border border-slate-200 bg-white p-4">
+                                <div class="flex items-end gap-3">
+                                    <div class="min-w-0 flex-1"><label data-item-title class="block">Poin</label><input data-field="text" data-required placeholder="{{ $list['placeholder'] }}"></div>
+                                    <div class="flex gap-1 pb-2">
+                                        <button type="button" data-move-up class="h-9 w-9 rounded-lg bg-slate-100 text-slate-600"><span class="material-symbols-outlined text-[18px]">arrow_upward</span></button>
+                                        <button type="button" data-move-down class="h-9 w-9 rounded-lg bg-slate-100 text-slate-600"><span class="material-symbols-outlined text-[18px]">arrow_downward</span></button>
+                                        <button type="button" data-remove-item class="h-9 w-9 rounded-lg bg-red-50 text-red-600"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+                                    </div>
+                                </div>
+                            </article>
+                        </template>
                     </div>
-                    <div>
-                        <label class="block">Berkas Administrasi</label>
-                        <textarea name="berkas" rows="10"
-                            placeholder="Tulis satu berkas per baris.">{{ old('berkas', $pmb?->berkas ?? '') }}</textarea>
-                    </div>
+                    @endforeach
                 </div>
             </details>
 
@@ -327,15 +421,63 @@ $pmb?->faq_title ?? 'Pertanyaan Umum (FAQ)'],
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block">Judul Bagian</label>
-                            <input name="timeline_title"
+                            <input name="timeline_title" data-required
                                 value="{{ old('timeline_title', $pmb?->timeline_title ?? 'Timeline Pendaftaran') }}"
                                 placeholder="Contoh: Timeline Pendaftaran">
                         </div>
                     </div>
-                    <div>
-                        <label class="block">Daftar Jadwal</label>
-                        <textarea name="jadwal" rows="8"
-                            placeholder="Tulis format: Kegiatan | Tanggal&#10;Contoh: Pendaftaran Berkas | 1-10 Juni 2026">{{ old('jadwal', $pmb?->jadwal ?? '') }}</textarea>
+                    <div data-dynamic-list data-list-name="jadwal" data-item-label="Jadwal" class="space-y-4">
+                        <div class="flex items-center justify-between gap-4">
+                            <label class="block mb-0">Daftar Jadwal</label>
+                            <button type="button" data-add-item class="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-white">
+                                <span class="material-symbols-outlined text-[18px]">add</span> Tambah Jadwal
+                            </button>
+                        </div>
+                        <div data-list-items class="space-y-4">
+                            @foreach($scheduleItems as $index => $item)
+                            @php($legacyDate = data_get($item, 'tanggal_legacy'))
+                            <article data-list-item class="rounded-2xl border border-slate-200 bg-white p-5 space-y-4">
+                                <div class="flex items-center justify-between gap-3">
+                                    <h4 data-item-title class="font-bold text-primary">Jadwal {{ $index + 1 }}</h4>
+                                    <div class="flex gap-2">
+                                        <button type="button" data-move-up class="h-9 w-9 rounded-lg bg-slate-100 text-slate-600"><span class="material-symbols-outlined text-[18px]">arrow_upward</span></button>
+                                        <button type="button" data-move-down class="h-9 w-9 rounded-lg bg-slate-100 text-slate-600"><span class="material-symbols-outlined text-[18px]">arrow_downward</span></button>
+                                        <button type="button" data-remove-item class="h-9 w-9 rounded-lg bg-red-50 text-red-600"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block">Nama Kegiatan</label>
+                                    <input data-field="kegiatan" data-required name="jadwal[{{ $index }}][kegiatan]" value="{{ data_get($item, 'kegiatan') }}" placeholder="Contoh: Seleksi Administrasi">
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div><label class="block">Tanggal Mulai</label><input data-field="tanggal_mulai" {{ $legacyDate ? '' : 'data-required' }} name="jadwal[{{ $index }}][tanggal_mulai]" type="date" value="{{ data_get($item, 'tanggal_mulai') }}"></div>
+                                    <div><label class="block">Tanggal Selesai <span class="normal-case text-slate-400">(opsional)</span></label><input data-field="tanggal_selesai" name="jadwal[{{ $index }}][tanggal_selesai]" type="date" value="{{ data_get($item, 'tanggal_selesai') }}"></div>
+                                </div>
+                                <input data-field="tanggal_legacy" type="hidden" name="jadwal[{{ $index }}][tanggal_legacy]" value="{{ $legacyDate }}">
+                                @if($legacyDate)
+                                <p class="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-700">Tanggal lama: {{ $legacyDate }}. Isi Tanggal Mulai untuk mengganti format lama.</p>
+                                @endif
+                            </article>
+                            @endforeach
+                        </div>
+                        <template data-item-template>
+                            <article data-list-item class="rounded-2xl border border-slate-200 bg-white p-5 space-y-4">
+                                <div class="flex items-center justify-between gap-3">
+                                    <h4 data-item-title class="font-bold text-primary">Jadwal</h4>
+                                    <div class="flex gap-2">
+                                        <button type="button" data-move-up class="h-9 w-9 rounded-lg bg-slate-100 text-slate-600"><span class="material-symbols-outlined text-[18px]">arrow_upward</span></button>
+                                        <button type="button" data-move-down class="h-9 w-9 rounded-lg bg-slate-100 text-slate-600"><span class="material-symbols-outlined text-[18px]">arrow_downward</span></button>
+                                        <button type="button" data-remove-item class="h-9 w-9 rounded-lg bg-red-50 text-red-600"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+                                    </div>
+                                </div>
+                                <div><label class="block">Nama Kegiatan</label><input data-field="kegiatan" data-required placeholder="Contoh: Seleksi Administrasi"></div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div><label class="block">Tanggal Mulai</label><input data-field="tanggal_mulai" data-required type="date"></div>
+                                    <div><label class="block">Tanggal Selesai <span class="normal-case text-slate-400">(opsional)</span></label><input data-field="tanggal_selesai" type="date"></div>
+                                </div>
+                                <input data-field="tanggal_legacy" type="hidden" value="">
+                            </article>
+                        </template>
                     </div>
                 </div>
             </details>
@@ -355,15 +497,48 @@ $pmb?->faq_title ?? 'Pertanyaan Umum (FAQ)'],
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block">Judul Bagian</label>
-                            <input name="faq_title"
+                            <input name="faq_title" data-required
                                 value="{{ old('faq_title', $pmb?->faq_title ?? 'Pertanyaan Umum (FAQ)') }}"
                                 placeholder="Contoh: Pertanyaan Umum (FAQ)">
                         </div>
                     </div>
-                    <div>
-                        <label class="block">Daftar Pertanyaan</label>
-                        <textarea name="faq" rows="8"
-                            placeholder="Tulis format: Pertanyaan | Jawaban&#10;Contoh: Kapan pendaftaran dibuka? | Informasi pendaftaran akan diumumkan oleh panitia PMB.">{{ old('faq', $pmb?->faq ?? '') }}</textarea>
+                    <div data-dynamic-list data-list-name="faq" data-item-label="Pertanyaan" class="space-y-4">
+                        <div class="flex items-center justify-between gap-4">
+                            <label class="block mb-0">Daftar FAQ</label>
+                            <button type="button" data-add-item class="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-white">
+                                <span class="material-symbols-outlined text-[18px]">add</span> Tambah Pertanyaan
+                            </button>
+                        </div>
+                        <div data-list-items class="space-y-4">
+                            @foreach($faqItems as $index => $item)
+                            <article data-list-item class="rounded-2xl border border-slate-200 bg-white p-5 space-y-4">
+                                <div class="flex items-center justify-between gap-3">
+                                    <h4 data-item-title class="font-bold text-primary">Pertanyaan {{ $index + 1 }}</h4>
+                                    <div class="flex gap-2">
+                                        <button type="button" data-move-up class="h-9 w-9 rounded-lg bg-slate-100 text-slate-600"><span class="material-symbols-outlined text-[18px]">arrow_upward</span></button>
+                                        <button type="button" data-move-down class="h-9 w-9 rounded-lg bg-slate-100 text-slate-600"><span class="material-symbols-outlined text-[18px]">arrow_downward</span></button>
+                                        <button type="button" data-remove-item class="h-9 w-9 rounded-lg bg-red-50 text-red-600"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+                                    </div>
+                                </div>
+                                <div><label class="block">Pertanyaan</label><input data-field="pertanyaan" data-required name="faq[{{ $index }}][pertanyaan]" value="{{ data_get($item, 'pertanyaan') }}" placeholder="Contoh: Kapan pendaftaran dibuka?"></div>
+                                <div><label class="block">Jawaban</label><textarea data-field="jawaban" data-required name="faq[{{ $index }}][jawaban]" rows="4" placeholder="Tuliskan jawaban yang jelas.">{{ data_get($item, 'jawaban') }}</textarea></div>
+                            </article>
+                            @endforeach
+                        </div>
+                        <template data-item-template>
+                            <article data-list-item class="rounded-2xl border border-slate-200 bg-white p-5 space-y-4">
+                                <div class="flex items-center justify-between gap-3">
+                                    <h4 data-item-title class="font-bold text-primary">Pertanyaan</h4>
+                                    <div class="flex gap-2">
+                                        <button type="button" data-move-up class="h-9 w-9 rounded-lg bg-slate-100 text-slate-600"><span class="material-symbols-outlined text-[18px]">arrow_upward</span></button>
+                                        <button type="button" data-move-down class="h-9 w-9 rounded-lg bg-slate-100 text-slate-600"><span class="material-symbols-outlined text-[18px]">arrow_downward</span></button>
+                                        <button type="button" data-remove-item class="h-9 w-9 rounded-lg bg-red-50 text-red-600"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+                                    </div>
+                                </div>
+                                <div><label class="block">Pertanyaan</label><input data-field="pertanyaan" data-required placeholder="Contoh: Kapan pendaftaran dibuka?"></div>
+                                <div><label class="block">Jawaban</label><textarea data-field="jawaban" data-required rows="4" placeholder="Tuliskan jawaban yang jelas."></textarea></div>
+                            </article>
+                        </template>
                     </div>
                 </div>
             </details>
@@ -373,7 +548,7 @@ $pmb?->faq_title ?? 'Pertanyaan Umum (FAQ)'],
                 <summary class="list-none p-6 flex items-center justify-between gap-4">
                     <div><span class="text-xs font-bold text-tertiary uppercase tracking-widest mb-1 block">Component
                             06</span>
-                        <h3 class="text-2xl font-headline font-extrabold text-primary">CTA Akhir</h3>
+                        <h3 class="text-2xl font-headline font-extrabold text-primary">CTA Pendaftaran</h3>
                     </div>
                     <button type="button" data-pmb-back
                         class="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors"><span
@@ -382,25 +557,25 @@ $pmb?->faq_title ?? 'Pertanyaan Umum (FAQ)'],
                 <div
                     class="border-t border-slate-100 p-6 lg:p-8 bg-surface-container-low/40 grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="md:col-span-2">
-                        <label class="block">Judul Ajakan</label>
-                        <input name="cta_title"
+                        <label class="block">Judul CTA</label>
+                        <input name="cta_title" data-required
                             value="{{ old('cta_title', $pmb?->cta_title ?? 'Informasi PMB SMAN Pintar Riau') }}"
                             placeholder="Contoh: Informasi PMB SMAN Pintar Riau">
                     </div>
                     <div class="md:col-span-2">
-                        <label class="block">Deskripsi Ajakan</label>
-                        <textarea name="cta_description" rows="4"
+                        <label class="block">Deskripsi CTA</label>
+                        <textarea name="cta_description" data-required rows="4"
                             placeholder="Tulis informasi penutup PMB yang ringkas.">{{ old('cta_description', $pmb?->cta_description ?? 'Informasi pendaftaran dapat diperoleh melalui panitia PMB SMAN Pintar Riau.') }}</textarea>
                     </div>
                     <div>
-                        <label class="block">Teks Tombol</label>
-                        <input name="cta_secondary_text"
+                        <label class="block">Label Tombol</label>
+                        <input name="cta_secondary_text" data-required
                             value="{{ old('cta_secondary_text', $pmb?->cta_secondary_text ?? 'Hubungi Panitia') }}"
                             placeholder="Contoh: Hubungi Panitia">
                     </div>
                     <div>
-                        <label class="block">Link Tombol</label>
-                        <input name="cta_secondary_link"
+                        <label class="block">URL Tombol</label>
+                        <input name="cta_secondary_link" data-required
                             value="{{ old('cta_secondary_link', $pmb?->cta_secondary_link ?? route('pmb')) }}"
                             placeholder="Contoh: https://wa.me/6281234567890">
                     </div>
@@ -421,12 +596,75 @@ $pmb?->faq_title ?? 'Pertanyaan Umum (FAQ)'],
 </div>
 
 <script>
+const dynamicLists = Array.from(document.querySelectorAll('[data-dynamic-list]'));
+
+function reindexDynamicList(list) {
+    const baseName = list.dataset.listName;
+    const itemLabel = list.dataset.itemLabel || 'Item';
+    const items = Array.from(list.querySelectorAll('[data-list-items] > [data-list-item]'));
+
+    items.forEach((item, index) => {
+        const title = item.querySelector('[data-item-title]');
+        if (title) title.textContent = `${itemLabel} ${index + 1}`;
+
+        item.querySelectorAll('[data-field]').forEach((field) => {
+            field.name = `${baseName}[${index}][${field.dataset.field}]`;
+        });
+
+        const up = item.querySelector('[data-move-up]');
+        const down = item.querySelector('[data-move-down]');
+        const remove = item.querySelector('[data-remove-item]');
+        if (up) up.disabled = index === 0;
+        if (down) down.disabled = index === items.length - 1;
+        if (remove) remove.disabled = items.length === 1;
+    });
+}
+
+dynamicLists.forEach((list) => {
+    const itemsContainer = list.querySelector('[data-list-items]');
+    const template = list.querySelector('[data-item-template]');
+
+    list.querySelector('[data-add-item]')?.addEventListener('click', () => {
+        const fragment = template.content.cloneNode(true);
+        itemsContainer.appendChild(fragment);
+        reindexDynamicList(list);
+        updatePmbRequiredFields(document.querySelector('[data-pmb-panel]:not(.hidden)'));
+        itemsContainer.lastElementChild?.querySelector('input, textarea')?.focus();
+    });
+
+    itemsContainer.addEventListener('click', (event) => {
+        const item = event.target.closest('[data-list-item]');
+        if (!item) return;
+
+        if (event.target.closest('[data-remove-item]')) {
+            if (itemsContainer.querySelectorAll('[data-list-item]').length > 1) item.remove();
+        } else if (event.target.closest('[data-move-up]') && item.previousElementSibling) {
+            itemsContainer.insertBefore(item, item.previousElementSibling);
+        } else if (event.target.closest('[data-move-down]') && item.nextElementSibling) {
+            itemsContainer.insertBefore(item.nextElementSibling, item);
+        } else {
+            return;
+        }
+
+        reindexDynamicList(list);
+    });
+
+    reindexDynamicList(list);
+});
+
+function updatePmbRequiredFields(activePanel = null) {
+    document.querySelectorAll('#pmb-editors [data-required]').forEach((field) => {
+        field.required = Boolean(activePanel?.contains(field));
+    });
+}
+
 const pmbOverview = document.getElementById('pmb-overview');
 const pmbEditors = document.getElementById('pmb-editors');
 const pmbPanels = document.querySelectorAll('[data-pmb-panel]');
 const activePmbPanelInput = document.getElementById('activePmbPanelInput');
 
 function showPmbOverview() {
+    updatePmbRequiredFields();
     pmbEditors.classList.add('hidden');
     pmbOverview.classList.remove('hidden');
     if (activePmbPanelInput) {
@@ -445,6 +683,8 @@ function showPmbEditor(panelId) {
     if (!target) {
         return;
     }
+
+    updatePmbRequiredFields(target);
 
     pmbOverview.classList.add('hidden');
     pmbEditors.classList.remove('hidden');
@@ -477,6 +717,10 @@ document.querySelectorAll('[data-pmb-back]').forEach((button) => {
 
 @if(session('open_pmb_panel'))
 showPmbEditor(@json(session('open_pmb_panel')));
+@endif
+
+@if($errors->any() && old('active_panel'))
+showPmbEditor(@json(old('active_panel')));
 @endif
 </script>
 @endsection

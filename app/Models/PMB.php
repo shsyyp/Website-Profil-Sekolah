@@ -43,6 +43,11 @@ class PMB extends Model
     ];
 
     protected $casts = [
+        'alur' => 'array',
+        'persyaratan_umum' => 'array',
+        'berkas' => 'array',
+        'jadwal' => 'array',
+        'faq' => 'array',
         'testimonials' => 'array',
     ];
 }

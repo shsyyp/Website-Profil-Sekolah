@@ -22,10 +22,10 @@
             </div>
 
             <div>
-                <label class="text-xs font-bold uppercase text-tertiary block mb-2">Jawaban Bot</label>
+                <label class="text-xs font-bold uppercase text-tertiary block mb-2">Jawaban</label>
                 <textarea name="jawaban" rows="5"
                     class="w-full bg-surface-container border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary"
-                    required>{{ old('jawaban', $chatbot->jawaban) }}</textarea>
+                    placeholder="Masukkan jawaban yang akan diberikan chatbot." required>{{ old('jawaban', $chatbot->jawaban) }}</textarea>
                 @error('jawaban') <span class="text-error text-xs">{{ $message }}</span> @enderror
             </div>
 

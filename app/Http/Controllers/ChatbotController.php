@@ -22,8 +22,11 @@ class ChatbotController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'pertanyaan' => 'required',
-            'jawaban'    => 'required'
+            'pertanyaan' => ['required', 'string', 'max:500'],
+            'jawaban' => ['required', 'string'],
+        ], [
+            'pertanyaan.required' => 'Pertanyaan wajib diisi.',
+            'jawaban.required' => 'Jawaban wajib diisi.',
         ]);
         $data['kategori'] = 'Umum';
 
@@ -39,8 +42,11 @@ class ChatbotController extends Controller
     public function update(Request $request, Chatbot $chatbot)
     {
         $data = $request->validate([
-            'pertanyaan' => 'required',
-            'jawaban'    => 'required'
+            'pertanyaan' => ['required', 'string', 'max:500'],
+            'jawaban' => ['required', 'string'],
+        ], [
+            'pertanyaan.required' => 'Pertanyaan wajib diisi.',
+            'jawaban.required' => 'Jawaban wajib diisi.',
         ]);
         $data['kategori'] = $chatbot->kategori ?: 'Umum';
 

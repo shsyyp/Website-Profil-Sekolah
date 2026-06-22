@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Manajemen Chatbot | SMAN Pintar Admin')
+@section('title', 'Chatbot | SMAN Pintar Admin')
 
 @section('content')
 <div class="max-w-7xl mx-auto space-y-8">
@@ -26,7 +26,7 @@
                 <thead>
                     <tr class="bg-surface-container-low/50">
                         <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">No</th>
-                        <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Komponen</th>
+                        <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Pertanyaan</th>
                         <th class="px-6 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Ringkasan Jawaban</th>
                         <th class="px-8 py-5 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">Aksi</th>
                     </tr>
@@ -43,7 +43,9 @@
                             <p class="font-bold text-blue-900 group-hover:text-primary transition-colors">{{ $item->pertanyaan }}</p>
                         </td>
                         <td class="px-6 py-4">
-                            <p class="max-w-xl text-sm text-on-surface-variant font-medium leading-relaxed line-clamp-2">{{ $item->jawaban }}</p>
+                            <p class="max-w-xl text-sm text-on-surface-variant font-medium leading-relaxed line-clamp-2">
+                                {{ \Illuminate\Support\Str::limit(strip_tags($item->jawaban), 140) }}
+                            </p>
                         </td>
                         <td class="px-8 py-4 text-right">
                             <div class="flex justify-end gap-2">
@@ -64,7 +66,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="px-8 py-8 text-center text-slate-400">Belum ada data Chatbot.</td>
+                        <td colspan="4" class="px-8 py-8 text-center text-slate-400">Belum ada data Chatbot.</td>
                     </tr>
                     @endforelse
                 </tbody>

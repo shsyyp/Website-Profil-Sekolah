@@ -108,11 +108,12 @@
         </div>
 
         <div>
-            <label class="block text-xs font-extrabold uppercase text-tertiary mb-3">Cerita Singkat</label>
+            <label class="block text-xs font-extrabold uppercase text-tertiary mb-3">Testimoni Alumni</label>
             <textarea name="deskripsi" rows="5"
                 class="w-full bg-surface-container border-none rounded-xl px-4 py-3 text-base leading-relaxed focus:ring-2 focus:ring-primary"
-                placeholder="Tulis kutipan atau cerita singkat alumni.">{{ old('deskripsi', $alumnus->deskripsi) }}</textarea>
+                placeholder="Tulis testimoni atau cerita singkat alumni.">{{ old('deskripsi', $alumnus->deskripsi) }}</textarea>
         </div>
+
     </div>
 
     <div class="bg-surface-container-lowest rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-8 py-6">

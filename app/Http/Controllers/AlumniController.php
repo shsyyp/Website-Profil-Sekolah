@@ -107,7 +107,7 @@ class AlumniController extends Controller
             'tahun_lulus' => 'required|numeric',
             'lokasi'      => 'required',
             'deskripsi'   => 'nullable|string',
-            'foto'        => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+            'foto'        => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         if ($request->hasFile('foto')) {
@@ -141,7 +141,7 @@ class AlumniController extends Controller
             'tahun_lulus' => 'required|numeric',
             'lokasi'      => 'required',
             'deskripsi'   => 'nullable|string',
-            'foto'        => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+            'foto'        => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         if ($request->hasFile('foto')) {
@@ -166,6 +166,8 @@ class AlumniController extends Controller
         if ($alumnus->foto) {
             Storage::disk('public')->delete($alumnus->foto);
         }
+
+        $this->syncTestimonialSelection($alumnus->id, false);
         
         $alumnus->delete();
         
@@ -230,5 +232,22 @@ class AlumniController extends Controller
         }
 
         return array_values(array_unique($locations));
+    }
+
+    private function syncTestimonialSelection(int $alumniId, bool $showInTestimonial): void
+    {
+        $settings = AlumniPageSetting::firstOrCreate([]);
+        $selectedIds = collect($settings->testimonial_alumni_ids ?? [])
+            ->map(fn ($id) => (int) $id)
+            ->filter()
+            ->unique();
+
+        $selectedIds = $showInTestimonial
+            ? $selectedIds->push($alumniId)->unique()->take(5)
+            : $selectedIds->reject(fn ($id) => $id === $alumniId);
+
+        $settings->update([
+            'testimonial_alumni_ids' => $selectedIds->values()->all(),
+        ]);
     }
 }

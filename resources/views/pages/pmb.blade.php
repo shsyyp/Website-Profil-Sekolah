@@ -103,40 +103,29 @@ $heroImage = $pmb?->hero_image
     <div class="max-w-7xl mx-auto px-8">
         <div class="grid md:grid-cols-2 gap-8">
             <div class="bg-surface-container p-10 rounded-3xl shadow-sm border border-outline-variant/10">
-                <h3 class="font-headline text-3xl font-extrabold text-primary mb-8 flex items-center gap-3">
-                    <span class="material-symbols-outlined">rule</span>
-                    Persyaratan Umum
-                </h3>
-                <ul class="space-y-6">
+                <h3 class="font-headline text-3xl font-extrabold text-primary mb-8">Persyaratan Umum</h3>
+                <ul class="list-disc space-y-6 pl-6 marker:text-primary">
                     @forelse ($persyaratan as $item)
-                    <li class="flex gap-4">
-                        <span class="material-symbols-outlined text-primary shrink-0">check_circle</span>
-                        <p class="text-on-surface-variant">{{ $item }}</p>
+                    <li class="pl-2 text-on-surface-variant leading-relaxed">
+                        {{ $item }}
                     </li>
                     @empty
-                    <li class="flex gap-4">
-                        <span class="material-symbols-outlined text-primary shrink-0">check_circle</span>
-                        <p class="text-on-surface-variant">Informasi persyaratan akan diperbarui melalui CMS PMB.</p>
+                    <li class="pl-2 text-on-surface-variant leading-relaxed">
+                        Informasi persyaratan akan diperbarui melalui CMS PMB.
                     </li>
                     @endforelse
                 </ul>
             </div>
             <div class="bg-surface-container p-10 rounded-3xl shadow-sm border border-outline-variant/10">
-                <h3 class="font-headline text-3xl font-extrabold text-primary mb-8 flex items-center gap-3">
-                    <span class="material-symbols-outlined">attachment</span>
-                    Berkas Administrasi
-                </h3>
-                <ul class="space-y-6">
+                <h3 class="font-headline text-3xl font-extrabold text-primary mb-8">Berkas Administrasi</h3>
+                <ul class="list-disc space-y-6 pl-6 marker:text-primary">
                     @forelse ($berkas as $item)
-                    <li class="flex gap-4">
-                        <span class="material-symbols-outlined text-primary shrink-0">task</span>
-                        <p class="text-on-surface-variant font-medium">{{ $item }}</p>
+                    <li class="pl-2 text-on-surface-variant font-medium leading-relaxed">
+                        {{ $item }}
                     </li>
                     @empty
-                    <li class="flex gap-4">
-                        <span class="material-symbols-outlined text-primary shrink-0">task</span>
-                        <p class="text-on-surface-variant font-medium">Informasi berkas administrasi akan diperbarui
-                            melalui CMS PMB.</p>
+                    <li class="pl-2 text-on-surface-variant font-medium leading-relaxed">
+                        Informasi berkas administrasi akan diperbarui melalui CMS PMB.
                     </li>
                     @endforelse
                 </ul>

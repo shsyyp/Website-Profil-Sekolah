@@ -15,16 +15,16 @@
                 Konten Website
             </p>
 
-            <a class="flex items-center gap-3 px-4 py-3 {{ Route::is('admin.homepage.*') ? 'bg-gradient-to-br from-[#285092] to-[#3264b7] text-white' : 'text-[#565656] hover:bg-[#f6f6f6]' }} rounded-lg transition-transform hover:translate-x-1 duration-300"
-                href="{{ route('admin.homepage.index') }}">
-                <span class="material-symbols-outlined">home_work</span>
-                <span class="font-medium text-sm">Beranda</span>
+            <a href="{{ route('admin.homepage.index') }}"
+                class="flex items-center gap-3 px-4 py-3 transition-all {{ Route::is('admin.homepage.*') ? 'text-primary font-bold border-r-4 border-primary bg-[#ecf3fe]' : 'text-[#565656] hover:text-primary hover:bg-[#f6f6f6]' }}">
+                <span class="material-symbols-outlined" data-icon="home_work">home_work</span>
+                <span>Beranda</span>
             </a>
 
-            <a class="flex items-center gap-3 px-4 py-3 {{ Route::is('admin.about.*') ? 'bg-gradient-to-br from-[#285092] to-[#3264b7] text-white' : 'text-[#565656] hover:bg-[#f6f6f6]' }} rounded-lg transition-transform hover:translate-x-1 duration-300"
-                href="{{ route('admin.about.index') }}">
-                <span class="material-symbols-outlined">info</span>
-                <span class="font-medium text-sm">Tentang Kami</span>
+            <a href="{{ route('admin.about.index') }}"
+                class="flex items-center gap-3 px-4 py-3 transition-all {{ Route::is('admin.about.*') ? 'text-primary font-bold border-r-4 border-primary bg-[#ecf3fe]' : 'text-[#565656] hover:text-primary hover:bg-[#f6f6f6]' }}">
+                <span class="material-symbols-outlined" data-icon="info">info</span>
+                <span>Tentang Kami</span>
             </a>
 
             <a href="{{ url('admin/berita') }}"
